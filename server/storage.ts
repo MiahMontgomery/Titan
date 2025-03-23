@@ -263,6 +263,8 @@ export class MemStorage implements IStorage {
     const project: Project = { 
       ...insertProject, 
       id,
+      isActive: insertProject.isActive ?? false,
+      progress: insertProject.progress ?? 0,
       lastUpdated: insertProject.lastUpdated || new Date()
     };
     this.projects.set(id, project);

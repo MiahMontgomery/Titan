@@ -48,10 +48,8 @@ export default function ProjectView() {
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Project Not Found</h2>
           <p className="mb-6">The project you are looking for does not exist or has been removed.</p>
-          <Link href="/">
-            <a className="bg-accent hover:bg-accentDark text-black font-medium py-2 px-4 rounded-md transition-colors duration-150">
-              Return to Dashboard
-            </a>
+          <Link href="/" className="bg-accent hover:bg-accentDark text-black font-medium py-2 px-4 rounded-md transition-colors duration-150">
+            Return to Dashboard
           </Link>
         </div>
       </div>
@@ -63,12 +61,10 @@ export default function ProjectView() {
       {/* Project Header */}
       <div className="bg-gray-900 border-b border-gray-800 py-3 px-6 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <Link href="/">
-            <a className="text-gray-400 hover:text-white">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-              </svg>
-            </a>
+          <Link href="/" className="text-gray-400 hover:text-white">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
           </Link>
           <h2 className="text-xl font-semibold text-white">
             {isLoading ? "Loading..." : project?.name}
