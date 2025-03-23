@@ -167,6 +167,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Diagnostic endpoint to list all features
+  app.get('/api/features/all', async (req, res) => {
+    try {
+      // Get all features from the storage
+      const allFeatures = Array.from(storage['features'].values());
+      res.json(allFeatures);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch all features' });
+    }
+  });
+  
   app.post('/api/features', async (req, res) => {
     try {
       const result = insertFeatureSchema.safeParse(req.body);

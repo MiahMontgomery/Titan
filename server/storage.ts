@@ -69,127 +69,147 @@ export class MemStorage implements IStorage {
     this.goals = new Map();
     this.activityLogs = new Map();
     
-    this.userId = 1;
-    this.projectId = 1;
-    this.featureId = 1;
-    this.milestoneId = 1;
-    this.goalId = 1;
-    this.logId = 1;
+    this.userId = 0;
+    this.projectId = 0;
+    this.featureId = 0;
+    this.milestoneId = 0;
+    this.goalId = 0;
+    this.logId = 0;
     
-    // Initialize with sample data
-    this.initSampleData();
+    // Initialize with sample data (async, but we don't need to await here)
+    this.initSampleData().catch(err => console.error("Error initializing sample data:", err));
   }
 
-  private initSampleData() {
-    // Sample projects
-    const projectIds = [
-      this.createProject({
-        name: "E-Commerce Website",
-        description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
-        isActive: true,
-        progress: 45,
-        lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-      }).id,
-      this.createProject({
-        name: "Mobile App",
-        description: "Develop a cross-platform mobile application",
-        isActive: false,
-        progress: 70,
-        lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
-      }).id,
-      this.createProject({
-        name: "Content Management System",
-        description: "Create a CMS for managing digital content",
-        isActive: true,
-        progress: 20,
-        lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
-      }).id
-    ];
+  private async initSampleData() {
+    // Create test users
+    await this.createUser({
+      username: "admin",
+      password: "password",
+      email: "admin@example.com",
+      name: "Admin User"
+    });
+    
+    // Sample projects with async/await to ensure we get the actual IDs
+    const project1 = await this.createProject({
+      name: "E-Commerce Website",
+      description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
+      isActive: true,
+      progress: 45,
+      lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+    });
+    
+    const project2 = await this.createProject({
+      name: "Mobile App",
+      description: "Develop a cross-platform mobile application",
+      isActive: false,
+      progress: 70,
+      lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+    });
+    
+    const project3 = await this.createProject({
+      name: "Content Management System",
+      description: "Create a CMS for managing digital content",
+      isActive: true,
+      progress: 20,
+      lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+    });
+    
+    console.log("Created projects:", project1.id, project2.id, project3.id);
 
     // Sample features for first project
-    const featureIds = [
-      this.createFeature({
-        projectId: projectIds[0],
-        name: "User Authentication System",
-        description: "Implement secure login and registration",
-        progress: 30
-      }).id,
-      this.createFeature({
-        projectId: projectIds[0],
-        name: "Product Catalog",
-        description: "Product listings with search and filter",
-        progress: 60
-      }).id,
-      this.createFeature({
-        projectId: projectIds[0],
-        name: "Shopping Cart",
-        description: "Add/remove items and checkout process",
-        progress: 45
-      }).id
-    ];
+    const feature1 = await this.createFeature({
+      projectId: project1.id,
+      name: "User Authentication System",
+      description: "Implement secure login and registration",
+      progress: 30
+    });
+    
+    const feature2 = await this.createFeature({
+      projectId: project1.id,
+      name: "Product Catalog",
+      description: "Product listings with search and filter",
+      progress: 60
+    });
+    
+    const feature3 = await this.createFeature({
+      projectId: project1.id,
+      name: "Shopping Cart",
+      description: "Add/remove items and checkout process",
+      progress: 45
+    });
+    
+    console.log("Created features for project", project1.id, ":", feature1.id, feature2.id, feature3.id);
 
     // Sample milestones for first feature
-    const milestoneIds = [
-      this.createMilestone({
-        featureId: featureIds[0],
-        name: "Setup user database schema",
-        description: "Define user model with required fields",
-        status: "completed",
-        estimatedHours: 8
-      }).id,
-      this.createMilestone({
-        featureId: featureIds[0],
-        name: "Implement login/signup forms",
-        description: "Create responsive forms with validation",
-        status: "in_progress",
-        estimatedHours: 12
-      }).id,
-      this.createMilestone({
-        featureId: featureIds[0],
-        name: "Setup authentication middleware",
-        description: "Implement JWT token-based auth",
-        status: "not_started",
-        estimatedHours: 10
-      }).id
-    ];
+    const milestone1 = await this.createMilestone({
+      featureId: feature1.id,
+      name: "Setup user database schema",
+      description: "Define user model with required fields",
+      status: "completed",
+      estimatedHours: 8
+    });
+    
+    const milestone2 = await this.createMilestone({
+      featureId: feature1.id,
+      name: "Implement login/signup forms",
+      description: "Create responsive forms with validation",
+      status: "in_progress",
+      estimatedHours: 12
+    });
+    
+    const milestone3 = await this.createMilestone({
+      featureId: feature1.id,
+      name: "Setup authentication middleware",
+      description: "Implement JWT token-based auth",
+      status: "not_started",
+      estimatedHours: 10
+    });
+    
+    console.log("Created milestones for feature", feature1.id, ":", milestone1.id, milestone2.id, milestone3.id);
 
     // Sample goals for first milestone
-    this.createGoal({
-      milestoneId: milestoneIds[0],
+    const goal1 = await this.createGoal({
+      milestoneId: milestone1.id,
       name: "Define user model with required fields",
       isCompleted: true
     });
-    this.createGoal({
-      milestoneId: milestoneIds[0],
+    
+    const goal2 = await this.createGoal({
+      milestoneId: milestone1.id,
       name: "Setup password hashing and security",
       isCompleted: true
     });
-    this.createGoal({
-      milestoneId: milestoneIds[0],
+    
+    const goal3 = await this.createGoal({
+      milestoneId: milestone1.id,
       name: "Create database migrations",
       isCompleted: true
     });
 
     // Sample goals for second milestone
-    this.createGoal({
-      milestoneId: milestoneIds[1],
+    const goal4 = await this.createGoal({
+      milestoneId: milestone2.id,
       name: "Design responsive login form",
       isCompleted: true
     });
-    this.createGoal({
-      milestoneId: milestoneIds[1],
+    
+    const goal5 = await this.createGoal({
+      milestoneId: milestone2.id,
       name: "Implement form validation",
       isCompleted: false
     });
-    this.createGoal({
-      milestoneId: milestoneIds[1],
+    
+    const goal6 = await this.createGoal({
+      milestoneId: milestone2.id,
       name: "Connect to authentication API",
       isCompleted: false
     });
+    
+    console.log("Created goals for milestones");
 
     // Sample activity logs
-    this.createActivityLog({
-      projectId: projectIds[0],
+    const log1 = await this.createActivityLog({
+      projectId: project1.id,
       message: "Started working on login form validation",
       timestamp: new Date(Date.now() - 40 * 60 * 1000), // 40 minutes ago
       agentId: "agent-1",
@@ -198,13 +218,17 @@ export class MemStorage implements IStorage {
   return re.test(String(email).toLowerCase());
 }`
     });
-    this.createActivityLog({
-      projectId: projectIds[0],
+    
+    const log2 = await this.createActivityLog({
+      projectId: project1.id,
       message: "Completed database schema design",
       timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
       agentId: "agent-2",
       codeSnippet: null
     });
+    
+    console.log("Created activity logs");
+    console.log("Sample data initialization complete!");
   }
 
   // User management
