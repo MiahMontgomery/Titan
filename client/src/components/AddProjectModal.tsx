@@ -56,8 +56,8 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
       name: projectName,
       description: projectDescription || "No description provided",
       isActive: true,
-      progress: 0,
-      lastUpdated: new Date()
+      progress: 0
+      // lastUpdated is handled by the database defaultNow()
     });
   };
   

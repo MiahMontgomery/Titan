@@ -11,7 +11,7 @@ interface PerformanceTabProps {
 export function PerformanceTab({ projectId }: PerformanceTabProps) {
   const [message, setMessage] = useState('');
   const [logs, setLogs] = useState<ActivityLog[]>([]);
-  const editorRef = useRef<HTMLPreElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
   const { sendMessage } = useWebSocketContext();
   
   // Fetch activity logs
@@ -116,11 +116,11 @@ const AuthForm = () => {
       }
     };
     
-    // Register listener
-    const unsubscribe = useWebSocketContext().subscribe(handleActivityUpdate);
+    // No longer using websocket subscription here since it causes issues
+    // We'll rely on the periodic polling from the query
     
     return () => {
-      unsubscribe();
+      // No cleanup needed
     };
   }, [projectId]);
   
