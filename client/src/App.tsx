@@ -6,7 +6,6 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import ProjectView from "@/pages/ProjectView";
 import { ProjectProvider } from "./context/ProjectContext";
-import { useWebSocket } from "./lib/websocket";
 
 function Router() {
   return (
@@ -19,9 +18,6 @@ function Router() {
 }
 
 function App() {
-  // Initialize WebSocket connection
-  useWebSocket();
-  
   return (
     <QueryClientProvider client={queryClient}>
       <ProjectProvider>
