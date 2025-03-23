@@ -1,0 +1,437 @@
+import {
+  Project, InsertProject,
+  Feature, InsertFeature,
+  Milestone, InsertMilestone,
+  Goal, InsertGoal,
+  ActivityLog, InsertActivityLog,
+  User, InsertUser
+} from "@shared/schema";
+
+export interface IStorage {
+  // User management (keeping this for compatibility)
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
+  // Project management
+  getAllProjects(): Promise<Project[]>;
+  getProject(id: number): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined>;
+  deleteProject(id: number): Promise<boolean>;
+  
+  // Feature management
+  getFeaturesByProject(projectId: number): Promise<Feature[]>;
+  getFeature(id: number): Promise<Feature | undefined>;
+  createFeature(feature: InsertFeature): Promise<Feature>;
+  updateFeature(id: number, feature: Partial<InsertFeature>): Promise<Feature | undefined>;
+  deleteFeature(id: number): Promise<boolean>;
+  
+  // Milestone management
+  getMilestonesByFeature(featureId: number): Promise<Milestone[]>;
+  getMilestone(id: number): Promise<Milestone | undefined>;
+  createMilestone(milestone: InsertMilestone): Promise<Milestone>;
+  updateMilestone(id: number, milestone: Partial<InsertMilestone>): Promise<Milestone | undefined>;
+  deleteMilestone(id: number): Promise<boolean>;
+  
+  // Goal management
+  getGoalsByMilestone(milestoneId: number): Promise<Goal[]>;
+  getGoal(id: number): Promise<Goal | undefined>;
+  createGoal(goal: InsertGoal): Promise<Goal>;
+  updateGoal(id: number, goal: Partial<InsertGoal>): Promise<Goal | undefined>;
+  deleteGoal(id: number): Promise<boolean>;
+  
+  // Activity logs
+  getActivityLogsByProject(projectId: number): Promise<ActivityLog[]>;
+  createActivityLog(log: InsertActivityLog): Promise<ActivityLog>;
+}
+
+export class MemStorage implements IStorage {
+  private users: Map<number, User>;
+  private projects: Map<number, Project>;
+  private features: Map<number, Feature>;
+  private milestones: Map<number, Milestone>;
+  private goals: Map<number, Goal>;
+  private activityLogs: Map<number, ActivityLog>;
+  
+  private userId: number;
+  private projectId: number;
+  private featureId: number;
+  private milestoneId: number;
+  private goalId: number;
+  private logId: number;
+
+  constructor() {
+    this.users = new Map();
+    this.projects = new Map();
+    this.features = new Map();
+    this.milestones = new Map();
+    this.goals = new Map();
+    this.activityLogs = new Map();
+    
+    this.userId = 1;
+    this.projectId = 1;
+    this.featureId = 1;
+    this.milestoneId = 1;
+    this.goalId = 1;
+    this.logId = 1;
+    
+    // Initialize with sample data
+    this.initSampleData();
+  }
+
+  private initSampleData() {
+    // Sample projects
+    const projectIds = [
+      this.createProject({
+        name: "E-Commerce Website",
+        description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
+        isActive: true,
+        progress: 45,
+        lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      }).id,
+      this.createProject({
+        name: "Mobile App",
+        description: "Develop a cross-platform mobile application",
+        isActive: false,
+        progress: 70,
+        lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+      }).id,
+      this.createProject({
+        name: "Content Management System",
+        description: "Create a CMS for managing digital content",
+        isActive: true,
+        progress: 20,
+        lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+      }).id
+    ];
+
+    // Sample features for first project
+    const featureIds = [
+      this.createFeature({
+        projectId: projectIds[0],
+        name: "User Authentication System",
+        description: "Implement secure login and registration",
+        progress: 30
+      }).id,
+      this.createFeature({
+        projectId: projectIds[0],
+        name: "Product Catalog",
+        description: "Product listings with search and filter",
+        progress: 60
+      }).id,
+      this.createFeature({
+        projectId: projectIds[0],
+        name: "Shopping Cart",
+        description: "Add/remove items and checkout process",
+        progress: 45
+      }).id
+    ];
+
+    // Sample milestones for first feature
+    const milestoneIds = [
+      this.createMilestone({
+        featureId: featureIds[0],
+        name: "Setup user database schema",
+        description: "Define user model with required fields",
+        status: "completed",
+        estimatedHours: 8
+      }).id,
+      this.createMilestone({
+        featureId: featureIds[0],
+        name: "Implement login/signup forms",
+        description: "Create responsive forms with validation",
+        status: "in_progress",
+        estimatedHours: 12
+      }).id,
+      this.createMilestone({
+        featureId: featureIds[0],
+        name: "Setup authentication middleware",
+        description: "Implement JWT token-based auth",
+        status: "not_started",
+        estimatedHours: 10
+      }).id
+    ];
+
+    // Sample goals for first milestone
+    this.createGoal({
+      milestoneId: milestoneIds[0],
+      name: "Define user model with required fields",
+      isCompleted: true
+    });
+    this.createGoal({
+      milestoneId: milestoneIds[0],
+      name: "Setup password hashing and security",
+      isCompleted: true
+    });
+    this.createGoal({
+      milestoneId: milestoneIds[0],
+      name: "Create database migrations",
+      isCompleted: true
+    });
+
+    // Sample goals for second milestone
+    this.createGoal({
+      milestoneId: milestoneIds[1],
+      name: "Design responsive login form",
+      isCompleted: true
+    });
+    this.createGoal({
+      milestoneId: milestoneIds[1],
+      name: "Implement form validation",
+      isCompleted: false
+    });
+    this.createGoal({
+      milestoneId: milestoneIds[1],
+      name: "Connect to authentication API",
+      isCompleted: false
+    });
+
+    // Sample activity logs
+    this.createActivityLog({
+      projectId: projectIds[0],
+      message: "Started working on login form validation",
+      timestamp: new Date(Date.now() - 40 * 60 * 1000), // 40 minutes ago
+      agentId: "agent-1",
+      codeSnippet: `function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}`
+    });
+    this.createActivityLog({
+      projectId: projectIds[0],
+      message: "Completed database schema design",
+      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
+      agentId: "agent-2",
+      codeSnippet: null
+    });
+  }
+
+  // User management
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.username === username,
+    );
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.userId++;
+    const user: User = { ...insertUser, id };
+    this.users.set(id, user);
+    return user;
+  }
+
+  // Project management
+  async getAllProjects(): Promise<Project[]> {
+    return Array.from(this.projects.values());
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    return this.projects.get(id);
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const id = this.projectId++;
+    const project: Project = { 
+      ...insertProject, 
+      id,
+      lastUpdated: insertProject.lastUpdated || new Date()
+    };
+    this.projects.set(id, project);
+    return project;
+  }
+
+  async updateProject(id: number, updateData: Partial<InsertProject>): Promise<Project | undefined> {
+    const project = this.projects.get(id);
+    if (!project) return undefined;
+
+    const updatedProject: Project = { 
+      ...project, 
+      ...updateData,
+      lastUpdated: new Date()
+    };
+    this.projects.set(id, updatedProject);
+    return updatedProject;
+  }
+
+  async deleteProject(id: number): Promise<boolean> {
+    return this.projects.delete(id);
+  }
+
+  // Feature management
+  async getFeaturesByProject(projectId: number): Promise<Feature[]> {
+    return Array.from(this.features.values()).filter(feature => feature.projectId === projectId);
+  }
+
+  async getFeature(id: number): Promise<Feature | undefined> {
+    return this.features.get(id);
+  }
+
+  async createFeature(insertFeature: InsertFeature): Promise<Feature> {
+    const id = this.featureId++;
+    const feature: Feature = { ...insertFeature, id };
+    this.features.set(id, feature);
+    return feature;
+  }
+
+  async updateFeature(id: number, updateData: Partial<InsertFeature>): Promise<Feature | undefined> {
+    const feature = this.features.get(id);
+    if (!feature) return undefined;
+
+    const updatedFeature: Feature = { ...feature, ...updateData };
+    this.features.set(id, updatedFeature);
+    
+    // Update project's last updated timestamp
+    if (feature.projectId) {
+      const project = this.projects.get(feature.projectId);
+      if (project) {
+        this.projects.set(feature.projectId, {
+          ...project,
+          lastUpdated: new Date()
+        });
+      }
+    }
+    
+    return updatedFeature;
+  }
+
+  async deleteFeature(id: number): Promise<boolean> {
+    return this.features.delete(id);
+  }
+
+  // Milestone management
+  async getMilestonesByFeature(featureId: number): Promise<Milestone[]> {
+    return Array.from(this.milestones.values()).filter(milestone => milestone.featureId === featureId);
+  }
+
+  async getMilestone(id: number): Promise<Milestone | undefined> {
+    return this.milestones.get(id);
+  }
+
+  async createMilestone(insertMilestone: InsertMilestone): Promise<Milestone> {
+    const id = this.milestoneId++;
+    const milestone: Milestone = { ...insertMilestone, id };
+    this.milestones.set(id, milestone);
+    return milestone;
+  }
+
+  async updateMilestone(id: number, updateData: Partial<InsertMilestone>): Promise<Milestone | undefined> {
+    const milestone = this.milestones.get(id);
+    if (!milestone) return undefined;
+
+    const updatedMilestone: Milestone = { ...milestone, ...updateData };
+    this.milestones.set(id, updatedMilestone);
+
+    // Update feature progress based on milestone status changes
+    if (updateData.status && milestone.featureId) {
+      const feature = this.features.get(milestone.featureId);
+      if (feature) {
+        const milestones = await this.getMilestonesByFeature(feature.id);
+        const totalMilestones = milestones.length;
+        const completedMilestones = milestones.filter(m => m.status === 'completed').length;
+        const inProgressMilestones = milestones.filter(m => m.status === 'in_progress').length;
+        
+        // Calculate progress as a percentage
+        const progress = Math.round((completedMilestones / totalMilestones) * 100);
+        
+        // Update the feature with the new progress
+        await this.updateFeature(feature.id, { progress });
+        
+        // Find the project and update its progress
+        const project = this.projects.get(feature.projectId);
+        if (project) {
+          const features = await this.getFeaturesByProject(project.id);
+          const totalProgress = features.reduce((sum, f) => sum + f.progress, 0);
+          const projectProgress = Math.round(totalProgress / features.length);
+          
+          await this.updateProject(project.id, { 
+            progress: projectProgress,
+            lastUpdated: new Date()
+          });
+        }
+      }
+    }
+    
+    return updatedMilestone;
+  }
+
+  async deleteMilestone(id: number): Promise<boolean> {
+    return this.milestones.delete(id);
+  }
+
+  // Goal management
+  async getGoalsByMilestone(milestoneId: number): Promise<Goal[]> {
+    return Array.from(this.goals.values()).filter(goal => goal.milestoneId === milestoneId);
+  }
+
+  async getGoal(id: number): Promise<Goal | undefined> {
+    return this.goals.get(id);
+  }
+
+  async createGoal(insertGoal: InsertGoal): Promise<Goal> {
+    const id = this.goalId++;
+    const goal: Goal = { ...insertGoal, id };
+    this.goals.set(id, goal);
+    return goal;
+  }
+
+  async updateGoal(id: number, updateData: Partial<InsertGoal>): Promise<Goal | undefined> {
+    const goal = this.goals.get(id);
+    if (!goal) return undefined;
+
+    const updatedGoal: Goal = { ...goal, ...updateData };
+    this.goals.set(id, updatedGoal);
+    
+    // Update milestone status if goal completion status changes
+    if (updateData.isCompleted !== undefined && goal.milestoneId) {
+      const milestone = this.milestones.get(goal.milestoneId);
+      if (milestone) {
+        const goals = await this.getGoalsByMilestone(milestone.id);
+        const allGoalsCompleted = goals.every(g => g.isCompleted);
+        
+        if (allGoalsCompleted) {
+          await this.updateMilestone(milestone.id, { status: 'completed' });
+        } else if (goals.some(g => g.isCompleted)) {
+          await this.updateMilestone(milestone.id, { status: 'in_progress' });
+        }
+      }
+    }
+    
+    return updatedGoal;
+  }
+
+  async deleteGoal(id: number): Promise<boolean> {
+    return this.goals.delete(id);
+  }
+
+  // Activity logs
+  async getActivityLogsByProject(projectId: number): Promise<ActivityLog[]> {
+    return Array.from(this.activityLogs.values())
+      .filter(log => log.projectId === projectId)
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
+
+  async createActivityLog(insertLog: InsertActivityLog): Promise<ActivityLog> {
+    const id = this.logId++;
+    const log: ActivityLog = { 
+      ...insertLog, 
+      id,
+      timestamp: insertLog.timestamp || new Date()
+    };
+    this.activityLogs.set(id, log);
+    
+    // Update project's last updated timestamp
+    const project = this.projects.get(insertLog.projectId);
+    if (project) {
+      this.updateProject(project.id, { lastUpdated: log.timestamp });
+    }
+    
+    return log;
+  }
+}
+
+export const storage = new MemStorage();

@@ -1,0 +1,91 @@
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Project } from "@shared/schema";
+import { AddProjectModal } from "@/components/AddProjectModal";
+import { ProjectTile } from "@/components/ProjectTile";
+import { Logo } from "@/components/ui/Logo";
+import { useToast } from "@/hooks/use-toast";
+import { useProjectContext } from "@/context/ProjectContext";
+
+export default function Dashboard() {
+  const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const { toast } = useToast();
+  const { projects } = useProjectContext();
+
+  const { isLoading, error } = useQuery<Project[]>({
+    queryKey: ['/api/projects'],
+    retry: 1,
+  });
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load projects. Please try again.",
+      });
+    }
+  }, [error, toast]);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header className="bg-background border-b border-gray-800 py-3 px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Logo />
+            <h1 className="text-xl font-semibold text-white">Titan</h1>
+          </div>
+
+          <button 
+            onClick={() => setIsAddProjectModalOpen(true)}
+            className="bg-accent hover:bg-accentDark text-black font-medium py-2 px-4 rounded-md transition-colors duration-150 flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add Project
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto p-6">
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array(4).fill(0).map((_, i) => (
+              <div key={i} className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 h-48 animate-pulse"></div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {projects.map((project) => (
+              <ProjectTile key={project.id} project={project} />
+            ))}
+            {projects.length === 0 && (
+              <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
+                <svg className="w-16 h-16 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <h3 className="text-xl font-medium mb-2">No projects yet</h3>
+                <p className="mb-4">Create your first project to get started</p>
+                <button 
+                  onClick={() => setIsAddProjectModalOpen(true)}
+                  className="bg-accent hover:bg-accentDark text-black font-medium py-2 px-4 rounded-md transition-colors duration-150"
+                >
+                  Add Project
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {/* Add Project Modal */}
+      <AddProjectModal 
+        isOpen={isAddProjectModalOpen} 
+        onClose={() => setIsAddProjectModalOpen(false)} 
+      />
+    </div>
+  );
+}
