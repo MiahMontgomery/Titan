@@ -299,7 +299,12 @@ export class MemStorage implements IStorage {
 
   async createFeature(insertFeature: InsertFeature): Promise<Feature> {
     const id = this.featureId++;
-    const feature: Feature = { ...insertFeature, id };
+    const feature: Feature = { 
+      ...insertFeature, 
+      id,
+      description: insertFeature.description ?? null,
+      progress: insertFeature.progress ?? 0
+    };
     this.features.set(id, feature);
     return feature;
   }
@@ -340,7 +345,13 @@ export class MemStorage implements IStorage {
 
   async createMilestone(insertMilestone: InsertMilestone): Promise<Milestone> {
     const id = this.milestoneId++;
-    const milestone: Milestone = { ...insertMilestone, id };
+    const milestone: Milestone = { 
+      ...insertMilestone, 
+      id,
+      description: insertMilestone.description ?? null,
+      status: insertMilestone.status ?? 'not_started',
+      estimatedHours: insertMilestone.estimatedHours ?? null
+    };
     this.milestones.set(id, milestone);
     return milestone;
   }
@@ -400,7 +411,11 @@ export class MemStorage implements IStorage {
 
   async createGoal(insertGoal: InsertGoal): Promise<Goal> {
     const id = this.goalId++;
-    const goal: Goal = { ...insertGoal, id };
+    const goal: Goal = { 
+      ...insertGoal, 
+      id,
+      isCompleted: insertGoal.isCompleted ?? false 
+    };
     this.goals.set(id, goal);
     return goal;
   }
@@ -446,7 +461,9 @@ export class MemStorage implements IStorage {
     const log: ActivityLog = { 
       ...insertLog, 
       id,
-      timestamp: insertLog.timestamp || new Date()
+      timestamp: insertLog.timestamp || new Date(),
+      agentId: insertLog.agentId ?? null,
+      codeSnippet: insertLog.codeSnippet ?? null
     };
     this.activityLogs.set(id, log);
     
