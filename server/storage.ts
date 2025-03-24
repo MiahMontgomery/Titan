@@ -121,21 +121,21 @@ export class MemStorage implements IStorage {
       projectId: project1.id,
       name: "User Authentication System",
       description: "Implement secure login and registration",
-      progress: 30
+      isComplete: false
     });
     
     const feature2 = await this.createFeature({
       projectId: project1.id,
       name: "Product Catalog",
       description: "Product listings with search and filter",
-      progress: 60
+      isComplete: true
     });
     
     const feature3 = await this.createFeature({
       projectId: project1.id,
       name: "Shopping Cart",
       description: "Add/remove items and checkout process",
-      progress: 45
+      isComplete: false
     });
     
     console.log("Created features for project", project1.id, ":", feature1.id, feature2.id, feature3.id);

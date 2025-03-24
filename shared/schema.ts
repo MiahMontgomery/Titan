@@ -18,7 +18,7 @@ export const features = pgTable("features", {
   projectId: integer("project_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  progress: integer("progress").default(0).notNull(),
+  isComplete: boolean("is_complete").default(false).notNull(),
 });
 
 // Milestone Table
@@ -27,7 +27,6 @@ export const milestones = pgTable("milestones", {
   featureId: integer("feature_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  status: text("status").notNull().default("not_started"), // not_started, in_progress, completed
   estimatedHours: integer("estimated_hours").default(0),
 });
 
