@@ -150,12 +150,14 @@ function FeatureItem({
           <h4 className="font-medium text-white">{feature.name}</h4>
         </div>
         <div className="flex items-center text-sm">
-          <span className="text-gray-400 mr-3">{feature.progress}% complete</span>
+          <span className={`${feature.isComplete ? 'text-accent' : 'text-gray-400'} mr-3`}>
+            {feature.isComplete ? 'Complete' : 'In Progress'}
+          </span>
           <div className="w-32">
             <div className="w-full bg-gray-700 rounded-full h-1.5">
               <div 
                 className="bg-accent h-1.5 rounded-full" 
-                style={{ width: `${feature.progress}%` }}
+                style={{ width: feature.isComplete ? '100%' : '0%' }}
               ></div>
             </div>
           </div>
@@ -208,18 +210,19 @@ function MilestoneItem({ milestone, isExpanded, onToggle, goalsData }: Milestone
   // Store goals in the parent's data structure
   goalsData[milestone.id] = goals;
   
-  // Status badge styles
-  const statusStyles = {
-    not_started: "text-gray-400 bg-gray-700",
-    in_progress: "text-yellow-400 bg-yellow-400 bg-opacity-10",
-    completed: "text-accent bg-accent bg-opacity-10"
+  // Calculate milestone completion based on goals
+  const calculateMilestoneStatus = () => {
+    if (!goals || goals.length === 0) return { isCompleted: false, percent: 0 };
+    
+    const completedGoals = goals.filter(g => g.isCompleted).length;
+    const totalGoals = goals.length;
+    const percent = Math.round((completedGoals / totalGoals) * 100);
+    const isCompleted = completedGoals === totalGoals;
+    
+    return { isCompleted, percent };
   };
   
-  const statusText = {
-    not_started: "Not Started",
-    in_progress: "In Progress",
-    completed: "Completed"
-  };
+  const milestoneStatus = calculateMilestoneStatus();
   
   return (
     <div>
@@ -239,10 +242,20 @@ function MilestoneItem({ milestone, isExpanded, onToggle, goalsData }: Milestone
           <h5 className="text-sm font-medium">{milestone.name}</h5>
         </div>
         <div className="flex items-center text-xs">
-          <span className={`${statusStyles[milestone.status as keyof typeof statusStyles]} px-2 py-0.5 rounded`}>
-            {statusText[milestone.status as keyof typeof statusText]}
-          </span>
-          <span className="ml-3 text-gray-400">{milestone.estimatedHours} hours</span>
+          <div className="flex items-center">
+            <span className={`${milestoneStatus.isCompleted ? 'text-accent' : 'text-gray-400'} mr-2`}>
+              {milestoneStatus.percent}%
+            </span>
+            <div className="w-20 mr-2">
+              <div className="w-full bg-gray-700 rounded-full h-1">
+                <div 
+                  className="bg-accent h-1 rounded-full" 
+                  style={{ width: `${milestoneStatus.percent}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+          <span className="ml-1 text-gray-400">{milestone.estimatedHours} hours</span>
         </div>
       </div>
       

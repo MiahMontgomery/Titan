@@ -145,7 +145,6 @@ export class MemStorage implements IStorage {
       featureId: feature1.id,
       name: "Setup user database schema",
       description: "Define user model with required fields",
-      status: "completed",
       estimatedHours: 8
     });
     
@@ -153,7 +152,6 @@ export class MemStorage implements IStorage {
       featureId: feature1.id,
       name: "Implement login/signup forms",
       description: "Create responsive forms with validation",
-      status: "in_progress",
       estimatedHours: 12
     });
     
@@ -161,7 +159,6 @@ export class MemStorage implements IStorage {
       featureId: feature1.id,
       name: "Setup authentication middleware",
       description: "Implement JWT token-based auth",
-      status: "not_started",
       estimatedHours: 10
     });
     
@@ -303,7 +300,7 @@ export class MemStorage implements IStorage {
       ...insertFeature, 
       id,
       description: insertFeature.description ?? null,
-      progress: insertFeature.progress ?? 0
+      isComplete: insertFeature.isComplete ?? false
     };
     this.features.set(id, feature);
     return feature;
@@ -349,7 +346,6 @@ export class MemStorage implements IStorage {
       ...insertMilestone, 
       id,
       description: insertMilestone.description ?? null,
-      status: insertMilestone.status ?? 'not_started',
       estimatedHours: insertMilestone.estimatedHours ?? null
     };
     this.milestones.set(id, milestone);
@@ -362,36 +358,6 @@ export class MemStorage implements IStorage {
 
     const updatedMilestone: Milestone = { ...milestone, ...updateData };
     this.milestones.set(id, updatedMilestone);
-
-    // Update feature progress based on milestone status changes
-    if (updateData.status && milestone.featureId) {
-      const feature = this.features.get(milestone.featureId);
-      if (feature) {
-        const milestones = await this.getMilestonesByFeature(feature.id);
-        const totalMilestones = milestones.length;
-        const completedMilestones = milestones.filter(m => m.status === 'completed').length;
-        const inProgressMilestones = milestones.filter(m => m.status === 'in_progress').length;
-        
-        // Calculate progress as a percentage
-        const progress = Math.round((completedMilestones / totalMilestones) * 100);
-        
-        // Update the feature with the new progress
-        await this.updateFeature(feature.id, { progress });
-        
-        // Find the project and update its progress
-        const project = this.projects.get(feature.projectId);
-        if (project) {
-          const features = await this.getFeaturesByProject(project.id);
-          const totalProgress = features.reduce((sum, f) => sum + f.progress, 0);
-          const projectProgress = Math.round(totalProgress / features.length);
-          
-          await this.updateProject(project.id, { 
-            progress: projectProgress,
-            lastUpdated: new Date()
-          });
-        }
-      }
-    }
     
     return updatedMilestone;
   }
@@ -427,17 +393,51 @@ export class MemStorage implements IStorage {
     const updatedGoal: Goal = { ...goal, ...updateData };
     this.goals.set(id, updatedGoal);
     
-    // Update milestone status if goal completion status changes
+    // Update feature completion status if goal completion status changes
     if (updateData.isCompleted !== undefined && goal.milestoneId) {
       const milestone = this.milestones.get(goal.milestoneId);
-      if (milestone) {
-        const goals = await this.getGoalsByMilestone(milestone.id);
-        const allGoalsCompleted = goals.every(g => g.isCompleted);
+      
+      if (milestone && milestone.featureId) {
+        const feature = this.features.get(milestone.featureId);
         
-        if (allGoalsCompleted) {
-          await this.updateMilestone(milestone.id, { status: 'completed' });
-        } else if (goals.some(g => g.isCompleted)) {
-          await this.updateMilestone(milestone.id, { status: 'in_progress' });
+        if (feature) {
+          // Get all milestones for this feature
+          const milestones = await this.getMilestonesByFeature(feature.id);
+          
+          // Get all goals for all milestones
+          let totalGoals = 0;
+          let completedGoals = 0;
+          
+          for (const m of milestones) {
+            const goals = await this.getGoalsByMilestone(m.id);
+            totalGoals += goals.length;
+            completedGoals += goals.filter(g => g.isCompleted).length;
+          }
+          
+          // If all goals are completed, mark the feature as complete
+          if (totalGoals > 0 && completedGoals === totalGoals) {
+            await this.updateFeature(feature.id, { isComplete: true });
+          } else {
+            await this.updateFeature(feature.id, { isComplete: false });
+          }
+          
+          // Update project progress based on completed features
+          if (feature.projectId) {
+            const project = this.projects.get(feature.projectId);
+            if (project) {
+              const features = await this.getFeaturesByProject(project.id);
+              const totalFeatures = features.length;
+              const completedFeatures = features.filter(f => f.isComplete).length;
+              
+              // Calculate progress as a percentage
+              const progress = totalFeatures > 0 ? Math.round((completedFeatures / totalFeatures) * 100) : 0;
+              
+              await this.updateProject(project.id, { 
+                progress,
+                lastUpdated: new Date()
+              });
+            }
+          }
         }
       }
     }
