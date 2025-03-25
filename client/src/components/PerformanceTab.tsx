@@ -128,7 +128,11 @@ const AuthForm = () => {
   // Add new log message mutation
   const addLogMutation = useMutation({
     mutationFn: async (newLog: Omit<ActivityLog, 'id'>) => {
-      return await apiRequest('POST', '/api/activity', newLog);
+      return await apiRequest({ 
+        method: 'POST', 
+        url: '/api/activity', 
+        data: newLog 
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/activity`] });

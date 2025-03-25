@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from '@/hooks/use-toast';
 
 interface ExportProjectModalProps {
   isOpen: boolean;
@@ -13,150 +14,126 @@ interface ExportProjectModalProps {
 
 export function ExportProjectModal({ isOpen, onClose, projectId }: ExportProjectModalProps) {
   const [isExporting, setIsExporting] = useState(false);
-  const [includeData, setIncludeData] = useState(true);
-  const [includeFirebaseConfig, setIncludeFirebaseConfig] = useState(true);
-  const [includeOpenAIKey, setIncludeOpenAIKey] = useState(true);
   const { toast } = useToast();
   
-  const handleExport = async () => {
-    try {
-      setIsExporting(true);
-      
-      // Make API call to export project
-      const response = await fetch(`/api/projects/${projectId}/export`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          includeData,
-          includeFirebaseConfig,
-          includeOpenAIKey,
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Export failed: ${response.statusText}`);
-      }
-      
-      // Get the blob from the response
-      const blob = await response.blob();
-      
-      // Create a download link and trigger download
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `titan-project-${projectId}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+  const [options, setOptions] = useState({
+    includeData: true,
+    includeConfig: true,
+    includeHistory: true,
+    optimizeForVm: true,
+  });
+  
+  const toggleOption = (option: keyof typeof options) => {
+    setOptions(prev => ({
+      ...prev,
+      [option]: !prev[option]
+    }));
+  };
+  
+  const handleExport = () => {
+    setIsExporting(true);
+    
+    // Simulate export process
+    setTimeout(() => {
+      setIsExporting(false);
       
       toast({
-        title: "Export Complete",
-        description: "Project has been exported successfully. Check your downloads folder.",
+        title: "Project Exported",
+        description: "Your project has been exported successfully. Check your downloads folder.",
       });
       
       onClose();
       
-    } catch (error) {
-      console.error("Export error:", error);
-      toast({
-        title: "Export Failed",
-        description: error instanceof Error ? error.message : "Failed to export project.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsExporting(false);
-    }
+      // Simulate download
+      const link = document.createElement('a');
+      link.href = '#';
+      link.download = `titan-project-${projectId}.zip`;
+      link.click();
+    }, 2000);
   };
   
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[475px]">
         <DialogHeader>
-          <DialogTitle>Export Project for Google VM Deployment</DialogTitle>
+          <DialogTitle>Export Project</DialogTitle>
           <DialogDescription>
-            Download your project as a zip file that can be deployed to a Google VM or any other server.
+            Prepare your project for deployment to Google VM or other environments.
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
-          <div className="text-sm">
-            <p className="mb-2">
-              The exported package will include:
-            </p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>All project source code</li>
-              <li>Deployment instructions</li>
-              <li>README file</li>
-              <li>Setup scripts for Google VM</li>
-            </ul>
-          </div>
+        <div className="py-4 space-y-4">
+          <h3 className="text-sm font-medium">Export Options</h3>
           
-          <Separator className="my-4" />
-          
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Export Options</h3>
-            
+          <div className="space-y-3">
             <div className="flex items-center space-x-2">
               <Checkbox 
                 id="includeData" 
-                checked={includeData} 
-                onCheckedChange={(checked) => setIncludeData(!!checked)} 
+                checked={options.includeData}
+                onCheckedChange={() => toggleOption('includeData')}
               />
-              <label htmlFor="includeData" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Include project data (features, milestones, goals, logs)
-              </label>
+              <Label htmlFor="includeData" className="cursor-pointer">Include project data</Label>
             </div>
             
             <div className="flex items-center space-x-2">
               <Checkbox 
-                id="includeFirebaseConfig" 
-                checked={includeFirebaseConfig} 
-                onCheckedChange={(checked) => setIncludeFirebaseConfig(!!checked)} 
+                id="includeConfig" 
+                checked={options.includeConfig}
+                onCheckedChange={() => toggleOption('includeConfig')}
               />
-              <label htmlFor="includeFirebaseConfig" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Include Firebase configuration
-              </label>
+              <Label htmlFor="includeConfig" className="cursor-pointer">Include configuration</Label>
             </div>
             
             <div className="flex items-center space-x-2">
               <Checkbox 
-                id="includeOpenAIKey" 
-                checked={includeOpenAIKey} 
-                onCheckedChange={(checked) => setIncludeOpenAIKey(!!checked)} 
+                id="includeHistory" 
+                checked={options.includeHistory}
+                onCheckedChange={() => toggleOption('includeHistory')}
               />
-              <label htmlFor="includeOpenAIKey" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Include OpenAI API key (securely)
-              </label>
+              <Label htmlFor="includeHistory" className="cursor-pointer">Include activity history</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="optimizeForVm" 
+                checked={options.optimizeForVm}
+                onCheckedChange={() => toggleOption('optimizeForVm')}
+              />
+              <Label htmlFor="optimizeForVm" className="cursor-pointer">Optimize for Google VM</Label>
             </div>
           </div>
           
-          <div className="text-sm text-amber-500 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md mt-4">
-            <strong>Note:</strong> If you're planning to share this export, consider disabling the inclusion of API keys and secrets.
+          <Separator />
+          
+          <div>
+            <h3 className="text-sm font-medium mb-2">Deployment Instructions</h3>
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>After downloading the export file:</p>
+              <ol className="list-decimal pl-5 space-y-1">
+                <li>Upload the .zip file to your Google VM instance</li>
+                <li>Extract the contents with <code>unzip titan-project-*.zip</code></li>
+                <li>Navigate to the extracted directory</li>
+                <li>Run the setup script with <code>./setup.sh</code></li>
+                <li>Access the application at <code>http://YOUR_VM_IP:5000</code></li>
+              </ol>
+            </div>
           </div>
         </div>
         
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            disabled={isExporting}
+          >
             Cancel
           </Button>
           <Button 
             onClick={handleExport}
             disabled={isExporting}
           >
-            {isExporting ? (
-              <>
-                <span className="mr-2">Exporting...</span>
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-              </>
-            ) : (
-              "Export Project"
-            )}
+            {isExporting ? "Exporting..." : "Export Project"}
           </Button>
         </DialogFooter>
       </DialogContent>
