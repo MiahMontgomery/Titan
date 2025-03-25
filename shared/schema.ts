@@ -36,7 +36,7 @@ export const goals = pgTable("goals", {
   id: serial("id").primaryKey(),
   milestoneId: integer("milestone_id").notNull(),
   name: text("name").notNull(),
-  isCompleted: boolean("is_completed").default(false).notNull(),
+  progress: integer("progress").default(0).notNull(),
 });
 
 // Project Activity Log

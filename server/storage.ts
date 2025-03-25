@@ -93,7 +93,7 @@ export class MemStorage implements IStorage {
     const project1 = await this.createProject({
       name: "E-Commerce Website",
       description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
-      isActive: true,
+      isWorking: true,
       progress: 45,
       lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     });
@@ -101,7 +101,7 @@ export class MemStorage implements IStorage {
     const project2 = await this.createProject({
       name: "Mobile App",
       description: "Develop a cross-platform mobile application",
-      isActive: false,
+      isWorking: false,
       progress: 70,
       lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
     });
@@ -109,7 +109,7 @@ export class MemStorage implements IStorage {
     const project3 = await this.createProject({
       name: "Content Management System",
       description: "Create a CMS for managing digital content",
-      isActive: true,
+      isWorking: true,
       progress: 20,
       lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
     });
@@ -121,21 +121,21 @@ export class MemStorage implements IStorage {
       projectId: project1.id,
       name: "User Authentication System",
       description: "Implement secure login and registration",
-      isComplete: false
+      progress: 25
     });
     
     const feature2 = await this.createFeature({
       projectId: project1.id,
       name: "Product Catalog",
       description: "Product listings with search and filter",
-      isComplete: true
+      progress: 90
     });
     
     const feature3 = await this.createFeature({
       projectId: project1.id,
       name: "Shopping Cart",
       description: "Add/remove items and checkout process",
-      isComplete: false
+      progress: 15
     });
     
     console.log("Created features for project", project1.id, ":", feature1.id, feature2.id, feature3.id);
@@ -168,38 +168,38 @@ export class MemStorage implements IStorage {
     const goal1 = await this.createGoal({
       milestoneId: milestone1.id,
       name: "Define user model with required fields",
-      isCompleted: true
+      progress: 100
     });
     
     const goal2 = await this.createGoal({
       milestoneId: milestone1.id,
       name: "Setup password hashing and security",
-      isCompleted: true
+      progress: 95
     });
     
     const goal3 = await this.createGoal({
       milestoneId: milestone1.id,
       name: "Create database migrations",
-      isCompleted: true
+      progress: 90
     });
 
     // Sample goals for second milestone
     const goal4 = await this.createGoal({
       milestoneId: milestone2.id,
       name: "Design responsive login form",
-      isCompleted: true
+      progress: 85
     });
     
     const goal5 = await this.createGoal({
       milestoneId: milestone2.id,
       name: "Implement form validation",
-      isCompleted: false
+      progress: 20
     });
     
     const goal6 = await this.createGoal({
       milestoneId: milestone2.id,
       name: "Connect to authentication API",
-      isCompleted: false
+      progress: 30
     });
     
     console.log("Created goals for milestones");
@@ -260,7 +260,7 @@ export class MemStorage implements IStorage {
     const project: Project = { 
       ...insertProject, 
       id,
-      isActive: insertProject.isActive ?? false,
+      isWorking: insertProject.isWorking ?? false,
       progress: insertProject.progress ?? 0,
       lastUpdated: insertProject.lastUpdated || new Date()
     };
@@ -300,7 +300,7 @@ export class MemStorage implements IStorage {
       ...insertFeature, 
       id,
       description: insertFeature.description ?? null,
-      isComplete: insertFeature.isComplete ?? false
+      progress: insertFeature.progress ?? 0
     };
     this.features.set(id, feature);
     return feature;
@@ -380,7 +380,7 @@ export class MemStorage implements IStorage {
     const goal: Goal = { 
       ...insertGoal, 
       id,
-      isCompleted: insertGoal.isCompleted ?? false 
+      progress: insertGoal.progress ?? 0
     };
     this.goals.set(id, goal);
     return goal;
