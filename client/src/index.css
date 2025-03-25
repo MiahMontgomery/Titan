@@ -74,3 +74,22 @@
 .tab-transition {
   transition: all 0.3s ease;
 }
+
+/* Chat styles for AI interface */
+.bg-gray-750 {
+  background-color: #262b36;
+}
+
+/* Thinking animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
