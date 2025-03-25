@@ -10,7 +10,7 @@ import {
   insertGoalSchema,
   insertActivityLogSchema 
 } from "@shared/schema";
-import { handleChatMessage } from "./chatHandler";
+import { handleChatMessage, setWebSocketServer } from "./chatHandler";
 
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
@@ -27,6 +27,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Create WebSocket server
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Pass WebSocket server to chat handler
+  setWebSocketServer(wss);
   
   // WebSocket connection handler
   wss.on('connection', (ws) => {
