@@ -8,6 +8,7 @@ import ProjectView from "@/pages/ProjectView";
 import Settings from "@/pages/Settings";
 import { ProjectProvider } from "./context/ProjectContext";
 import { WebSocketProvider } from "./lib/websocket";
+import { Navigation } from "@/components/Navigation";
 
 function Router() {
   return (
@@ -25,7 +26,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <WebSocketProvider>
         <ProjectProvider>
-          <Router />
+          <div className="flex flex-col md:flex-row min-h-screen bg-gray-950">
+            <Navigation />
+            <main className="flex-1 overflow-auto">
+              <Router />
+            </main>
+          </div>
           <Toaster />
         </ProjectProvider>
       </WebSocketProvider>

@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface StatusIndicatorProps {
   isWorking: boolean;
   showLabel?: boolean;
@@ -5,22 +7,34 @@ interface StatusIndicatorProps {
 }
 
 export function StatusIndicator({ isWorking, showLabel = false, size = "md" }: StatusIndicatorProps) {
-  const sizeClass = size === "sm" ? "h-3 w-3" : "h-4 w-4";
-  
   return (
     <div className="flex items-center">
-      <span 
-        className={`${sizeClass} ${isWorking ? "bg-accent" : "bg-gray-900"} rounded-full flex items-center justify-center mr-2`} 
-        title={isWorking ? "Working" : "Not Working"}
-      >
-        {isWorking ? (
-          <span className="h-2 w-2 rounded-full bg-green-400"></span>
-        ) : (
-          <span className="h-2 w-2 rounded-full bg-gray-600"></span>
+      <div 
+        className={cn(
+          "relative flex-shrink-0 rounded-full",
+          {
+            "bg-green-500": isWorking,
+            "bg-gray-500": !isWorking,
+            "w-2 h-2": size === "sm",
+            "w-3 h-3": size === "md"
+          }
         )}
-      </span>
+      >
+        {isWorking && (
+          <span className="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-75"></span>
+        )}
+      </div>
+      
       {showLabel && (
-        <span className="text-sm text-gray-300">{isWorking ? "Working" : "Not Working"}</span>
+        <span className={cn(
+          "ml-2 text-sm", 
+          { 
+            "text-green-500": isWorking,
+            "text-gray-500": !isWorking,
+          }
+        )}>
+          {isWorking ? "System Active" : "System Idle"}
+        </span>
       )}
     </div>
   );

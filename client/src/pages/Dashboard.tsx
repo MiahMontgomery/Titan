@@ -28,18 +28,15 @@ export default function Dashboard() {
   }, [error, toast]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="w-full">
       {/* Header */}
-      <header className="bg-background border-b border-gray-800 py-3 px-6">
+      <header className="bg-background py-3 px-6 border-b border-gray-800">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Logo />
-            <h1 className="text-xl font-semibold text-white">Titan</h1>
-          </div>
+          <h1 className="text-xl font-semibold text-white">Dashboard</h1>
 
           <button 
             onClick={() => setIsAddProjectModalOpen(true)}
-            className="bg-accent hover:bg-accentDark text-black font-medium py-2 px-4 rounded-md transition-colors duration-150 flex items-center"
+            className="bg-accent hover:bg-accent/90 text-black font-medium py-2 px-4 rounded-md transition-colors duration-150 flex items-center"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
@@ -50,7 +47,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto p-6">
+      <main className="p-6">
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array(4).fill(0).map((_, i) => (
