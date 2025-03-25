@@ -62,7 +62,7 @@ Your role:
 - Maintain a friendly, professional tone
 
 When providing code snippets, embed them directly in your response. If you're extensively modifying code, return both your explanation and the complete updated code.`
-        }
+        } as ChatCompletionMessageParam
       ];
     }
     
@@ -70,7 +70,7 @@ When providing code snippets, embed them directly in your response. If you're ex
     chatHistories[projectIdNum].push({
       role: "user",
       content: message
-    });
+    } as ChatCompletionMessageParam);
     
     // Keep only the last 10 messages to avoid exceeding token limits
     if (chatHistories[projectIdNum].length > 10) {
@@ -100,7 +100,7 @@ When providing code snippets, embed them directly in your response. If you're ex
       chatHistories[projectIdNum].push({
         role: "assistant",
         content: response
-      });
+      } as ChatCompletionMessageParam);
       
       console.log("OpenAI API response received successfully");
       
@@ -119,7 +119,7 @@ When providing code snippets, embed them directly in your response. If you're ex
       chatHistories[projectIdNum].push({
         role: "assistant",
         content: response
-      });
+      } as ChatCompletionMessageParam);
     }
     
     // Return the response
@@ -138,15 +138,24 @@ When providing code snippets, embed them directly in your response. If you're ex
 function extractCodeSnippet(response: string): string | null {
   // Look for code blocks in markdown format ```code```
   const codeBlockRegex = /```(?:javascript|typescript|js|ts|jsx|tsx)?\s*([\s\S]*?)```/g;
-  const matches = [...response.matchAll(codeBlockRegex)];
+  
+  // Collect all matches manually without using matchAll
+  const matches: string[] = [];
+  let match;
+  
+  while ((match = codeBlockRegex.exec(response)) !== null) {
+    if (match[1]) {
+      matches.push(match[1].trim());
+    }
+  }
   
   if (matches.length > 0) {
     // Use the largest code block found (likely the main snippet)
-    let largestCodeBlock = matches[0][1].trim();
+    let largestCodeBlock = matches[0];
     let maxLength = largestCodeBlock.length;
     
     for (let i = 1; i < matches.length; i++) {
-      const codeBlock = matches[i][1].trim();
+      const codeBlock = matches[i];
       if (codeBlock.length > maxLength) {
         largestCodeBlock = codeBlock;
         maxLength = codeBlock.length;
