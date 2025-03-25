@@ -9,11 +9,30 @@ export async function handleChatMessage(req: Request, res: Response) {
       return res.status(400).json({ error: 'Message is required and must be a string' });
     }
     
-    if (!projectId || typeof projectId !== 'number') {
-      return res.status(400).json({ error: 'Project ID is required and must be a number' });
+    // Parse projectId to number if it's a string
+    const projectIdNum = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
+    
+    if (isNaN(projectIdNum) || projectIdNum <= 0) {
+      return res.status(400).json({ error: 'Project ID is required and must be a valid number' });
     }
     
-    console.log(`Received chat message for project ${projectId}: ${message}`);
+    console.log(`Received chat message for project ${projectIdNum}: ${message}`);
+    
+    // Simple math expressions handler for demo purposes
+    if (message.toLowerCase().includes('what') && message.includes('+')) {
+      const parts = message.match(/(\d+)\s*\+\s*(\d+)/);
+      if (parts && parts.length === 3) {
+        const num1 = parseInt(parts[1], 10);
+        const num2 = parseInt(parts[2], 10);
+        const result = num1 + num2;
+        
+        // Return the sum result
+        return res.json({
+          response: `The answer is ${result}`,
+          codeSnippet: null
+        });
+      }
+    }
     
     // Process the message and generate a response
     const response = generateAIResponse(message);

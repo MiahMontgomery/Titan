@@ -20,7 +20,7 @@ const chatHandlerSource = importedHandler.toString();
 const generateAIResponseMatch = chatHandlerSource.match(/function\s+generateAIResponse\s*\([^)]*\)\s*{[^]*?}/);
 
 // Define a local implementation of generateAIResponse for WebSocket handling
-function generateAIResponse(message: string): { message: string; codeSnippet: string | null } {
+function generateAIResponse(message: string, projectId: number | string = 1): { message: string; codeSnippet: string | null } {
   console.log(`Generating WebSocket AI response for: ${message}`);
   
   // Simple fallback response if something goes wrong
@@ -30,9 +30,11 @@ function generateAIResponse(message: string): { message: string; codeSnippet: st
   };
   
   try {
+    // Parse projectId to number if it's a string
+    const projectIdNum = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
+    
     // Call the actual handler function to process the message
-    const projectId = 1; // Default project ID for WebSocket messages
-    const mockReq = { body: { message, projectId } };
+    const mockReq = { body: { message, projectId: projectIdNum } };
     const mockRes = {
       json: (data: any) => {
         return {
@@ -97,8 +99,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const projectId = data.projectId || 1; // Default to project 1 if not specified
           
           try {
+            // Parse projectId to number if it's a string
+            const projectIdNum = typeof projectId === 'string' ? parseInt(projectId as string, 10) : projectId;
+            
             // Call the API endpoint directly with the message data
-            const mockReq = { body: { message: data.message, projectId } };
+            const mockReq = { body: { message: data.message, projectId: projectIdNum } };
             let responseData: any = null;
             
             const mockRes = {
