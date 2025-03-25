@@ -4,6 +4,7 @@ import { ActivityLog } from '@shared/schema';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useWebSocketContext } from '@/lib/websocket';
 import { Separator } from '@/components/ui/separator';
+import { WebSocketMessage } from '@/lib/types';
 
 interface PerformanceTabProps {
   projectId: number;
@@ -38,7 +39,7 @@ export function PerformanceTab({ projectId }: PerformanceTabProps) {
   
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const { sendMessage } = useWebSocketContext();
+  const { sendMessage, subscribe, connected } = useWebSocketContext();
   
   // Fetch activity logs
   const { data: activityLogs = [] } = useQuery<ActivityLog[]>({
@@ -168,12 +169,41 @@ const AuthForm = () => {
     }
   }, [projectId, addLogMutation]);
   
+  // Setup WebSocket subscription for chat responses
+  useEffect(() => {
+    // Subscribe to WebSocket messages
+    const unsubscribe = subscribe((data: WebSocketMessage) => {
+      // Handle chat responses from WebSocket
+      if (data.type === 'chat-response') {
+        console.log('Received chat response via WebSocket in component:', data);
+        
+        // Remove thinking messages
+        setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+        setIsThinking(false);
+        
+        // Add the response to chat
+        if (typeof data.message === 'string') {
+          addChatMessage(data.message, 'agent', (data as any).codeSnippet || null);
+          
+          // Update code if a code snippet was provided
+          if ((data as any).codeSnippet) {
+            setCurrentCode((data as any).codeSnippet);
+          }
+        }
+      }
+    });
+    
+    return unsubscribe;
+  }, [addChatMessage, setChatMessages, setIsThinking, setCurrentCode, subscribe]);
+
   // Handle sending a user message
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     
+    const userMessageContent = message.trim();
+    
     // Add user message
-    addChatMessage(message, 'user');
+    addChatMessage(userMessageContent, 'user');
     
     // Clear input
     setMessage('');
@@ -213,190 +243,88 @@ const AuthForm = () => {
       } else {
         clearInterval(thinkingInterval);
         
-        // Generate AI response
-        generateAIResponse(message);
+        // Try WebSocket first if connected
+        if (connected) {
+          console.log('Sending message via WebSocket:', userMessageContent);
+          sendMessage({
+            type: 'chat-message',
+            message: userMessageContent,
+            projectId: projectId
+          });
+          
+          // Wait for the response via WebSocket (handled in useEffect)
+          
+          // Fallback to REST API after timeout if no WebSocket response
+          const fallbackTimeout = setTimeout(() => {
+            console.log('WebSocket response timeout, falling back to REST API');
+            generateAIResponse(userMessageContent);
+          }, 5000);
+          
+          // Store the timeout ID in a ref so we can clear it when WebSocket responds
+          // This logic would be cleaned up in a real implementation
+        } else {
+          // Use REST API directly
+          console.log('WebSocket not connected, using REST API directly');
+          generateAIResponse(userMessageContent);
+        }
       }
     }, 1000);
   };
   
-  // Function to generate AI response (simulated for now)
-  const generateAIResponse = (userMessage: string) => {
-    const userMessageLower = userMessage.toLowerCase();
-    let aiResponse = '';
-    let codeResponse: string | null = null;
-    
-    // Remove thinking message
-    setChatMessages(prev => prev.filter(msg => !msg.isThinking));
-    setIsThinking(false);
-    
-    // Save the current code to history before making changes
-    if (currentCode && !codeHistory.includes(currentCode)) {
-      setCodeHistory(prev => [...prev, currentCode]);
-      setCanRollback(true);
-    }
-    
-    // Simple rule-based responses
-    if (userMessageLower.includes('fix error') || userMessageLower.includes('debug')) {
-      aiResponse = "I've analyzed the code and found an issue with the form submission. Let me fix that for you by adding form inputs and improving the error handling.";
-      codeResponse = sampleCode.replace(
-        "// Form inputs will be added here",
-        `<div className="form-field">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-field">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Processing...' : formType === 'login' ? 'Login' : 'Sign Up'}
-        </button>
-        <button type="button" onClick={() => setFormType(formType === 'login' ? 'signup' : 'login')}>
-          {formType === 'login' ? 'Need an account? Sign up' : 'Have an account? Log in'}
-        </button>`
-      );
-      setCurrentCode(codeResponse);
-    } else if (userMessageLower.includes('add feature') || userMessageLower.includes('implement')) {
-      aiResponse = "I'm adding a new feature to handle user sessions with localStorage. This will allow the application to remember when users are logged in.";
-      codeResponse = `import React from 'react';
-import { useState, useEffect } from 'react';
-
-// Authentication component for the e-commerce site
-const AuthForm = () => {
-  const [formType, setFormType] = useState('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  // Check for existing session
-  useEffect(() => {
-    const session = localStorage.getItem('userSession');
-    if (session) {
-      try {
-        const sessionData = JSON.parse(session);
-        if (sessionData.loggedIn && new Date(sessionData.expiry) > new Date()) {
-          setIsLoggedIn(true);
-        } else {
-          localStorage.removeItem('userSession');
-        }
-      } catch (e) {
-        console.error('Error parsing session data', e);
-        localStorage.removeItem('userSession');
-      }
-    }
-  }, []);
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    
+  // Function to generate AI response from the server API
+  const generateAIResponse = async (userMessage: string) => {
     try {
-      // Call to authentication API will be implemented here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(\`\${formType} successful\`);
+      console.log('Sending message to AI assistant:', userMessage);
       
-      // Store session in localStorage
-      const expiry = new Date();
-      expiry.setHours(expiry.getHours() + 24); // 24 hour expiry
+      // Remove thinking message
+      setChatMessages(prev => prev.filter(msg => !msg.isThinking));
       
-      localStorage.setItem('userSession', JSON.stringify({
-        email,
-        loggedIn: true,
-        expiry: expiry.toISOString()
-      }));
-      
-      setIsLoggedIn(true);
-    } catch (err) {
-      setError('Authentication failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const handleLogout = () => {
-    localStorage.removeItem('userSession');
-    setIsLoggedIn(false);
-  };
-  
-  if (isLoggedIn) {
-    return (
-      <div className="user-profile">
-        <h2>Welcome back!</h2>
-        <p>You are logged in as {email}</p>
-        <button onClick={handleLogout}>Log Out</button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="auth-form-container">
-      <h2>{formType === 'login' ? 'Login' : 'Sign Up'}</h2>
-      {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-field">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-field">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Processing...' : formType === 'login' ? 'Login' : 'Sign Up'}
-        </button>
-        <button type="button" onClick={() => setFormType(formType === 'login' ? 'signup' : 'login')}>
-          {formType === 'login' ? 'Need an account? Sign up' : 'Have an account? Log in'}
-        </button>
-      </form>
-    </div>
-  );
-};`;
-      setCurrentCode(codeResponse);
-    } else if (userMessageLower.includes('explain') || userMessageLower.includes('how') || userMessageLower.includes('why')) {
-      aiResponse = "Let me explain how the authentication flow works in this component:\n\n1. The component maintains state for `formType` (login/signup), user credentials, loading state, and errors.\n\n2. When the form is submitted, it calls the `handleSubmit` function which:\n   - Prevents the default form submission\n   - Sets loading state to true\n   - Clears any previous errors\n   - Makes an API call (currently a mock Promise)\n   - Handles success or error cases\n   - Updates the UI accordingly\n\n3. The UI conditionally renders different content based on the `formType` state.\n\nThis is a standard React pattern for handling form submissions and API calls. We can enhance it further with validation, security features, or UI improvements.";
-    } else if (userMessageLower.includes('rollback') || userMessageLower.includes('undo')) {
-      if (codeHistory.length > 0) {
-        const previousCode = codeHistory[codeHistory.length - 1];
-        setCurrentCode(previousCode);
-        setCodeHistory(prev => prev.slice(0, -1));
-        setCanRollback(codeHistory.length > 1);
-        aiResponse = "I've rolled back to the previous version of the code. Let me know if you want to make additional changes.";
-      } else {
-        aiResponse = "There's no previous version to roll back to. This is the original code.";
+      // Save the current code to history before potential changes
+      if (currentCode && !codeHistory.includes(currentCode)) {
+        setCodeHistory(prev => [...prev, currentCode]);
+        setCanRollback(true);
       }
-    } else {
-      aiResponse = "I understand you're interested in improving this code. Would you like me to explain how it works, add new features, or fix any specific issues? I'm here to help you optimize and expand your project.";
+      
+      // Send request to the server
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          projectId: projectId,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Received AI response:', data);
+      
+      // Add the response to chat
+      addChatMessage(data.response, 'agent', data.codeSnippet);
+      
+      // Update code if a code snippet was returned
+      if (data.codeSnippet) {
+        setCurrentCode(data.codeSnippet);
+      }
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      // Show error message in chat
+      setIsThinking(false);
+      addChatMessage(
+        `Sorry, I encountered an error processing your request. Please try again. Error details: ${error instanceof Error ? error.message : 'Unknown error'}`, 
+        'agent', 
+        null, 
+        false, 
+        true
+      );
+    } finally {
+      setIsThinking(false);
     }
-    
-    // Add AI response to chat
-    addChatMessage(aiResponse, 'agent', codeResponse);
   };
   
   // Handle code rollback

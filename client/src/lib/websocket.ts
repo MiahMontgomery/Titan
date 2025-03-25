@@ -70,6 +70,7 @@ function initWebSocket() {
   socket.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data);
+      console.log('WebSocket message received:', data);
       
       // Handle different message types
       if (data.type === 'projects') {
@@ -84,6 +85,13 @@ function initWebSocket() {
         queryClient.setQueryData(['/api/projects'], (old: Project[] = []) => 
           old.map(p => p.id === data.data.id ? data.data : p)
         );
+      }
+      else if (data.type === 'chat-response') {
+        // Chat responses are handled directly by subscribers
+        console.log('Received chat response via WebSocket:', data);
+      }
+      else if (data.type === 'pong') {
+        console.log('Received pong from server');
       }
       
       // Notify all listeners
