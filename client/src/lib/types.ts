@@ -39,7 +39,9 @@ export type WebSocketMessageType =
   | 'new-goal'
   | 'update-goal'
   | 'activity'
-  | 'new-activity';
+  | 'new-activity'
+  | 'chat-message'
+  | 'chat-response';
 
 export interface WebSocketMessage<T = any> {
   type: WebSocketMessageType;
@@ -48,4 +50,6 @@ export interface WebSocketMessage<T = any> {
   featureId?: number;
   milestoneId?: number;
   id?: number;
+  message?: string;
+  codeSnippet?: string | null;
 }
