@@ -163,7 +163,7 @@ const AuthForm = () => {
         message: rolePrefix + content,
         timestamp: new Date(),
         agentId: role === 'user' ? 'user' : 'agent-1',
-        codeSnippet
+        codeSnippet: codeSnippet || null
       });
     }
   }, [projectId, addLogMutation]);
