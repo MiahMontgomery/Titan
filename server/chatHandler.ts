@@ -207,6 +207,7 @@ async function processFeatureRequest(
           description: milestone.description,
           featureId: featureId,
           progress: 0,
+          estimatedHours: 0,
           percentOfFeature: milestone.percentOfFeature || 20,
           createdAt: new Date(),
         };
@@ -279,6 +280,7 @@ async function processFeatureRequest(
             milestoneId: milestoneId,
             completed: false,
             percentOfMilestone: goal.percentOfMilestone || 25,
+            progress: 0,
             createdAt: new Date(),
           };
           

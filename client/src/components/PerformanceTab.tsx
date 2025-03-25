@@ -199,22 +199,27 @@ const AuthForm = () => {
         const hasThinkingMessage = chatMessages.some(msg => msg.isThinking);
         
         if (hasThinkingMessage) {
-          // Update the existing thinking message
+          // Update the existing thinking message by appending to the content
           setChatMessages(prev => {
             const updatedMessages = [...prev];
             const thinkingIndex = updatedMessages.findIndex(msg => msg.isThinking);
             if (thinkingIndex !== -1) {
-              updatedMessages[thinkingIndex] = {
-                ...updatedMessages[thinkingIndex],
-                content: data.message || 'Thinking...'
-              };
+              // Create a sequential thinking output
+              const currentContent = updatedMessages[thinkingIndex].content;
+              // Only append if it's a different message
+              if (!currentContent.includes(data.message || 'Thinking...')) {
+                updatedMessages[thinkingIndex] = {
+                  ...updatedMessages[thinkingIndex],
+                  content: currentContent + '\n→ ' + (data.message || 'Processing...')
+                };
+              }
             }
             return updatedMessages;
           });
         } else {
           // Add a new thinking message
           setIsThinking(true);
-          addChatMessage(data.message || 'Thinking...', 'agent', null, true);
+          addChatMessage('🧠 ' + (data.message || 'Processing request...'), 'agent', null, true);
         }
       }
     });
@@ -241,7 +246,7 @@ const AuthForm = () => {
     
     // Show thinking state for AI
     setIsThinking(true);
-    addChatMessage('Thinking...', 'agent', null, true);
+    addChatMessage('🧠 Starting analysis...', 'agent', null, true);
     
     // Simulate AI "thinking" with a timer
     const thinkingSteps = [
@@ -440,10 +445,11 @@ const AuthForm = () => {
                   `}
                 >
                   {message.isThinking && (
-                    <div className="flex items-center mb-1">
-                      <div className="w-3 h-3 bg-gray-600 rounded-full animate-bounce mr-1" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-3 h-3 bg-gray-600 rounded-full animate-bounce mr-1" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-3 h-3 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div className="flex items-center mb-1 border-b border-gray-600 pb-1 mb-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-1" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-1" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                      <span className="ml-2 text-blue-400 text-xs">AI processing...</span>
                     </div>
                   )}
                   

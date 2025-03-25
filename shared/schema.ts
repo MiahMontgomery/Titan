@@ -41,7 +41,11 @@ export const goals = pgTable("goals", {
   id: serial("id").primaryKey(),
   milestoneId: integer("milestone_id").notNull(),
   name: text("name").notNull(),
+  description: text("description"),
+  completed: boolean("completed").default(false).notNull(),
+  percentOfMilestone: integer("percent_of_milestone").default(25).notNull(), // What percentage of the milestone this goal represents
   progress: integer("progress").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Project Activity Log
