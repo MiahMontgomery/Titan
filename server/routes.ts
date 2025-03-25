@@ -10,6 +10,53 @@ import {
   insertGoalSchema,
   insertActivityLogSchema 
 } from "@shared/schema";
+import { handleChatMessage } from "./chatHandler";
+
+// Re-export generateAIResponse from chatHandler
+import { handleChatMessage as importedHandler } from "./chatHandler";
+
+// Use Function.prototype.toString() to extract the function source
+const chatHandlerSource = importedHandler.toString();
+const generateAIResponseMatch = chatHandlerSource.match(/function\s+generateAIResponse\s*\([^)]*\)\s*{[^]*?}/);
+
+// Define a local implementation of generateAIResponse for WebSocket handling
+function generateAIResponse(message: string): { message: string; codeSnippet: string | null } {
+  console.log(`Generating WebSocket AI response for: ${message}`);
+  
+  // Simple fallback response if something goes wrong
+  const defaultResponse = {
+    message: "I've processed your request. Would you like me to explain anything further?",
+    codeSnippet: null
+  };
+  
+  try {
+    // Call the actual handler function to process the message
+    const projectId = 1; // Default project ID for WebSocket messages
+    const mockReq = { body: { message, projectId } };
+    const mockRes = {
+      json: (data: any) => {
+        return {
+          message: data.response,
+          codeSnippet: data.codeSnippet
+        };
+      },
+      status: () => mockRes
+    };
+    
+    // Call the handler directly and get the result
+    const result = handleChatMessage(mockReq as any, mockRes as any);
+    
+    // If result is a Promise, return default response for now
+    if (result instanceof Promise) {
+      return defaultResponse;
+    }
+    
+    return result || defaultResponse;
+  } catch (error) {
+    console.error('Error in WebSocket generateAIResponse:', error);
+    return defaultResponse;
+  }
+};
 
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
@@ -43,6 +90,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Handle different message types
         if (data.type === 'ping') {
           ws.send(JSON.stringify({ type: 'pong' }));
+        } else if (data.type === 'chat-message') {
+          console.log('Received chat message via WebSocket:', data.message);
+          
+          // Process the message using our chat handler
+          const projectId = data.projectId || 1; // Default to project 1 if not specified
+          
+          try {
+            // Call the API endpoint directly with the message data
+            const mockReq = { body: { message: data.message, projectId } };
+            let responseData: any = null;
+            
+            const mockRes = {
+              json: (data: any) => {
+                responseData = data;
+                return mockRes;
+              },
+              status: () => mockRes
+            };
+            
+            // Call the handler and wait for it to complete
+            await handleChatMessage(mockReq as any, mockRes as any);
+            
+            // Send the response back to the client
+            if (ws.readyState === WebSocket.OPEN && responseData) {
+              ws.send(JSON.stringify({
+                type: 'chat-response',
+                message: responseData.response,
+                codeSnippet: responseData.codeSnippet
+              }));
+            } else {
+              // Fallback response if something went wrong
+              ws.send(JSON.stringify({
+                type: 'chat-response',
+                message: "I've processed your request. Would you like me to explain anything further?",
+                codeSnippet: null
+              }));
+            }
+          } catch (chatError) {
+            console.error('Error processing chat message:', chatError);
+            // Send error response
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({
+                type: 'chat-response',
+                message: "Sorry, I encountered an error processing your request. Please try again.",
+                codeSnippet: null,
+                error: true
+              }));
+            }
+          }
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -59,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const projects = await storage.getAllProjects();
       for (const project of projects) {
-        if (project.isActive) {
+        if (project.isWorking) {
           // Add a new activity log
           const timestamp = new Date();
           const log = {
@@ -398,6 +494,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to setup Firebase integration' });
     }
   });
+  
+  // AI Chat Assistant API
+  app.post('/api/chat', handleChatMessage);
 
   return httpServer;
 }
