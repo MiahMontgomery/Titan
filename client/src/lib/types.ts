@@ -41,7 +41,8 @@ export type WebSocketMessageType =
   | 'activity'
   | 'new-activity'
   | 'chat-message'
-  | 'chat-response';
+  | 'chat-response'
+  | 'thinking';
 
 export interface WebSocketMessage<T = any> {
   type: WebSocketMessageType;

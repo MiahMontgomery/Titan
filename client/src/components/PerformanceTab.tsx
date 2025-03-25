@@ -169,7 +169,7 @@ const AuthForm = () => {
     }
   }, [projectId, addLogMutation]);
   
-  // Setup WebSocket subscription for chat responses
+  // Setup WebSocket subscription for chat responses and thinking updates
   useEffect(() => {
     // Subscribe to WebSocket messages
     const unsubscribe = subscribe((data: WebSocketMessage) => {
@@ -191,10 +191,36 @@ const AuthForm = () => {
           }
         }
       }
+      // Handle AI thinking status updates
+      else if (data.type === 'thinking' && data.projectId === projectId) {
+        console.log('Received thinking update via WebSocket:', data);
+        
+        // Check if there's already a thinking message
+        const hasThinkingMessage = chatMessages.some(msg => msg.isThinking);
+        
+        if (hasThinkingMessage) {
+          // Update the existing thinking message
+          setChatMessages(prev => {
+            const updatedMessages = [...prev];
+            const thinkingIndex = updatedMessages.findIndex(msg => msg.isThinking);
+            if (thinkingIndex !== -1) {
+              updatedMessages[thinkingIndex] = {
+                ...updatedMessages[thinkingIndex],
+                content: data.message || 'Thinking...'
+              };
+            }
+            return updatedMessages;
+          });
+        } else {
+          // Add a new thinking message
+          setIsThinking(true);
+          addChatMessage(data.message || 'Thinking...', 'agent', null, true);
+        }
+      }
     });
     
     return unsubscribe;
-  }, [addChatMessage, setChatMessages, setIsThinking, setCurrentCode, subscribe]);
+  }, [addChatMessage, setChatMessages, setIsThinking, setCurrentCode, subscribe, projectId, chatMessages]);
 
   // Handle sending a user message
   const handleSendMessage = async () => {

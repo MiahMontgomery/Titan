@@ -19,6 +19,9 @@ export const features = pgTable("features", {
   name: text("name").notNull(),
   description: text("description"),
   progress: integer("progress").default(0).notNull(),
+  isWorking: boolean("is_working").default(false).notNull(),
+  estimatedDays: integer("estimated_days").default(5), // Estimated time to complete in days
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Milestone Table
@@ -29,6 +32,8 @@ export const milestones = pgTable("milestones", {
   description: text("description"),
   estimatedHours: integer("estimated_hours").default(0),
   progress: integer("progress").default(0).notNull(),
+  percentOfFeature: integer("percent_of_feature").default(25).notNull(), // What percentage of the feature this milestone represents
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Goal Table
