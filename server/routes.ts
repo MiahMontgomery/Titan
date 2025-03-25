@@ -457,6 +457,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // AI Chat Assistant API
   app.post('/api/chat', handleChatMessage);
+  
+  // Project Export API
+  app.post('/api/projects/:id/export', async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const { includeData, includeFirebaseConfig, includeOpenAIKey } = req.body;
+      
+      // Get project data
+      const project = await storage.getProject(projectId);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // For MVP, create a simple JSON response that would be a ZIP file in production
+      const exportData: Record<string, any> = {
+        project,
+        exportDate: new Date().toISOString(),
+        version: '1.0.0',
+      };
+      
+      // Export features, milestones, and goals if included
+      if (includeData) {
+        const features = await storage.getFeaturesByProject(projectId);
+        exportData['features'] = features;
+        
+        // Get milestones and goals for each feature
+        const milestones = [];
+        const goals = [];
+        
+        for (const feature of features) {
+          const featureMilestones = await storage.getMilestonesByFeature(feature.id);
+          milestones.push(...featureMilestones);
+          
+          for (const milestone of featureMilestones) {
+            const milestoneGoals = await storage.getGoalsByMilestone(milestone.id);
+            goals.push(...milestoneGoals);
+          }
+        }
+        
+        exportData['milestones'] = milestones;
+        exportData['goals'] = goals;
+        
+        // Get activity logs
+        const logs = await storage.getActivityLogsByProject(projectId);
+        exportData['activityLogs'] = logs;
+      }
+      
+      // Include configuration if requested
+      if (includeFirebaseConfig) {
+        exportData['firebaseConfig'] = {
+          // In a real implementation, fetch from secure storage
+          // This is just a placeholder
+          apiKey: "PLACEHOLDER_FIREBASE_API_KEY",
+          projectId: "PLACEHOLDER_PROJECT_ID",
+          appId: "PLACEHOLDER_APP_ID"
+        };
+      }
+      
+      if (includeOpenAIKey) {
+        exportData['openAIConfig'] = {
+          // In a real implementation, fetch from secure storage
+          // This is just a placeholder
+          apiKey: "PLACEHOLDER_OPENAI_API_KEY"
+        };
+      }
+      
+      // In a real implementation, we would:
+      // 1. Generate all needed project files
+      // 2. Include deployment scripts for Google VM
+      // 3. Create a ZIP file with all content
+      // 4. Return the ZIP file as a download
+      
+      // For MVP, return a JSON response
+      res.setHeader('Content-Disposition', `attachment; filename="titan-project-${projectId}.json"`);
+      res.setHeader('Content-Type', 'application/json');
+      res.json(exportData);
+      
+    } catch (error) {
+      console.error('Error exporting project:', error);
+      res.status(500).json({ error: 'Failed to export project' });
+    }
+  });
 
   return httpServer;
 }
