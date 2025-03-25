@@ -346,7 +346,8 @@ export class MemStorage implements IStorage {
       ...insertMilestone, 
       id,
       description: insertMilestone.description ?? null,
-      estimatedHours: insertMilestone.estimatedHours ?? null
+      estimatedHours: insertMilestone.estimatedHours ?? null,
+      progress: insertMilestone.progress ?? 0
     };
     this.milestones.set(id, milestone);
     return milestone;
@@ -393,49 +394,52 @@ export class MemStorage implements IStorage {
     const updatedGoal: Goal = { ...goal, ...updateData };
     this.goals.set(id, updatedGoal);
     
-    // Update feature completion status if goal completion status changes
-    if (updateData.isCompleted !== undefined && goal.milestoneId) {
+    // Update milestone progress when goal progress changes
+    if (updateData.progress !== undefined && goal.milestoneId) {
       const milestone = this.milestones.get(goal.milestoneId);
       
       if (milestone && milestone.featureId) {
-        const feature = this.features.get(milestone.featureId);
-        
-        if (feature) {
-          // Get all milestones for this feature
-          const milestones = await this.getMilestonesByFeature(feature.id);
+        // Calculate milestone progress based on the average progress of all related goals
+        const goals = await this.getGoalsByMilestone(milestone.id);
+        if (goals.length > 0) {
+          let totalProgress = 0;
+          goals.forEach(g => totalProgress += g.progress);
+          const milestoneProgress = Math.round(totalProgress / goals.length);
           
-          // Get all goals for all milestones
-          let totalGoals = 0;
-          let completedGoals = 0;
+          // Update the milestone's progress
+          await this.updateMilestone(milestone.id, { progress: milestoneProgress });
           
-          for (const m of milestones) {
-            const goals = await this.getGoalsByMilestone(m.id);
-            totalGoals += goals.length;
-            completedGoals += goals.filter(g => g.isCompleted).length;
-          }
-          
-          // If all goals are completed, mark the feature as complete
-          if (totalGoals > 0 && completedGoals === totalGoals) {
-            await this.updateFeature(feature.id, { isComplete: true });
-          } else {
-            await this.updateFeature(feature.id, { isComplete: false });
-          }
-          
-          // Update project progress based on completed features
-          if (feature.projectId) {
-            const project = this.projects.get(feature.projectId);
-            if (project) {
-              const features = await this.getFeaturesByProject(project.id);
-              const totalFeatures = features.length;
-              const completedFeatures = features.filter(f => f.isComplete).length;
+          // Get the feature and update its progress
+          const feature = this.features.get(milestone.featureId);
+          if (feature) {
+            // Calculate feature progress based on the average progress of all related milestones
+            const milestones = await this.getMilestonesByFeature(feature.id);
+            if (milestones.length > 0) {
+              let totalMilestoneProgress = 0;
+              milestones.forEach(m => totalMilestoneProgress += m.progress);
+              const featureProgress = Math.round(totalMilestoneProgress / milestones.length);
               
-              // Calculate progress as a percentage
-              const progress = totalFeatures > 0 ? Math.round((completedFeatures / totalFeatures) * 100) : 0;
+              // Update the feature's progress
+              await this.updateFeature(feature.id, { progress: featureProgress });
               
-              await this.updateProject(project.id, { 
-                progress,
-                lastUpdated: new Date()
-              });
+              // Update project progress based on feature progress
+              if (feature.projectId) {
+                const project = this.projects.get(feature.projectId);
+                if (project) {
+                  const features = await this.getFeaturesByProject(project.id);
+                  if (features.length > 0) {
+                    let totalFeatureProgress = 0;
+                    features.forEach(f => totalFeatureProgress += f.progress);
+                    const projectProgress = Math.round(totalFeatureProgress / features.length);
+                    
+                    // Update the project's progress
+                    await this.updateProject(project.id, { 
+                      progress: projectProgress,
+                      lastUpdated: new Date()
+                    });
+                  }
+                }
+              }
             }
           }
         }

@@ -150,14 +150,14 @@ function FeatureItem({
           <h4 className="font-medium text-white">{feature.name}</h4>
         </div>
         <div className="flex items-center text-sm">
-          <span className={`${feature.isComplete ? 'text-accent' : 'text-gray-400'} mr-3`}>
-            {feature.isComplete ? 'Complete' : 'In Progress'}
+          <span className="text-gray-400 mr-3">
+            {feature.progress}%
           </span>
           <div className="w-32">
             <div className="w-full bg-gray-700 rounded-full h-1.5">
               <div 
                 className="bg-accent h-1.5 rounded-full" 
-                style={{ width: feature.isComplete ? '100%' : '0%' }}
+                style={{ width: `${feature.progress}%` }}
               ></div>
             </div>
           </div>
@@ -210,19 +210,22 @@ function MilestoneItem({ milestone, isExpanded, onToggle, goalsData }: Milestone
   // Store goals in the parent's data structure
   goalsData[milestone.id] = goals;
   
-  // Calculate milestone completion based on goals
-  const calculateMilestoneStatus = () => {
-    if (!goals || goals.length === 0) return { isCompleted: false, percent: 0 };
-    
-    const completedGoals = goals.filter(g => g.isCompleted).length;
-    const totalGoals = goals.length;
-    const percent = Math.round((completedGoals / totalGoals) * 100);
-    const isCompleted = completedGoals === totalGoals;
-    
-    return { isCompleted, percent };
+  // Display milestone progress directly from the milestone object
+  // If no progress value in milestone, calculate average from goals
+  const getMilestoneProgress = () => {
+    if (milestone.progress !== undefined) {
+      return milestone.progress;
+    } else if (!goals || goals.length === 0) {
+      return 0;
+    } else {
+      // Calculate average progress from goals
+      let totalProgress = 0;
+      goals.forEach(goal => totalProgress += goal.progress);
+      return Math.round(totalProgress / goals.length);
+    }
   };
   
-  const milestoneStatus = calculateMilestoneStatus();
+  const milestoneProgress = getMilestoneProgress();
   
   return (
     <div>
@@ -243,14 +246,14 @@ function MilestoneItem({ milestone, isExpanded, onToggle, goalsData }: Milestone
         </div>
         <div className="flex items-center text-xs">
           <div className="flex items-center">
-            <span className={`${milestoneStatus.isCompleted ? 'text-accent' : 'text-gray-400'} mr-2`}>
-              {milestoneStatus.percent}%
+            <span className="text-gray-400 mr-2">
+              {milestoneProgress}%
             </span>
             <div className="w-20 mr-2">
               <div className="w-full bg-gray-700 rounded-full h-1">
                 <div 
                   className="bg-accent h-1 rounded-full" 
-                  style={{ width: `${milestoneStatus.percent}%` }}
+                  style={{ width: `${milestoneProgress}%` }}
                 ></div>
               </div>
             </div>
@@ -272,9 +275,16 @@ function MilestoneItem({ milestone, isExpanded, onToggle, goalsData }: Milestone
           ) : (
             <ul className="space-y-2 text-xs text-gray-400 border-l border-gray-700 pl-4 py-2">
               {goals.map(goal => (
-                <li key={goal.id} className="flex items-start">
-                  <span className={`inline-block w-3 h-3 ${goal.isCompleted ? 'bg-accent' : 'bg-gray-600'} rounded-full mt-1 -ml-5.5 mr-2`}></span>
-                  <span>{goal.name}</span>
+                <li key={goal.id} className="flex items-center">
+                  <div className="flex-shrink-0 -ml-5.5 mr-2 w-3 h-3 relative">
+                    <div className="absolute inset-0 bg-gray-600 rounded-full"></div>
+                    <div 
+                      className="absolute inset-0 bg-accent rounded-full" 
+                      style={{ clipPath: `inset(0 ${100 - goal.progress}% 0 0)` }}
+                    ></div>
+                  </div>
+                  <span className="mr-1">{goal.name}</span>
+                  <span className="text-gray-500 text-xs">{goal.progress}%</span>
                 </li>
               ))}
             </ul>
