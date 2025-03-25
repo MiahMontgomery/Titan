@@ -7,7 +7,7 @@ export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  isActive: boolean("is_active").default(false).notNull(),
+  isWorking: boolean("is_working").default(false).notNull(),
   progress: integer("progress").default(0).notNull(),
   lastUpdated: timestamp("last_updated").defaultNow().notNull(),
 });
@@ -18,7 +18,7 @@ export const features = pgTable("features", {
   projectId: integer("project_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  isComplete: boolean("is_complete").default(false).notNull(),
+  progress: integer("progress").default(0).notNull(),
 });
 
 // Milestone Table
@@ -28,6 +28,7 @@ export const milestones = pgTable("milestones", {
   name: text("name").notNull(),
   description: text("description"),
   estimatedHours: integer("estimated_hours").default(0),
+  progress: integer("progress").default(0).notNull(),
 });
 
 // Goal Table

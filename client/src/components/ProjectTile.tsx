@@ -23,7 +23,7 @@ export function ProjectTile({ project }: ProjectTileProps) {
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-white truncate">{project.name}</h3>
-          <StatusIndicator isActive={project.isActive} />
+          <StatusIndicator isWorking={project.isWorking} />
         </div>
       </div>
       <div className="p-4">
@@ -38,7 +38,6 @@ export function ProjectTile({ project }: ProjectTileProps) {
         </div>
         <div className="text-xs text-gray-400 flex justify-between">
           <span>Last updated: {formatDistanceToNow(new Date(project.lastUpdated), { addSuffix: true })}</span>
-          <span>{Math.floor(Math.random() * 15) + 5} milestones</span>
         </div>
       </div>
     </div>
