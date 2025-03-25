@@ -12,54 +12,6 @@ import {
 } from "@shared/schema";
 import { handleChatMessage } from "./chatHandler";
 
-// Re-export generateAIResponse from chatHandler
-import { handleChatMessage as importedHandler } from "./chatHandler";
-
-// Use Function.prototype.toString() to extract the function source
-const chatHandlerSource = importedHandler.toString();
-const generateAIResponseMatch = chatHandlerSource.match(/function\s+generateAIResponse\s*\([^)]*\)\s*{[^]*?}/);
-
-// Define a local implementation of generateAIResponse for WebSocket handling
-function generateAIResponse(message: string, projectId: number | string = 1): { message: string; codeSnippet: string | null } {
-  console.log(`Generating WebSocket AI response for: ${message}`);
-  
-  // Simple fallback response if something goes wrong
-  const defaultResponse = {
-    message: "I've processed your request. Would you like me to explain anything further?",
-    codeSnippet: null
-  };
-  
-  try {
-    // Parse projectId to number if it's a string
-    const projectIdNum = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
-    
-    // Call the actual handler function to process the message
-    const mockReq = { body: { message, projectId: projectIdNum } };
-    const mockRes = {
-      json: (data: any) => {
-        return {
-          message: data.response,
-          codeSnippet: data.codeSnippet
-        };
-      },
-      status: () => mockRes
-    };
-    
-    // Call the handler directly and get the result
-    const result = handleChatMessage(mockReq as any, mockRes as any);
-    
-    // If result is a Promise, return default response for now
-    if (result instanceof Promise) {
-      return defaultResponse;
-    }
-    
-    return result || defaultResponse;
-  } catch (error) {
-    console.error('Error in WebSocket generateAIResponse:', error);
-    return defaultResponse;
-  }
-};
-
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
   wss.clients.forEach((client) => {

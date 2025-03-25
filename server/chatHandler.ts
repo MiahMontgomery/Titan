@@ -1,6 +1,16 @@
 import { Request, Response } from 'express';
+import OpenAI from 'openai';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
-// Simple chat handler that processes user messages and returns simulated AI responses
+// Create an OpenAI client instance
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Chat history storage for context
+const chatHistories: Record<number, ChatCompletionMessageParam[]> = {};
+
+// AI Chat handler that processes user messages using OpenAI's GPT-4 Turbo
 export async function handleChatMessage(req: Request, res: Response) {
   try {
     const { message, projectId } = req.body;
@@ -18,7 +28,7 @@ export async function handleChatMessage(req: Request, res: Response) {
     
     console.log(`Received chat message for project ${projectIdNum}: ${message}`);
     
-    // Simple math expressions handler for demo purposes
+    // Simple math expressions handler as a fallback for demo purposes
     if (message.toLowerCase().includes('what') && message.includes('+')) {
       const parts = message.match(/(\d+)\s*\+\s*(\d+)/);
       if (parts && parts.length === 3) {
@@ -34,28 +44,126 @@ export async function handleChatMessage(req: Request, res: Response) {
       }
     }
     
-    // Process the message and generate a response
-    const response = generateAIResponse(message);
+    // Initialize chat history for this project if it doesn't exist
+    if (!chatHistories[projectIdNum]) {
+      chatHistories[projectIdNum] = [
+        {
+          role: "system",
+          content: `You are an AI-powered assistant for the Titan project management system, focused on helping with project planning, coding, and debugging.
+          
+Current project context: Project ID ${projectIdNum}
+
+Your role:
+- Help users write, debug, and optimize code
+- Answer questions about development best practices
+- Generate code samples when requested
+- Provide explanation for code logic
+- Process follow-up questions based on previous conversation context
+- Maintain a friendly, professional tone
+
+When providing code snippets, embed them directly in your response. If you're extensively modifying code, return both your explanation and the complete updated code.`
+        }
+      ];
+    }
     
-    // Simulate a delay for realistic response timing
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Add the user message to chat history
+    chatHistories[projectIdNum].push({
+      role: "user",
+      content: message
+    });
+    
+    // Keep only the last 10 messages to avoid exceeding token limits
+    if (chatHistories[projectIdNum].length > 10) {
+      // Always keep the system message at index 0
+      chatHistories[projectIdNum] = [
+        chatHistories[projectIdNum][0],
+        ...chatHistories[projectIdNum].slice(-9)
+      ];
+    }
+    
+    let response;
+    let codeSnippet = null;
+    
+    try {
+      // Call OpenAI API for chat completion
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4-turbo-preview", // or "gpt-3.5-turbo" as fallback
+        messages: chatHistories[projectIdNum],
+        max_tokens: 2000,
+        temperature: 0.7,
+      });
+      
+      // Get the assistant's response
+      response = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
+      
+      // Add the assistant's response to chat history
+      chatHistories[projectIdNum].push({
+        role: "assistant",
+        content: response
+      });
+      
+      console.log("OpenAI API response received successfully");
+      
+      // Extract code snippet if present
+      codeSnippet = extractCodeSnippet(response);
+      
+    } catch (apiError) {
+      console.error("Error calling OpenAI API:", apiError);
+      
+      // Fallback to local response generation
+      const fallbackResponse = generateFallbackResponse(message);
+      response = fallbackResponse.message;
+      codeSnippet = fallbackResponse.codeSnippet;
+      
+      // Still add this fallback to history
+      chatHistories[projectIdNum].push({
+        role: "assistant",
+        content: response
+      });
+    }
     
     // Return the response
     return res.json({
-      response: response.message,
-      codeSnippet: response.codeSnippet
+      response: response,
+      codeSnippet: codeSnippet
     });
+    
   } catch (error) {
     console.error('Error handling chat message:', error);
     return res.status(500).json({ error: 'Failed to process chat message' });
   }
 }
 
-// Function to generate AI responses based on user input
-function generateAIResponse(message: string): { message: string; codeSnippet: string | null } {
+// Function to extract code snippets from the response
+function extractCodeSnippet(response: string): string | null {
+  // Look for code blocks in markdown format ```code```
+  const codeBlockRegex = /```(?:javascript|typescript|js|ts|jsx|tsx)?\s*([\s\S]*?)```/g;
+  const matches = [...response.matchAll(codeBlockRegex)];
+  
+  if (matches.length > 0) {
+    // Use the largest code block found (likely the main snippet)
+    let largestCodeBlock = matches[0][1].trim();
+    let maxLength = largestCodeBlock.length;
+    
+    for (let i = 1; i < matches.length; i++) {
+      const codeBlock = matches[i][1].trim();
+      if (codeBlock.length > maxLength) {
+        largestCodeBlock = codeBlock;
+        maxLength = codeBlock.length;
+      }
+    }
+    
+    return largestCodeBlock;
+  }
+  
+  return null;
+}
+
+// Fallback response generator in case the API call fails
+function generateFallbackResponse(message: string): { message: string; codeSnippet: string | null } {
   const messageLower = message.toLowerCase();
   
-  console.log(`Generating AI response for: ${message}`);
+  console.log(`Generating fallback AI response for: ${message}`);
   
   // Sample code for demonstration
   const sampleCode = `import React from 'react';
@@ -95,7 +203,7 @@ const AuthForm = () => {
     </div>
   );
 };`;
-
+  
   // Simple rule-based responses
   if (messageLower.includes('fix error') || messageLower.includes('debug')) {
     return {
