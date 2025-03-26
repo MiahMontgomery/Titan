@@ -8,25 +8,38 @@ export function Logo() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        {/* Ninja Star - Basic Shape */}
         <path
-          d="M12 2L2 12L12 22L22 12L12 2Z"
+          d="M12 2L6 12L12 22L18 12L12 2Z"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           className="text-accent"
         />
+        {/* Horizontal Line */}
         <path
-          d="M12 6L6 12L12 18L18 12L12 6Z"
-          fill="currentColor"
+          d="M3 12L21 12"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
           className="text-accent"
         />
+        {/* Vertical Line */}
+        <path
+          d="M12 3L12 21"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          className="text-accent"
+        />
+        {/* Center Circle */}
         <circle
           cx="12"
           cy="12"
           r="2"
           fill="currentColor"
-          className="text-background"
+          className="text-accent"
         />
       </svg>
     </div>

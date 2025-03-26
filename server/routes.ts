@@ -238,6 +238,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.delete('/api/projects/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteProject(id);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Project not found or could not be deleted' });
+      }
+      
+      // Broadcast to all clients
+      broadcast(wss, { type: 'delete-project', data: { id } });
+      
+      // Log the deletion
+      console.log(`Project ${id} deleted successfully`);
+      
+      res.json({ success: true, message: 'Project deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      res.status(500).json({ error: 'Failed to delete project' });
+    }
+  });
+  
   // Features
   app.get('/api/projects/:projectId/features', async (req, res) => {
     try {
