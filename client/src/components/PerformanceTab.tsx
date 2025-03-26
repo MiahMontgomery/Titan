@@ -96,25 +96,25 @@ const AuthForm = () => {
     if (chatMessages.length === 0) {
       setCurrentCode(sampleCode);
       
-      // Add welcome messages in Replit-like style
+      // Add welcome messages with Replit-like styling and Markdown formatting
       setChatMessages([
         {
           id: generateId(),
-          content: "👋 I'm Titan, your autonomous development agent. I work 24/7 on your projects, constantly improving them without stopping.",
+          content: "# 👋 Welcome to Titan\n\nI'm your AI development agent. I work **24/7** on your projects, constantly improving them without stopping.",
           role: 'system',
           timestamp: new Date(),
           codeSnippet: null
         },
         {
           id: generateId(),
-          content: "I'm currently analyzing your project and determining what to build next. I'll keep you updated on my progress in real-time.",
+          content: "## What I'm doing\nI'm analyzing your project and determining what to build next. I'll show you my **real-time thinking process** as I work.",
           role: 'agent',
           timestamp: new Date(),
           codeSnippet: null
         },
         {
           id: generateId(),
-          content: "You can ask me questions about what I'm doing, request changes, or give me additional instructions at any time. I'll continuously work on improving this project.",
+          content: "## How to interact with me\n- Ask me questions about the code\n- Request new features or changes\n- Give me specific instructions\n- See my thinking process in real-time\n\nI'll generate meaningful, production-ready code that you can use immediately.",
           role: 'agent',
           timestamp: new Date(),
           codeSnippet: null
@@ -270,9 +270,9 @@ const AuthForm = () => {
             return updatedMessages;
           });
         } else {
-          // Add a new thinking message with Replit-like styling
+          // Add a new thinking message with enhanced Replit-like styling
           setIsThinking(true);
-          addChatMessage('🧠 **Thinking process started**\n\n' + (data.message || 'Processing request...'), 'agent', null, true);
+          addChatMessage('🧠 **Thinking process started**\n\n```thinking\n' + (data.message || 'Processing request...') + '\n```', 'agent', null, true);
         }
       }
       // Handle new project/feature creation events
@@ -357,9 +357,9 @@ const AuthForm = () => {
       inputRef.current.focus();
     }
     
-    // Show thinking state for AI with Replit-like styling
+    // Show thinking state for AI with enhanced Replit-like styling
     setIsThinking(true);
-    addChatMessage('🧠 **Processing your request**\n\nStarting analysis of your query...', 'agent', null, true);
+    addChatMessage('🧠 **Processing your request**\n\n```thinking\nStarting analysis of your query...\n```', 'agent', null, true);
     
     // Simulate AI "thinking" with a timer
     const thinkingSteps = [
