@@ -40,21 +40,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Pass WebSocket server to chat handler
   setWebSocketServer(wss);
   
-  // Try to initialize Firebase from environment variables
-  if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_API_KEY && process.env.FIREBASE_APP_ID) {
-    console.log('Initializing Firebase with environment variables...');
+  // For now, we'll use in-memory storage while we work out Firebase issues
+  console.log('Using in-memory storage for now.');
+  
+  // We'll check if we need to initialize sample data
+  const memStorage = getStorage();
+  const projects = await memStorage.getAllProjects();
+  
+  if (projects.length === 0) {
+    console.log('No projects found, initializing sample data...');
     
-    if (initializeFirebaseFromEnv()) {
-      console.log('Firebase initialized successfully with environment variables.');
-      // Switch to Firebase storage implementation
-      const firebaseStorage = getFirebaseStorage();
-      setStorage(firebaseStorage);
-      console.log('Using Firebase storage implementation.');
-    } else {
-      console.log('Failed to initialize Firebase with environment variables, falling back to in-memory storage.');
-    }
+    // Create sample projects
+    const project1 = await memStorage.createProject({
+      name: "E-Commerce Website",
+      description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
+      isWorking: true,
+      progress: 45,
+      lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+    });
+    
+    const project2 = await memStorage.createProject({
+      name: "Mobile App",
+      description: "Develop a cross-platform mobile application",
+      isWorking: false,
+      progress: 70,
+      lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+    });
+    
+    const project3 = await memStorage.createProject({
+      name: "Content Management System",
+      description: "Create a CMS for managing digital content",
+      isWorking: true,
+      progress: 20,
+      lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+    });
+    
+    console.log('Sample projects created:', project1.id, project2.id, project3.id);
+    
+    // Sample features for first project
+    const feature1 = await memStorage.createFeature({
+      projectId: project1.id,
+      name: "User Authentication System",
+      description: "Implement secure login and registration",
+      progress: 25
+    });
+    
+    const feature2 = await memStorage.createFeature({
+      projectId: project1.id,
+      name: "Product Catalog",
+      description: "Product listings with search and filter",
+      progress: 90
+    });
+    
+    const feature3 = await memStorage.createFeature({
+      projectId: project1.id,
+      name: "Shopping Cart",
+      description: "Add/remove items and checkout process",
+      progress: 15
+    });
+    
+    console.log("Created features for project", project1.id, ":", feature1.id, feature2.id, feature3.id);
+    
+    // Sample milestones for first feature
+    const milestone1 = await memStorage.createMilestone({
+      featureId: feature1.id,
+      name: "Setup user database schema",
+      description: "Define user model with required fields",
+      estimatedHours: 8
+    });
+    
+    console.log("Created milestone for feature", feature1.id, ":", milestone1.id);
+    
+    // Sample goals for first milestone
+    const goal1 = await memStorage.createGoal({
+      milestoneId: milestone1.id,
+      name: "Define user model with required fields",
+      progress: 100
+    });
+    
+    console.log("Created goal for milestone", milestone1.id, ":", goal1.id);
   } else {
-    console.log('Firebase environment variables not found, using in-memory storage.');
+    console.log(`Found ${projects.length} existing projects, skipping sample data initialization.`);
   }
   
   // WebSocket connection handler

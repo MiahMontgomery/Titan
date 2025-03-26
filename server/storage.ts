@@ -111,11 +111,8 @@ export class MemStorage implements IStorage {
     this.goalId = 0;
     this.logId = 0;
     
-    // Initialize with sample data only if no existing data (async, but we don't need to await here)
-    // We only want to initialize sample data for in-memory storage
-    if (this.constructor.name === 'MemStorage') {
-      this.initSampleDataIfEmpty().catch(err => console.error("Error initializing sample data:", err));
-    }
+    // We no longer initialize sample data in the constructor
+    // Sample data is now handled in routes.ts when needed
   }
   
   private async initSampleDataIfEmpty() {
