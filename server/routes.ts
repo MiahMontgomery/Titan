@@ -40,6 +40,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Pass WebSocket server to chat handler
   setWebSocketServer(wss);
   
+  // Try to initialize Firebase from environment variables
+  if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_API_KEY && process.env.FIREBASE_APP_ID) {
+    console.log('Initializing Firebase with environment variables...');
+    
+    if (initializeFirebaseFromEnv()) {
+      console.log('Firebase initialized successfully with environment variables.');
+      // Switch to Firebase storage implementation
+      const firebaseStorage = getFirebaseStorage();
+      setStorage(firebaseStorage);
+      console.log('Using Firebase storage implementation.');
+    } else {
+      console.log('Failed to initialize Firebase with environment variables, falling back to in-memory storage.');
+    }
+  } else {
+    console.log('Firebase environment variables not found, using in-memory storage.');
+  }
+  
   // WebSocket connection handler
   wss.on('connection', (ws) => {
     console.log('WebSocket client connected');
@@ -235,8 +252,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Diagnostic endpoint to list all features
   app.get('/api/features/all', async (req, res) => {
     try {
-      // Get all features from the storage
-      const allFeatures = Array.from(storage['features'].values());
+      // Get features from all projects
+      const projects = await storage.getAllProjects();
+      const allFeatures = [];
+      
+      // Collect features from each project
+      for (const project of projects) {
+        const features = await storage.getFeaturesByProject(project.id);
+        allFeatures.push(...features);
+      }
+      
       res.json(allFeatures);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch all features' });
@@ -777,14 +802,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // For Firebase Admin SDK, we need a service account
+      // Save the Firebase config to environment variables for future use
+      process.env.FIREBASE_PROJECT_ID = config.projectId;
+      process.env.FIREBASE_API_KEY = config.apiKey;
+      process.env.FIREBASE_APP_ID = config.appId;
+      
+      // For Firebase Admin SDK, we need a service account or app default credentials
       const serviceAccount = {
         projectId: config.projectId,
         clientEmail: config.clientEmail,
         privateKey: config.privateKey
       };
       
-      // Initialize Firebase Admin SDK
+      // Initialize Firebase Admin SDK with service account if provided
       if (serviceAccount.clientEmail && serviceAccount.privateKey) {
         const initialized = initializeFirebase(serviceAccount);
         
@@ -798,9 +828,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             message: "Firebase integration successfully configured with cloud persistence" 
           });
         }
+      } 
+      // Try to initialize with just the project ID (for environments with default credentials)
+      else {
+        const initialized = initializeFirebase({ projectId: config.projectId });
+        
+        if (initialized) {
+          // Switch to Firebase storage implementation
+          const firebaseStorage = getFirebaseStorage();
+          setStorage(firebaseStorage);
+          
+          return res.json({ 
+            success: true, 
+            message: "Firebase integration successfully configured with cloud persistence using default credentials" 
+          });
+        }
       }
       
-      // If we don't have a service account but do have project config,
+      // If we can't initialize Firestore but do have project config for client,
       // still acknowledge success but note we're using in-memory storage
       return res.json({ 
         success: true, 

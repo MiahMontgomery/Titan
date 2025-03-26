@@ -15,18 +15,21 @@ interface FirebaseConfig {
 
 // Get Firebase configuration from environment variables or saved config
 const firebaseConfig: FirebaseConfig = {
-  apiKey: import.meta.env.FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.FIREBASE_APP_ID || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
 };
 
 // Initialize Firebase app if secrets are provided
-let app = null;
-let auth = null;
-let provider = null;
+import type { FirebaseApp } from "firebase/app";
+import type { Auth } from "firebase/auth";
+
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let provider: GoogleAuthProvider | null = null;
 let initialized = false;
 
 try {
@@ -254,15 +257,27 @@ export function subscribeToFeaturesByProject(projectId: number, callback: (featu
       const features: Feature[] = [];
       snapshot.forEach(doc => {
         const data = doc.data();
-        features.push({
+        // Convert Firestore data to Feature with proper date handling
+        const feature: Partial<Feature> = { 
           id: Number(doc.id),
-          ...data,
+          name: data.name,
+          description: data.description,
+          isWorking: data.isWorking,
+          progress: data.progress,
+          priority: data.priority,
+          projectId: data.projectId,
+          status: data.status,
+          estimatedDays: data.estimatedDays,
+          // Convert any date fields from Firestore Timestamp to JS Date
           createdAt: data.createdAt?.toDate() || new Date(),
           startDate: data.startDate?.toDate() || null,
           endDate: data.endDate?.toDate() || null,
-          startedAt: data.startedAt?.toDate() || null,
-          completedAt: data.completedAt?.toDate() || null
-        } as Feature);
+          // Map extended fields if they exist in Firestore
+          dependencies: data.dependencies || []
+        };
+        
+        // Add to features array
+        features.push(feature as Feature);
       });
       callback(features);
     }, (error) => {
