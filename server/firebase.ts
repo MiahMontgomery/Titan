@@ -1,6 +1,7 @@
 import { initializeApp, cert, App } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { log } from './vite';
+import { IStorage } from './storage';
 import {
   Project, InsertProject,
   Feature, InsertFeature,

@@ -112,7 +112,10 @@ export class MemStorage implements IStorage {
     this.logId = 0;
     
     // Initialize with sample data only if no existing data (async, but we don't need to await here)
-    this.initSampleDataIfEmpty().catch(err => console.error("Error initializing sample data:", err));
+    // We only want to initialize sample data for in-memory storage
+    if (this.constructor.name === 'MemStorage') {
+      this.initSampleDataIfEmpty().catch(err => console.error("Error initializing sample data:", err));
+    }
   }
   
   private async initSampleDataIfEmpty() {
@@ -304,12 +307,21 @@ export class MemStorage implements IStorage {
 
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = this.projectId++;
+    const timestamp = new Date();
+    
     const project: Project = { 
       ...insertProject, 
       id,
       isWorking: insertProject.isWorking ?? false,
       progress: insertProject.progress ?? 0,
-      lastUpdated: insertProject.lastUpdated || new Date()
+      lastUpdated: insertProject.lastUpdated || timestamp,
+      projectType: insertProject.projectType || 'generic',
+      agentConfig: insertProject.agentConfig || {},
+      autoMode: insertProject.autoMode ?? false,
+      checkpoints: insertProject.checkpoints || {},
+      priority: insertProject.priority ?? 0,
+      lastCheckIn: insertProject.lastCheckIn || null,
+      nextCheckIn: insertProject.nextCheckIn || null
     };
     this.projects.set(id, project);
     return project;
@@ -343,11 +355,24 @@ export class MemStorage implements IStorage {
 
   async createFeature(insertFeature: InsertFeature): Promise<Feature> {
     const id = this.featureId++;
+    const timestamp = new Date();
+    
     const feature: Feature = { 
       ...insertFeature, 
       id,
       description: insertFeature.description ?? null,
-      progress: insertFeature.progress ?? 0
+      progress: insertFeature.progress ?? 0,
+      status: insertFeature.status || 'planned',
+      isWorking: insertFeature.isWorking ?? false,
+      priority: insertFeature.priority ?? 0,
+      estimatedDays: insertFeature.estimatedDays ?? null,
+      createdAt: insertFeature.createdAt || timestamp,
+      startDate: insertFeature.startDate || null,
+      completionDate: insertFeature.completionDate || null,
+      dependencies: insertFeature.dependencies || [],
+      blockReason: insertFeature.blockReason ?? null,
+      implementationDetails: insertFeature.implementationDetails || {},
+      optimizationRound: insertFeature.optimizationRound ?? 0
     };
     this.features.set(id, feature);
     return feature;
@@ -506,6 +531,18 @@ export class MemStorage implements IStorage {
       .filter(log => log.projectId === projectId)
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
+  
+  async getActivityLogsByFeature(featureId: number): Promise<ActivityLog[]> {
+    return Array.from(this.activityLogs.values())
+      .filter(log => log.featureId === featureId)
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
+  
+  async getActivityLogCheckpoints(projectId: number): Promise<ActivityLog[]> {
+    return Array.from(this.activityLogs.values())
+      .filter(log => log.projectId === projectId && log.activityType === 'checkpoint')
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
 
   async createActivityLog(insertLog: InsertActivityLog): Promise<ActivityLog> {
     const id = this.logId++;
@@ -514,7 +551,14 @@ export class MemStorage implements IStorage {
       id,
       timestamp: insertLog.timestamp || new Date(),
       agentId: insertLog.agentId ?? null,
-      codeSnippet: insertLog.codeSnippet ?? null
+      codeSnippet: insertLog.codeSnippet ?? null,
+      featureId: insertLog.featureId ?? null,
+      milestoneId: insertLog.milestoneId ?? null,
+      activityType: insertLog.activityType || 'general',
+      importance: insertLog.importance ?? 'normal',
+      details: insertLog.details || {},
+      reasoning: insertLog.reasoning ?? null,
+      thinkingProcess: insertLog.thinkingProcess ?? null
     };
     this.activityLogs.set(id, log);
     
@@ -525,6 +569,176 @@ export class MemStorage implements IStorage {
     }
     
     return log;
+  }
+  
+  async createCheckpoint(insertLog: InsertActivityLog): Promise<ActivityLog> {
+    return this.createActivityLog({
+      ...insertLog,
+      activityType: 'checkpoint',
+      importance: 'high'
+    });
+  }
+  
+  // External APIs
+  async getExternalApisByProject(projectId: number): Promise<ExternalApi[]> {
+    return Array.from(this.externalApis.values())
+      .filter(api => api.projectId === projectId);
+  }
+  
+  async getExternalApi(id: number): Promise<ExternalApi | undefined> {
+    return this.externalApis.get(id);
+  }
+  
+  async createExternalApi(api: InsertExternalApi): Promise<ExternalApi> {
+    const id = this.externalApis.size + 1;
+    const timestamp = new Date();
+    
+    const externalApi: ExternalApi = {
+      ...api,
+      id,
+      status: api.status || 'active',
+      createdAt: api.createdAt || timestamp,
+      endpoint: api.endpoint ?? null,
+      configData: api.configData || {},
+      lastUsed: api.lastUsed || null,
+      errorCount: api.errorCount ?? 0,
+      lastError: api.lastError ?? null
+    };
+    
+    this.externalApis.set(id, externalApi);
+    return externalApi;
+  }
+  
+  async updateExternalApi(id: number, updateData: Partial<InsertExternalApi>): Promise<ExternalApi | undefined> {
+    const api = this.externalApis.get(id);
+    if (!api) return undefined;
+    
+    const updatedApi = { ...api, ...updateData };
+    this.externalApis.set(id, updatedApi);
+    return updatedApi;
+  }
+  
+  async deleteExternalApi(id: number): Promise<boolean> {
+    return this.externalApis.delete(id);
+  }
+  
+  // Agent Tasks
+  async getTasksByProject(projectId: number): Promise<AgentTask[]> {
+    return Array.from(this.agentTasks.values())
+      .filter(task => task.projectId === projectId);
+  }
+  
+  async getPendingTasks(projectId: number): Promise<AgentTask[]> {
+    return Array.from(this.agentTasks.values())
+      .filter(task => task.projectId === projectId && task.status === 'pending');
+  }
+  
+  async getTask(id: number): Promise<AgentTask | undefined> {
+    return this.agentTasks.get(id);
+  }
+  
+  async createTask(task: InsertAgentTask): Promise<AgentTask> {
+    const id = this.agentTasks.size + 1;
+    const timestamp = new Date();
+    
+    const agentTask: AgentTask = {
+      ...task,
+      id,
+      status: task.status || 'pending',
+      description: task.description ?? null,
+      progress: task.progress ?? 0,
+      priority: task.priority ?? 1,
+      createdAt: timestamp,
+      featureId: task.featureId ?? null,
+      assignedAgentId: task.assignedAgentId ?? null,
+      executionPath: task.executionPath || [],
+      executionState: task.executionState || {},
+      errorDetails: task.errorDetails ?? null,
+      taskResult: task.taskResult ?? null,
+      parentTaskId: task.parentTaskId ?? null
+    };
+    
+    this.agentTasks.set(id, agentTask);
+    return agentTask;
+  }
+  
+  async updateTask(id: number, updateData: Partial<InsertAgentTask>): Promise<AgentTask | undefined> {
+    const task = this.agentTasks.get(id);
+    if (!task) return undefined;
+    
+    const updatedTask = { ...task, ...updateData };
+    this.agentTasks.set(id, updatedTask);
+    return updatedTask;
+  }
+  
+  async completeTask(id: number, result: any): Promise<AgentTask | undefined> {
+    const task = this.agentTasks.get(id);
+    if (!task) return undefined;
+    
+    const updatedTask = { 
+      ...task, 
+      status: 'completed',
+      progress: 100,
+      taskResult: result
+    };
+    
+    this.agentTasks.set(id, updatedTask);
+    return updatedTask;
+  }
+  
+  async failTask(id: number, errorDetails: string): Promise<AgentTask | undefined> {
+    const task = this.agentTasks.get(id);
+    if (!task) return undefined;
+    
+    const updatedTask = { 
+      ...task, 
+      status: 'failed',
+      errorDetails
+    };
+    
+    this.agentTasks.set(id, updatedTask);
+    return updatedTask;
+  }
+  
+  // Web Accounts
+  async getWebAccountsByProject(projectId: number): Promise<WebAccount[]> {
+    return Array.from(this.webAccounts.values())
+      .filter(account => account.projectId === projectId);
+  }
+  
+  async getWebAccount(id: number): Promise<WebAccount | undefined> {
+    return this.webAccounts.get(id);
+  }
+  
+  async createWebAccount(account: InsertWebAccount): Promise<WebAccount> {
+    const id = this.webAccounts.size + 1;
+    const timestamp = new Date();
+    
+    const webAccount: WebAccount = {
+      ...account,
+      id,
+      status: account.status || 'active',
+      createdAt: account.createdAt || timestamp,
+      profileUrl: account.profileUrl ?? null,
+      lastActivity: account.lastActivity ?? null,
+      cookies: account.cookies || {}
+    };
+    
+    this.webAccounts.set(id, webAccount);
+    return webAccount;
+  }
+  
+  async updateWebAccount(id: number, updateData: Partial<InsertWebAccount>): Promise<WebAccount | undefined> {
+    const account = this.webAccounts.get(id);
+    if (!account) return undefined;
+    
+    const updatedAccount = { ...account, ...updateData };
+    this.webAccounts.set(id, updatedAccount);
+    return updatedAccount;
+  }
+  
+  async deleteWebAccount(id: number): Promise<boolean> {
+    return this.webAccounts.delete(id);
   }
 }
 
