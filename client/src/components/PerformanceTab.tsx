@@ -211,7 +211,9 @@ const AuthForm = () => {
           hasRollback: codeSnippet ? true : false
         },
         isCheckpoint: false,
-        thinkingProcess: null
+        thinkingProcess: null,
+        urls: [],
+        changes: {}
       });
     }
   }, [projectId, addLogMutation]);
@@ -261,9 +263,13 @@ const AuthForm = () => {
               const currentContent = updatedMessages[thinkingIndex].content;
               // Only append if it's a different message
               if (!currentContent.includes(data.message || 'Thinking...')) {
+                const newThinkingContent = currentContent.includes('```thinking')
+                  ? currentContent.replace(/```thinking\n(.*?)\n```/s, `\`\`\`thinking\n$1\n→ ${data.message || 'Processing...'}\n\`\`\``)
+                  : currentContent + '\n→ ' + (data.message || 'Processing...');
+                
                 updatedMessages[thinkingIndex] = {
                   ...updatedMessages[thinkingIndex],
-                  content: currentContent + '\n→ ' + (data.message || 'Processing...')
+                  content: newThinkingContent
                 };
               }
             }
@@ -736,10 +742,13 @@ const AuthForm = () => {
                 >
                   {message.isThinking && (
                     <div className="flex items-center mb-1 border-b border-gray-600 pb-1 mb-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-1" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse mr-1" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
-                      <span className="ml-2 text-blue-400 text-xs">AI processing...</span>
+                      <div className="h-5 w-5 relative mr-2">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="h-4 w-4 bg-blue-500 rounded-full"></div>
+                        </div>
+                        <div className="absolute inset-0 h-5 w-5 border-2 border-blue-300 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                      <span className="text-blue-300 text-sm font-medium">AI Processing</span>
                     </div>
                   )}
                   
