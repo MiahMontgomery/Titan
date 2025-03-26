@@ -552,12 +552,18 @@ Features:
 /**
  * Create a new project and all its components from a user prompt
  * @param description User description of the project
+ * @param name Optional project name to use instead of AI-generated name
  * @returns Created project with all components
  */
-export async function createProjectFromPrompt(description: string): Promise<Project> {
+export async function createProjectFromPrompt(description: string, name?: string): Promise<Project> {
   try {
     // Generate project structure
     const generated = await generateProject(description);
+    
+    // Override name if provided by user
+    if (name && name.trim()) {
+      generated.project.name = name.trim();
+    }
     
     // Create the project
     const project = await storage.createProject(generated.project);

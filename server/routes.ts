@@ -483,7 +483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const { prompt } = req.body;
+      const { prompt, name } = req.body;
       
       if (!prompt) {
         return res.status(400).json({ 
@@ -495,11 +495,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Broadcast thinking status to clients
       broadcast(wss, { 
         type: 'thinking', 
-        message: 'Generating project structure from your description. This may take a minute...' 
+        message: 'Generating comprehensive project structure with 30+ features from your description. This may take a minute...' 
       });
       
-      // Generate and create the project
-      const project = await createProjectFromPrompt(prompt);
+      // Generate and create the project, passing optional name
+      const project = await createProjectFromPrompt(prompt, name);
       
       // Broadcast the new project to all clients
       broadcast(wss, { 
