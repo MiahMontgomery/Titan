@@ -95,6 +95,10 @@ function initWebSocket() {
         // Chat responses are handled directly by subscribers
         console.log('Received chat response via WebSocket:', data);
       }
+      else if (data.type === 'thinking') {
+        // Thinking messages for real-time progress updates
+        console.log('Received thinking update via WebSocket:', data);
+      }
       else if (data.type === 'pong') {
         console.log('Received pong from server');
       }
