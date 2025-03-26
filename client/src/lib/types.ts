@@ -22,6 +22,8 @@ export interface FirebaseIntegration {
     storageBucket: string;
     messagingSenderId: string;
     appId: string;
+    clientEmail?: string;
+    privateKey?: string;
   };
 }
 
