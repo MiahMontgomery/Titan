@@ -129,7 +129,7 @@ function getFirestoreDb(): Firestore {
 /**
  * Firebase implementation of storage interface
  */
-export class FirebaseStorage {
+export class FirebaseStorage implements IStorage {
   
   // User Management
   async getUser(id: number): Promise<User | undefined> {
