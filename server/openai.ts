@@ -163,6 +163,8 @@ export async function generateProject(description: string): Promise<{
   }
 
   try {
+    console.log('Generating project with OpenAI using API key:', process.env.OPENAI_API_KEY ? 'API key is set' : 'API key not set');
+    
     const completion = await openai.chat.completions.create({
       model: GPT_4_TURBO,
       messages: [
@@ -174,7 +176,16 @@ export async function generateProject(description: string): Promise<{
     });
 
     const responseText = completion.choices[0]?.message?.content || '{}';
-    const responseData = JSON.parse(responseText);
+    console.log('OpenAI response received:', responseText.substring(0, 100) + '...');
+    
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Error parsing OpenAI response as JSON:', parseError);
+      console.error('Received response:', responseText);
+      throw new Error('Invalid response format from OpenAI: ' + parseError.message);
+    }
     
     // Transform the response to match our schema
     const project: InsertProject = {
@@ -297,6 +308,8 @@ ${existingFeatures.map(f => `- ${f.name}: ${f.description}`).join('\n')}
 Generate a new feature based on the following prompt: "${prompt}"
 `;
 
+    console.log('Generating feature with OpenAI...');
+    
     const completion = await openai.chat.completions.create({
       model: GPT_4_TURBO,
       messages: [
@@ -308,7 +321,16 @@ Generate a new feature based on the following prompt: "${prompt}"
     });
 
     const responseText = completion.choices[0]?.message?.content || '{}';
-    const responseData = JSON.parse(responseText);
+    console.log('OpenAI response received for feature generation:', responseText.substring(0, 100) + '...');
+    
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Error parsing OpenAI feature response as JSON:', parseError);
+      console.error('Received response:', responseText);
+      throw new Error('Invalid response format from OpenAI for feature: ' + parseError.message);
+    }
     
     // Transform the response to match our schema
     const feature: InsertFeature = {
