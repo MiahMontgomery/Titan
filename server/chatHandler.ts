@@ -37,7 +37,7 @@ function isFeatureRequest(message: string): boolean {
 /**
  * Broadcast thinking message to clients for a specific project
  */
-function broadcastThinking(projectId: number, message: string): void {
+export function broadcastThinking(projectId: number, message: string, codeSnippet?: string | null): void {
   if (!wss) return;
   
   wss.clients.forEach((client) => {
@@ -45,7 +45,8 @@ function broadcastThinking(projectId: number, message: string): void {
       client.send(JSON.stringify({
         type: 'thinking',
         projectId,
-        message
+        message,
+        codeSnippet
       }));
     }
   });
