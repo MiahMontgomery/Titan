@@ -263,9 +263,25 @@ const AuthForm = () => {
               const currentContent = updatedMessages[thinkingIndex].content;
               // Only append if it's a different message
               if (!currentContent.includes(data.message || 'Thinking...')) {
-                const newThinkingContent = currentContent.includes('```thinking')
-                  ? currentContent.replace(/```thinking\n(.*?)\n```/s, `\`\`\`thinking\n$1\n→ ${data.message || 'Processing...'}\n\`\`\``)
-                  : currentContent + '\n→ ' + (data.message || 'Processing...');
+                // Update thinking content
+                let newThinkingContent = currentContent;
+                if (currentContent.includes('```thinking')) {
+                  // Extract everything between the code block markers
+                  const startIdx = currentContent.indexOf('```thinking\n') + '```thinking\n'.length;
+                  const endIdx = currentContent.lastIndexOf('\n```');
+                  
+                  if (startIdx > 0 && endIdx > startIdx) {
+                    const existingContent = currentContent.substring(startIdx, endIdx);
+                    newThinkingContent = currentContent.substring(0, startIdx) + 
+                      existingContent + 
+                      '\n→ ' + (data.message || 'Processing...') + 
+                      currentContent.substring(endIdx);
+                  } else {
+                    newThinkingContent = currentContent + '\n→ ' + (data.message || 'Processing...');
+                  }
+                } else {
+                  newThinkingContent = currentContent + '\n→ ' + (data.message || 'Processing...');
+                }
                 
                 updatedMessages[thinkingIndex] = {
                   ...updatedMessages[thinkingIndex],
@@ -382,9 +398,29 @@ const AuthForm = () => {
           const newMessages = [...prev];
           const lastMessage = newMessages[newMessages.length - 1];
           if (lastMessage && lastMessage.isThinking) {
+            // Update the thinking message properly
+            const currentContent = lastMessage.content;
+            let newContent = currentContent;
+            
+            if (currentContent.includes('```thinking')) {
+              const startIdx = currentContent.indexOf('```thinking\n') + '```thinking\n'.length;
+              const endIdx = currentContent.lastIndexOf('\n```');
+              
+              if (startIdx > 0 && endIdx > startIdx) {
+                newContent = currentContent.substring(0, startIdx) + 
+                  currentContent.substring(startIdx, endIdx) +
+                  '\n→ ' + thinkingSteps[stepIndex] + 
+                  currentContent.substring(endIdx);
+              } else {
+                newContent = '🧠 **Processing your request**\n\n```thinking\n' + thinkingSteps[stepIndex] + '\n```';
+              }
+            } else {
+              newContent = '🧠 **Processing your request**\n\n```thinking\n' + thinkingSteps[stepIndex] + '\n```';
+            }
+            
             newMessages[newMessages.length - 1] = {
               ...lastMessage,
-              content: thinkingSteps[stepIndex]
+              content: newContent
             };
           }
           return newMessages;
@@ -810,12 +846,29 @@ const AuthForm = () => {
                     </div>
                   )}
                   
-                  {/* Regular message content */}
-                  {message.content && message.content.split('\n').map((line, i) => (
-                    <p key={i} className={i > 0 ? 'mt-2' : ''}>
-                      {line}
-                    </p>
-                  ))}
+                  {/* Regular message content with special handling for thinking code blocks */}
+                  {message.content && message.content.split('\n').map((line, i) => {
+                    // Check if we're inside a thinking code block
+                    if (message.isThinking && line.includes('```thinking')) {
+                      return <div key={i} className="mt-2 text-sm font-mono bg-blue-950/30 rounded-t-md p-2 border-t border-x border-blue-800/50">Thinking Process:</div>;
+                    }
+                    else if (message.isThinking && line.includes('```') && message.content.includes('```thinking')) {
+                      return <div key={i} className="border-b border-x border-blue-800/50 rounded-b-md mb-2"></div>;
+                    }
+                    else if (message.isThinking && message.content.includes('```thinking') && !line.includes('```')) {
+                      return (
+                        <div key={i} className={`pl-3 pr-2 py-1 border-l border-r border-blue-800/50 text-blue-300 text-xs font-mono ${line.startsWith('→') ? 'border-l-2 border-l-blue-500' : ''}`}>
+                          {line}
+                        </div>
+                      );
+                    }
+                    // Otherwise regular content
+                    return (
+                      <p key={i} className={i > 0 ? 'mt-2' : ''}>
+                        {line}
+                      </p>
+                    );
+                  })}
                   
                   {/* If has code snippet, display a button to view it with enhanced UI */}
                   {message.codeSnippet && (
