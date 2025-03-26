@@ -206,10 +206,14 @@ MILESTONE DESCRIPTION: {{MILESTONE_DESCRIPTION}}
 GOAL: {{GOAL_NAME}}
 GOAL DESCRIPTION: {{GOAL_DESCRIPTION}}
 
-DEVELOPMENT REQUIREMENTS:
-1. Create SUBSTANTIVE code that performs REAL functionality (not simulations)
-2. Provide a complete implementation (not just outlines or stubs)
-3. Include comprehensive error handling and edge case management
+CRITICAL DEVELOPMENT REQUIREMENTS:
+1. Write REAL, FULLY IMPLEMENTED, PRODUCTION-GRADE CODE - not diagrams, flowcharts, or high-level outlines
+2. You MUST provide COMPLETE, EXECUTABLE CODE FILES - not pseudocode, not theoretical outlines
+3. Generate AT LEAST 2-3 COMPLETE CODE FILES with proper imports, error handling, and full implementation
+4. Files must contain ACTUAL FUNCTIONAL CODE with proper syntax that would run in production
+5. Each code file must be 50-200 lines long (not trivially short samples)
+6. Put each file in a separate code block with proper syntax highlighting
+7. Implementations must use real external libraries, frameworks and APIs when appropriate
 4. Build highly maintainable, well-documented code with proper commenting
 5. Follow industry best practices for the language and frameworks used
 6. Focus on production-ready code that can be integrated immediately
@@ -619,10 +623,20 @@ Generate production-ready code to implement this goal. Include detailed line-by-
 
     const response = completion.choices[0]?.message?.content || '';
     
-    // Extract code block and explanation
-    const codeMatch = response.match(/```([a-zA-Z]+)?\n([\s\S]*?)\n```/);
+    // Extract all code blocks and explanation
+    const codeBlockRegex = /```([a-zA-Z]+)?\n([\s\S]*?)\n```/g;
+    const codeBlocks: { language: string, code: string }[] = [];
+    let match;
     
-    if (!codeMatch) {
+    // Find all code blocks
+    while ((match = codeBlockRegex.exec(response)) !== null) {
+      codeBlocks.push({
+        language: match[1] || 'text',
+        code: match[2]
+      });
+    }
+    
+    if (codeBlocks.length === 0) {
       broadcastThinking(
         projectId,
         "No code block found in response",
@@ -649,23 +663,42 @@ Generate production-ready code to implement this goal. Include detailed line-by-
       };
     }
     
-    // Extract the language and code content
-    const language = codeMatch[1] || '';
-    const code = codeMatch[2] || '';
+    // Create a consolidated code string with all code blocks and their filenames
+    const consolidatedCode = codeBlocks.map((block, index) => {
+      // Try to extract filename from code or code block context
+      const filenameRegex = /\/\/ Filename: (.+)$|\/\* Filename: (.+) \*\/|# Filename: (.+)$/m;
+      const filenameMatch = block.code.match(filenameRegex);
+      const filename = filenameMatch ? 
+        (filenameMatch[1] || filenameMatch[2] || filenameMatch[3]) : 
+        `file${index + 1}.${getFileExtension(block.language)}`;
+      
+      return `// FILE: ${filename}\n\n${block.code}`;
+    }).join('\n\n' + '-'.repeat(50) + '\n\n');
     
-    // Extract explanation (everything before the code block)
-    const explanationParts = response.split('```');
-    const explanation = explanationParts[0].trim();
+    // Get primary language from the first code block
+    const primaryLanguage = codeBlocks[0].language;
     
+    // Get explanation (everything outside the code blocks)
+    const explanationText = response.replace(/```([a-zA-Z]+)?\n[\s\S]*?\n```/g, '').trim();
+    
+    // Use the consolidated code and primary language as our final output
+    const code = consolidatedCode;
+    const language = primaryLanguage;
+    
+    // Limit explanation text for display
+    const explanationPreview = explanationText.length > 100 
+      ? explanationText.substring(0, 100) + "..." 
+      : explanationText;
+      
     // Send final progress update with code
     broadcastThinking(
       projectId,
       "Code generation complete",
       code,
       [
-        "✓ Generated explanation: " + explanation.substring(0, 100) + "...",
-        "✓ Extracted code block (" + code.split('\n').length + " lines)",
-        "✓ Identified language: " + (language || "unspecified"),
+        "✓ Generated explanation: " + explanationPreview,
+        "✓ Extracted " + codeBlocks.length + " code blocks with " + code.split('\n').length + " total lines",
+        "✓ Identified primary language: " + (language || "unspecified"),
         "✓ Code generation task complete"
       ],
       true,
@@ -673,14 +706,14 @@ Generate production-ready code to implement this goal. Include detailed line-by-
     );
     
     return {
-      explanation,
+      explanation: explanationText,
       code,
       language,
       debugSteps: [
         "Retrieved project context",
         "Generated AI prompt with detailed specifications",
         `Received AI response in ${responseTime} seconds`,
-        `Extracted ${code.split('\n').length} lines of ${language} code`,
+        `Extracted ${codeBlocks.length} code blocks totaling ${code.split('\n').length} lines of code`,
         "Parsed explanation and documentation"
       ]
     };
@@ -1080,6 +1113,40 @@ export async function improveProject(projectId: number): Promise<void> {
  * Setup a regular job to improve all auto-mode projects
  * @param intervalMinutes Minutes between improvement runs
  */
+/**
+ * Helper function to get file extension based on language
+ */
+function getFileExtension(language: string): string {
+  const extensionMap: Record<string, string> = {
+    javascript: 'js',
+    typescript: 'ts',
+    python: 'py',
+    java: 'java',
+    cpp: 'cpp',
+    c: 'c',
+    csharp: 'cs',
+    go: 'go',
+    ruby: 'rb',
+    php: 'php',
+    rust: 'rs',
+    swift: 'swift',
+    kotlin: 'kt',
+    scala: 'scala',
+    html: 'html',
+    css: 'css',
+    json: 'json',
+    xml: 'xml',
+    yaml: 'yaml',
+    sql: 'sql',
+    shell: 'sh',
+    bash: 'sh',
+    plaintext: 'txt',
+    text: 'txt'
+  };
+  
+  return extensionMap[language.toLowerCase()] || 'txt';
+}
+
 export function setupProjectImprovement(intervalMinutes: number = 1): void {
   // Run improvement for all auto-mode projects periodically
   // Using 1-minute intervals for more frequent autonomous development
