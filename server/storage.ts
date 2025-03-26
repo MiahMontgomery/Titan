@@ -742,8 +742,11 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Storage factory to get the appropriate storage implementation
-let storageImplementation: IStorage = new MemStorage();
+// Import LowDB storage implementation
+import { lowdbStorage } from './lowdb';
+
+// Storage factory to get the appropriate storage implementation with LowDB as default
+let storageImplementation: IStorage = lowdbStorage;
 
 /**
  * Get the current storage implementation

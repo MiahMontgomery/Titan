@@ -1,0 +1,143 @@
+{
+  "users": [
+    {
+      "username": "demo",
+      "email": "demo@example.com",
+      "fullName": "Demo User",
+      "isAdmin": true,
+      "preferences": {},
+      "id": 1
+    }
+  ],
+  "projects": [
+    {
+      "name": "Sample Project",
+      "description": "A sample project to demonstrate the system",
+      "status": "active",
+      "lastUpdated": "2025-03-26T14:22:39.895Z",
+      "isWorking": true,
+      "progress": 50,
+      "nextCheckIn": "2025-03-27T14:22:39.892Z",
+      "lastCheckIn": "2025-03-26T14:22:39.892Z",
+      "estimatedDays": 14,
+      "priority": 1,
+      "projectType": "web",
+      "agentConfig": {
+        "model": "gpt-4o",
+        "maxTokens": 2000,
+        "temperature": 0.7
+      },
+      "autoMode": true,
+      "checkpoints": {},
+      "tags": [
+        "sample",
+        "demo"
+      ],
+      "id": 1
+    }
+  ],
+  "features": [
+    {
+      "projectId": 1,
+      "name": "User Authentication",
+      "description": "Implement user authentication with JWT",
+      "status": "in_progress",
+      "isWorking": true,
+      "progress": 50,
+      "priority": 1,
+      "estimatedDays": 3,
+      "startDate": "2025-03-26T14:22:39.894Z",
+      "completionDate": null,
+      "dependencies": [],
+      "blockReason": null,
+      "implementationDetails": {
+        "framework": "Express",
+        "library": "jsonwebtoken"
+      },
+      "optimizationRound": 0,
+      "id": 1,
+      "createdAt": "2025-03-26T14:22:39.894Z",
+      "aiGenerated": true
+    }
+  ],
+  "milestones": [
+    {
+      "featureId": 1,
+      "name": "Basic Authentication Flow",
+      "description": "Implement login and registration endpoints",
+      "progress": 50,
+      "estimatedHours": 8,
+      "percentOfFeature": 40,
+      "id": 1,
+      "createdAt": "2025-03-26T14:22:39.894Z"
+    }
+  ],
+  "goals": [
+    {
+      "milestoneId": 1,
+      "name": "User Registration Endpoint",
+      "description": "Create API endpoint for user registration",
+      "progress": 100,
+      "completed": true,
+      "percentOfMilestone": 50,
+      "id": 1,
+      "createdAt": "2025-03-26T14:22:39.894Z"
+    },
+    {
+      "milestoneId": 1,
+      "name": "User Login Endpoint",
+      "description": "Create API endpoint for user login",
+      "progress": 0,
+      "completed": false,
+      "percentOfMilestone": 50,
+      "id": 2,
+      "createdAt": "2025-03-26T14:22:39.895Z"
+    }
+  ],
+  "activityLogs": [
+    {
+      "projectId": 1,
+      "message": "Project created",
+      "activityType": "creation",
+      "timestamp": "2025-03-26T13:22:39.896Z",
+      "isCheckpoint": true,
+      "codeSnippet": null,
+      "agentId": "system",
+      "featureId": null,
+      "milestoneId": null,
+      "actionType": "create",
+      "relatedEntityType": "project",
+      "relatedEntityId": 1,
+      "thinkingProcess": null,
+      "id": 1
+    },
+    {
+      "projectId": 1,
+      "featureId": 1,
+      "message": "Feature added: User Authentication",
+      "activityType": "feature_added",
+      "timestamp": "2025-03-26T13:52:39.896Z",
+      "isCheckpoint": false,
+      "codeSnippet": null,
+      "agentId": "system",
+      "milestoneId": null,
+      "actionType": "create",
+      "relatedEntityType": "feature",
+      "relatedEntityId": 1,
+      "thinkingProcess": null,
+      "id": 2
+    }
+  ],
+  "externalApis": [],
+  "agentTasks": [],
+  "webAccounts": [],
+  "nextUserId": 2,
+  "nextProjectId": 2,
+  "nextFeatureId": 2,
+  "nextMilestoneId": 2,
+  "nextGoalId": 3,
+  "nextLogId": 3,
+  "nextApiId": 1,
+  "nextTaskId": 1,
+  "nextAccountId": 1
+}
