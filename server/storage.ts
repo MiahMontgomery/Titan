@@ -100,6 +100,9 @@ export class MemStorage implements IStorage {
     this.milestones = new Map();
     this.goals = new Map();
     this.activityLogs = new Map();
+    this.externalApis = new Map();
+    this.agentTasks = new Map();
+    this.webAccounts = new Map();
     
     this.userId = 0;
     this.projectId = 0;
@@ -108,8 +111,20 @@ export class MemStorage implements IStorage {
     this.goalId = 0;
     this.logId = 0;
     
-    // Initialize with sample data (async, but we don't need to await here)
-    this.initSampleData().catch(err => console.error("Error initializing sample data:", err));
+    // Initialize with sample data only if no existing data (async, but we don't need to await here)
+    this.initSampleDataIfEmpty().catch(err => console.error("Error initializing sample data:", err));
+  }
+  
+  private async initSampleDataIfEmpty() {
+    // First check if any projects already exist
+    const existingProjects = await this.getAllProjects();
+    if (existingProjects.length > 0) {
+      console.log(`Found ${existingProjects.length} existing projects, skipping sample data initialization.`);
+      return;
+    }
+    
+    // If no projects exist, initialize sample data
+    await this.initSampleData();
   }
 
   private async initSampleData() {
