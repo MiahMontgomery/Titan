@@ -10,12 +10,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const firebaseConfigSchema = z.object({
+  // Client-side Firebase config
   apiKey: z.string().min(1, "API Key is required"),
   authDomain: z.string().optional(),
   projectId: z.string().min(1, "Project ID is required"),
   storageBucket: z.string().optional(),
   messagingSenderId: z.string().optional(),
   appId: z.string().min(1, "App ID is required"),
+  
+  // For server-side Firebase Admin (optional)
+  clientEmail: z.string().email("Please enter a valid client email").optional(),
+  privateKey: z.string().optional(),
 });
 
 type FirebaseConfigValues = z.infer<typeof firebaseConfigSchema>;
@@ -37,6 +42,8 @@ export function FirebaseSetupModal({ isOpen, onClose, onSave, existingConfig }: 
     storageBucket: "",
     messagingSenderId: "",
     appId: "",
+    clientEmail: "",
+    privateKey: "",
   };
   
   const form = useForm<FirebaseConfigValues>({
@@ -66,6 +73,15 @@ export function FirebaseSetupModal({ isOpen, onClose, onSave, existingConfig }: 
         appId: data.appId,
       }
     };
+    
+    // Add service account details if provided
+    if (data.clientEmail || data.privateKey) {
+      fullConfig.config = {
+        ...fullConfig.config,
+        clientEmail: data.clientEmail,
+        privateKey: data.privateKey,
+      };
+    }
     
     // Wait a bit to show loading state
     setTimeout(() => {
@@ -182,6 +198,52 @@ export function FirebaseSetupModal({ isOpen, onClose, onSave, existingConfig }: 
                             placeholder="123456789012" 
                             {...field} 
                             value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </details>
+            </div>
+            
+            <div className="pt-2">
+              <details>
+                <summary className="text-sm font-medium cursor-pointer text-muted-foreground">
+                  Firebase Service Account (For Cloud Persistence)
+                </summary>
+                <div className="mt-3 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="clientEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Service Account Email (Optional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="firebase-adminsdk-xxxx@project-id.iam.gserviceaccount.com" 
+                            {...field} 
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="privateKey"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Private Key (Optional)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----" 
+                            {...field} 
+                            value={field.value || ""}
+                            className="h-32 font-mono text-xs"
                           />
                         </FormControl>
                         <FormMessage />

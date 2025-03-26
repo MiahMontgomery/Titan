@@ -1,8 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, getStorage, setStorage } from "./storage";
 import { WebSocketServer, WebSocket } from "ws";
 import { z } from "zod";
+import { initializeFirebase, getFirebaseStorage } from "./firebase";
 import { 
   insertProjectSchema, 
   insertFeatureSchema, 
@@ -443,15 +444,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Firebase integration stub
+  // Firebase integration
   app.post('/api/firebase/setup', async (req, res) => {
     try {
       const config = req.body.config;
-      // This would setup the Firebase integration
-      // For now, just return success
-      res.json({ success: true, message: "Firebase integration ready for connection" });
+      
+      if (!config || !config.projectId) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Firebase configuration is missing required fields' 
+        });
+      }
+      
+      // For Firebase Admin SDK, we need a service account
+      const serviceAccount = {
+        projectId: config.projectId,
+        clientEmail: config.clientEmail,
+        privateKey: config.privateKey
+      };
+      
+      // Initialize Firebase Admin SDK
+      if (serviceAccount.clientEmail && serviceAccount.privateKey) {
+        const initialized = initializeFirebase(serviceAccount);
+        
+        if (initialized) {
+          // Switch to Firebase storage implementation
+          const firebaseStorage = getFirebaseStorage();
+          setStorage(firebaseStorage);
+          
+          return res.json({ 
+            success: true, 
+            message: "Firebase integration successfully configured with cloud persistence" 
+          });
+        }
+      }
+      
+      // If we don't have a service account but do have project config,
+      // still acknowledge success but note we're using in-memory storage
+      return res.json({ 
+        success: true, 
+        message: "Firebase client configured successfully, using in-memory storage (no server persistence)",
+        warning: "For full cloud persistence, please provide Firebase service account credentials"
+      });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to setup Firebase integration' });
+      console.error('Error setting up Firebase:', error);
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Failed to setup Firebase integration',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
   
