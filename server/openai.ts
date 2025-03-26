@@ -98,61 +98,93 @@ Remember, this system is designed for autonomous coding and project improvement 
 /**
  * Feature generation system prompt
  */
+
 const FEATURE_GENERATION_PROMPT = `
-You are an expert AI software development assistant. Your job is to analyze a project and generate a new feature for it.
-Given the project's title, description, and existing features, create a new feature that would enhance the project.
+You are an expert AI project management assistant working on the Titan system, an autonomous AI project management tool that continuously improves projects 24/7. Your task is to analyze the user's feature request within the context of their project and generate a comprehensive implementation plan.
+
+IMPORTANT: Create a feature with as much depth and technical detail as possible. This system runs 24/7 and needs substantive work to continuously improve.
+
+The feature should include:
+1. A clear feature name and description that captures the essence of what needs to be built
+2. 3-5 detailed technical milestones with implementation specifics
+3. For each milestone, 3-5 specific programming goals with detailed technical requirements
+
+Ensure each goal includes:
+- Specific programming languages to use
+- APIs, libraries, and frameworks to implement
+- Data structures and algorithms where applicable
+- Error handling considerations
+- Testing strategies
+- Integration points with other systems
 
 Format the response in a structured JSON object with the following structure:
 {
   "feature": {
     "name": "Feature Name",
-    "description": "Feature description",
-    "projectId": 0,
-    "isWorking": false,
-    "priority": 1,
+    "description": "Detailed feature description explaining purpose and functionality",
+    "projectId": <projectId>,
+    "isWorking": true,
+    "priority": 1-10,
     "status": "planning",
     "progress": 0
   },
   "milestones": [
     {
       "name": "Milestone Name",
-      "description": "Milestone description",
+      "description": "Detailed milestone description with technical specifications",
       "featureId": 0,
       "progress": 0,
-      "estimatedHours": 4,
-      "percentOfFeature": 30,
+      "estimatedHours": 4-40,
+      "percentOfFeature": 10-50,
       "goals": [
         {
           "name": "Goal Name",
-          "description": "Specific task description",
+          "description": "Extremely specific and technical task description with implementation details including code structures, algorithms, libraries, and integration points. Include sufficient detail to guide programming work.",
           "milestoneId": 0,
           "progress": 0,
           "completed": false,
-          "percentOfMilestone": 40
+          "percentOfMilestone": 10-50
         }
       ]
     }
   ]
-}
-`;
+}`;
 
 /**
- * Code generation system prompt
+ * Code generation system prompt (template - populated at runtime)
  */
-const CODE_GENERATION_PROMPT = `
-You are an expert AI software developer. Your job is to generate code implementations for a specific goal.
-Given the project context, feature, milestone, and goal, write code that fulfills the goal's requirements.
+const CODE_GENERATION_PROMPT_TEMPLATE = `
+You are an expert AI coding assistant for the Titan system, an autonomous AI project management tool that continuously improves projects 24/7. Your job is to implement detailed, production-ready code for a specific goal within a project feature.
 
-Format the response with the following structure:
-[explanation of approach]
+I'll provide you with project context, feature details, milestone information, and a specific goal to implement. Your task is to produce comprehensive, professional-grade code that fulfills this goal.
 
-\`\`\`[language]
-[code implementation]
-\`\`\`
+PROJECT: {{PROJECT_NAME}}
+PROJECT DESCRIPTION: {{PROJECT_DESCRIPTION}}
 
-Include comments to explain complex parts of the code. Make sure your code is complete and functional.
-`;
+FEATURE: {{FEATURE_NAME}}
+FEATURE DESCRIPTION: {{FEATURE_DESCRIPTION}}
 
+MILESTONE: {{MILESTONE_NAME}}
+MILESTONE DESCRIPTION: {{MILESTONE_DESCRIPTION}}
+
+GOAL: {{GOAL_NAME}}
+GOAL DESCRIPTION: {{GOAL_DESCRIPTION}}
+
+Please write high-quality, well-documented, and fully functional code to implement this goal. Your code should:
+
+1. Be complete and ready to integrate into the project
+2. Include error handling, edge cases, and performance considerations
+3. Include proper commenting and documentation
+4. Follow best practices for the language and frameworks used
+5. Be structured for maintainability and readability
+
+For complex implementations, explain your design choices and include any setup instructions or dependencies required.
+
+Provide the entire code solution (not pseudocode) along with a detailed explanation of how it works and how it fulfills the goal. Consider all aspects of professional development including security, testing, and performance.
+
+If any external APIs, libraries, or services are needed, specify them clearly with installation or integration instructions.
+
+Your response should be extremely thorough with all the necessary details required to immediately implement your solution without needing to ask further questions.`;
 /**
  * Check if OpenAI API key is configured
  * @returns True if OpenAI API key is present
@@ -450,10 +482,21 @@ Goal: ${goal.name} - ${goal.description}
 Generate code to implement this goal.
 `;
 
+    // Fill in template placeholders with actual values
+    const codeGenerationPrompt = CODE_GENERATION_PROMPT_TEMPLATE
+      .replace('{{PROJECT_NAME}}', project.name)
+      .replace('{{PROJECT_DESCRIPTION}}', project.description)
+      .replace('{{FEATURE_NAME}}', feature.name)
+      .replace('{{FEATURE_DESCRIPTION}}', feature.description)
+      .replace('{{MILESTONE_NAME}}', milestone.name)
+      .replace('{{MILESTONE_DESCRIPTION}}', milestone.description)
+      .replace('{{GOAL_NAME}}', goal.name)
+      .replace('{{GOAL_DESCRIPTION}}', goal.description);
+
     const completion = await openai.chat.completions.create({
       model: GPT_4_TURBO,
       messages: [
-        { role: "system", content: CODE_GENERATION_PROMPT },
+        { role: "system", content: codeGenerationPrompt },
         { role: "user", content: context }
       ],
       temperature: 0.7,
