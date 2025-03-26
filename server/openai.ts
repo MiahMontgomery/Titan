@@ -188,7 +188,8 @@ export async function generateProject(description: string): Promise<{
     let responseData;
     try {
       responseData = JSON.parse(responseText);
-    } catch (parseError) {
+    } catch (error) {
+      const parseError = error as Error;
       console.error('Error parsing OpenAI response as JSON:', parseError);
       console.error('Received response:', responseText);
       throw new Error('Invalid response format from OpenAI: ' + parseError.message);
@@ -677,6 +678,7 @@ export async function addFeatureFromPrompt(projectId: number, prompt: string): P
  */
 export async function improveProject(projectId: number): Promise<void> {
   try {
+    console.log(`Starting autonomous improvement for project ID: ${projectId}`);
     const project = await storage.getProject(projectId);
     if (!project) {
       throw new Error(`Project with ID ${projectId} not found`);
@@ -684,11 +686,23 @@ export async function improveProject(projectId: number): Promise<void> {
     
     // Only improve projects in auto mode
     if (!project.autoMode) {
+      console.log(`Project ${project.name} (ID: ${projectId}) is not in auto mode, skipping improvement`);
       return;
     }
     
+    // Log the activity for the automation start
+    await storage.createActivityLog({
+      projectId,
+      message: `Auto-generated activity at ${new Date().toLocaleTimeString()}`,
+      timestamp: new Date(),
+      agentId: `agent-${Math.floor(Math.random() * 10) + 1}`,
+      codeSnippet: null,
+      activityType: 'auto_improvement',
+    });
+    
     // Check if there are features with low progress
     const features = await storage.getFeaturesByProject(projectId);
+    console.log(`Found ${features.length} features for project ${project.name}, checking for work to do`);
     
     // Get incomplete goals to work on
     const incompleteGoals = [];
@@ -790,14 +804,18 @@ export async function improveProject(projectId: number): Promise<void> {
  * Setup a regular job to improve all auto-mode projects
  * @param intervalMinutes Minutes between improvement runs
  */
-export function setupProjectImprovement(intervalMinutes: number = 15): void {
+export function setupProjectImprovement(intervalMinutes: number = 5): void {
   // Run improvement for all auto-mode projects periodically
+  // Using 5-minute intervals for more frequent autonomous development
+  console.log(`Setting up autonomous project improvement with ${intervalMinutes}-minute intervals`);
   setInterval(async () => {
     try {
       const projects = await storage.getAllProjects();
+      console.log(`Checking ${projects.length} projects for autonomous improvement...`);
       
       for (const project of projects) {
         if (project.autoMode && project.isWorking) {
+          console.log(`Autonomously improving project: ${project.name} (ID: ${project.id})`);
           // Run improvement for this project
           await improveProject(project.id);
         }
