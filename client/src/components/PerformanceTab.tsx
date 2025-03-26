@@ -191,12 +191,18 @@ const AuthForm = () => {
           
           // Update code if a code snippet was provided
           if ((data as any).codeSnippet) {
+            // Save current code to history before updating
+            if (currentCode && !codeHistory.includes(currentCode)) {
+              setCodeHistory(prev => [...prev, currentCode]);
+              setCanRollback(true);
+            }
+            
             setCurrentCode((data as any).codeSnippet);
           }
         }
       }
       // Handle AI thinking status updates
-      else if (data.type === 'thinking' && data.projectId === projectId) {
+      else if (data.type === 'thinking' && (data.projectId === projectId || !data.projectId)) {
         console.log('Received thinking update via WebSocket:', data);
         
         // Check if there's already a thinking message
@@ -226,10 +232,70 @@ const AuthForm = () => {
           addChatMessage('🧠 ' + (data.message || 'Processing request...'), 'agent', null, true);
         }
       }
+      // Handle new project/feature creation events
+      else if (data.type === 'new-project' || data.type === 'new-feature') {
+        console.log(`Received ${data.type} event via WebSocket:`, data);
+        
+        // Remove thinking messages
+        setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+        setIsThinking(false);
+        
+        // Add a success message about the creation
+        let message = '';
+        if (data.type === 'new-project') {
+          message = `✅ Project "${data.data?.name}" has been successfully generated!`;
+        } else if (data.type === 'new-feature') {
+          message = `✅ Feature "${data.data?.name}" has been successfully added to the project!`;
+        }
+        
+        if (message) {
+          addChatMessage(message, 'system');
+        }
+      }
+      // Handle new activity logs related to AI actions
+      else if (data.type === 'new-activity' && data.projectId === projectId) {
+        const activityLog = data.data;
+        
+        // Only process AI-generated activities
+        if (activityLog && activityLog.agentId && activityLog.agentId.startsWith('ai-')) {
+          console.log('Received AI activity via WebSocket:', activityLog);
+          
+          // If code was generated, update the editor
+          if (activityLog.codeSnippet && activityLog.activityType === 'code_generation') {
+            // Save current code to history before updating
+            if (currentCode && !codeHistory.includes(currentCode)) {
+              setCodeHistory(prev => [...prev, currentCode]);
+              setCanRollback(true);
+            }
+            
+            setCurrentCode(activityLog.codeSnippet);
+            
+            // Add message about code generation
+            addChatMessage(
+              `I've generated code for the goal: ${activityLog.message.replace('Generated code for goal: ', '')}`,
+              'agent',
+              activityLog.codeSnippet
+            );
+          }
+          // If it's a thinking process/analysis, show it in the chat
+          else if (activityLog.thinkingProcess && activityLog.activityType === 'project_analysis') {
+            // Remove thinking messages first
+            setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+            setIsThinking(false);
+            
+            // Add the thinking as a chat message
+            addChatMessage(
+              activityLog.thinkingProcess,
+              'agent',
+              null
+            );
+          }
+        }
+      }
     });
     
     return unsubscribe;
-  }, [addChatMessage, setChatMessages, setIsThinking, setCurrentCode, subscribe, projectId, chatMessages]);
+  }, [addChatMessage, setChatMessages, setIsThinking, setCurrentCode, subscribe, projectId, chatMessages, currentCode, codeHistory]);
 
   // Handle sending a user message
   const handleSendMessage = async () => {
