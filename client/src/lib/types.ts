@@ -34,6 +34,7 @@ export type WebSocketMessageType =
   | 'projects'
   | 'new-project'
   | 'update-project'
+  | 'delete-project'
   | 'new-feature'
   | 'update-feature'
   | 'new-milestone'

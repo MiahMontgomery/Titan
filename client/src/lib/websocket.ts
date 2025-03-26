@@ -86,6 +86,11 @@ function initWebSocket() {
           old.map(p => p.id === data.data.id ? data.data : p)
         );
       }
+      else if (data.type === 'delete-project') {
+        queryClient.setQueryData(['/api/projects'], (old: Project[] = []) => 
+          old.filter(p => p.id !== data.data.id)
+        );
+      }
       else if (data.type === 'chat-response') {
         // Chat responses are handled directly by subscribers
         console.log('Received chat response via WebSocket:', data);
