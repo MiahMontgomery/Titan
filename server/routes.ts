@@ -1036,5 +1036,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Start the automatic project improvement cycle if OpenAI is configured
+  if (isOpenAIConfigured()) {
+    console.log("OpenAI is configured, starting autonomous project improvement cycle...");
+    setupProjectImprovement(5); // Check every 5 minutes for autonomous improvement
+  } else {
+    console.log("OpenAI API key not configured. Autonomous project improvement is disabled.");
+    console.log("Please configure the OpenAI API key in Settings to enable autonomous coding.");
+  }
+
   return httpServer;
 }

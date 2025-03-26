@@ -142,6 +142,7 @@ export class MemStorage implements IStorage {
       description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
       isWorking: true,
       progress: 45,
+      autoMode: true, // Enable autonomous mode
       lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     });
     
@@ -150,6 +151,7 @@ export class MemStorage implements IStorage {
       description: "Develop a cross-platform mobile application",
       isWorking: false,
       progress: 70,
+      autoMode: false,
       lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
     });
     
@@ -158,6 +160,7 @@ export class MemStorage implements IStorage {
       description: "Create a CMS for managing digital content",
       isWorking: true,
       progress: 20,
+      autoMode: true, // Enable autonomous mode
       lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
     });
     
