@@ -168,7 +168,13 @@ const AuthForm = () => {
         message: rolePrefix + content,
         timestamp: new Date(),
         agentId: role === 'user' ? 'user' : 'agent-1',
-        codeSnippet: codeSnippet || null
+        codeSnippet: codeSnippet || null,
+        featureId: null,
+        milestoneId: null,
+        activityType: 'chat',
+        details: {},
+        isCheckpoint: false,
+        thinkingProcess: null
       });
     }
   }, [projectId, addLogMutation]);
@@ -381,7 +387,7 @@ const AuthForm = () => {
       setChatMessages(prev => prev.filter(msg => !msg.isThinking));
       
       // Save the current code to history before potential changes
-      if (currentCode && !codeHistory.includes(currentCode)) {
+      if (currentCode && codeHistory && !codeHistory.includes(currentCode)) {
         setCodeHistory(prev => [...prev, currentCode]);
         setCanRollback(true);
       }
