@@ -5,6 +5,14 @@ import { WebSocketServer, WebSocket } from "ws";
 import { z } from "zod";
 import { initializeFirebase, getFirebaseStorage } from "./firebase";
 import { 
+  createProjectFromPrompt, 
+  addFeatureFromPrompt, 
+  generateThinking, 
+  generateCodeForGoal,
+  setupProjectImprovement,
+  isOpenAIConfigured
+} from "./openai";
+import { 
   insertProjectSchema, 
   insertFeatureSchema, 
   insertMilestoneSchema, 
@@ -432,15 +440,328 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // OpenAI integration stub
+  // OpenAI integration
   app.post('/api/openai/setup', async (req, res) => {
     try {
       const apiKey = req.body.apiKey;
-      // This would setup the OpenAI API connection
-      // For now, just return success
-      res.json({ success: true, message: "OpenAI integration ready for connection" });
+      
+      // Set the OpenAI API key in the environment
+      process.env.OPENAI_API_KEY = apiKey;
+      
+      // Verify that the key is configured
+      if (isOpenAIConfigured()) {
+        // Setup the autonomous project improvement cycle
+        setupProjectImprovement(15); // Check every 15 minutes
+        
+        res.json({ 
+          success: true, 
+          message: "OpenAI integration successfully configured" 
+        });
+      } else {
+        res.status(400).json({ 
+          success: false, 
+          error: 'Invalid OpenAI API key' 
+        });
+      }
     } catch (error) {
-      res.status(500).json({ error: 'Failed to setup OpenAI integration' });
+      console.error('Error setting up OpenAI:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to setup OpenAI integration',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
+  // AI Project Generation
+  app.post('/api/ai/generate-project', async (req, res) => {
+    try {
+      if (!isOpenAIConfigured()) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'OpenAI API key not configured. Please configure it in Settings first.' 
+        });
+      }
+      
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Project description is required' 
+        });
+      }
+      
+      // Broadcast thinking status to clients
+      broadcast(wss, { 
+        type: 'thinking', 
+        message: 'Generating project structure from your description. This may take a minute...' 
+      });
+      
+      // Generate and create the project
+      const project = await createProjectFromPrompt(prompt);
+      
+      // Broadcast the new project to all clients
+      broadcast(wss, { 
+        type: 'new-project', 
+        data: project 
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Project generated successfully', 
+        project 
+      });
+    } catch (error) {
+      console.error('Error generating project with AI:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to generate project', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
+  // AI Feature Generation
+  app.post('/api/projects/:projectId/generate-feature', async (req, res) => {
+    try {
+      if (!isOpenAIConfigured()) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'OpenAI API key not configured. Please configure it in Settings first.' 
+        });
+      }
+      
+      const projectId = parseInt(req.params.projectId);
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Feature description is required' 
+        });
+      }
+      
+      // Check if project exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Project not found' 
+        });
+      }
+      
+      // Broadcast thinking status to clients
+      broadcast(wss, { 
+        type: 'thinking', 
+        projectId,
+        message: 'Generating feature from your description. This may take a minute...' 
+      });
+      
+      // Generate and create the feature
+      const feature = await addFeatureFromPrompt(projectId, prompt);
+      
+      // Broadcast the new feature to all clients
+      broadcast(wss, { 
+        type: 'new-feature', 
+        projectId: feature.projectId,
+        data: feature 
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Feature generated successfully', 
+        feature 
+      });
+    } catch (error) {
+      console.error('Error generating feature with AI:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to generate feature', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
+  // AI Code Generation for Goal
+  app.post('/api/goals/:goalId/generate-code', async (req, res) => {
+    try {
+      if (!isOpenAIConfigured()) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'OpenAI API key not configured. Please configure it in Settings first.' 
+        });
+      }
+      
+      const goalId = parseInt(req.params.goalId);
+      
+      // Get the goal and its related entities
+      const goal = await storage.getGoal(goalId);
+      if (!goal) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Goal not found' 
+        });
+      }
+      
+      const milestone = await storage.getMilestone(goal.milestoneId);
+      if (!milestone) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Milestone not found' 
+        });
+      }
+      
+      const feature = await storage.getFeature(milestone.featureId);
+      if (!feature) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Feature not found' 
+        });
+      }
+      
+      // Broadcast thinking status to clients
+      broadcast(wss, { 
+        type: 'thinking', 
+        projectId: feature.projectId,
+        message: `Generating code for goal: ${goal.name}. This may take a minute...` 
+      });
+      
+      // Generate code for the goal
+      const codeResult = await generateCodeForGoal(
+        feature.projectId,
+        feature.id,
+        milestone.id,
+        goal.id
+      );
+      
+      // Log the activity
+      const activityLog = await storage.createActivityLog({
+        projectId: feature.projectId,
+        featureId: feature.id,
+        milestoneId: milestone.id,
+        message: `Generated code for goal: ${goal.name}`,
+        timestamp: new Date(),
+        agentId: 'ai-agent',
+        codeSnippet: codeResult.code,
+        activityType: 'code_generation',
+        details: { 
+          language: codeResult.language,
+          goalId: goal.id
+        },
+        isCheckpoint: false,
+        thinkingProcess: codeResult.explanation
+      });
+      
+      // Update the goal as completed
+      await storage.updateGoal(goal.id, {
+        progress: 100,
+        completed: true
+      });
+      
+      // Broadcast the activity to all clients
+      broadcast(wss, { 
+        type: 'new-activity', 
+        projectId: feature.projectId,
+        data: activityLog 
+      });
+      
+      // Broadcast the updated goal to all clients
+      const updatedGoal = await storage.getGoal(goal.id);
+      broadcast(wss, { 
+        type: 'update-goal', 
+        id: goal.id,
+        data: updatedGoal 
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Code generated successfully', 
+        explanation: codeResult.explanation,
+        code: codeResult.code,
+        language: codeResult.language
+      });
+    } catch (error) {
+      console.error('Error generating code with AI:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to generate code', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
+  // AI Thinking/Analysis
+  app.post('/api/projects/:projectId/thinking', async (req, res) => {
+    try {
+      if (!isOpenAIConfigured()) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'OpenAI API key not configured. Please configure it in Settings first.' 
+        });
+      }
+      
+      const projectId = parseInt(req.params.projectId);
+      const { prompt } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Thinking prompt is required' 
+        });
+      }
+      
+      // Check if project exists
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Project not found' 
+        });
+      }
+      
+      // Broadcast thinking status to clients
+      broadcast(wss, { 
+        type: 'thinking', 
+        projectId,
+        message: 'Thinking about your request. This may take a minute...' 
+      });
+      
+      // Generate thinking about the project
+      const thinking = await generateThinking(projectId, prompt);
+      
+      // Log the activity
+      const activityLog = await storage.createActivityLog({
+        projectId,
+        message: `Analysis: ${prompt}`,
+        timestamp: new Date(),
+        agentId: 'ai-agent',
+        codeSnippet: null,
+        activityType: 'project_analysis',
+        details: { prompt },
+        isCheckpoint: true,
+        thinkingProcess: thinking
+      });
+      
+      // Broadcast the activity to all clients
+      broadcast(wss, { 
+        type: 'new-activity', 
+        projectId,
+        data: activityLog 
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Analysis generated successfully', 
+        thinking 
+      });
+    } catch (error) {
+      console.error('Error generating thinking with AI:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to generate analysis', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
     }
   });
   
