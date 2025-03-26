@@ -1,4 +1,5 @@
-import * as admin from 'firebase-admin';
+import { initializeApp, cert, App } from 'firebase-admin/app';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { log } from './vite';
 import {
   Project, InsertProject,
@@ -14,6 +15,8 @@ import {
 
 // Firebase Admin initialization state
 let firebaseInitialized = false;
+let firestoreDb: Firestore | null = null;
+let firebaseApp: App | null = null;
 
 // Firestore collection names
 const COLLECTIONS = {
@@ -44,10 +47,11 @@ export function initializeFirebaseFromEnv(): boolean {
   try {
     // Initialize with Google Application Default Credentials if available
     // This will work in Google Cloud environments
-    admin.initializeApp({
+    firebaseApp = initializeApp({
       projectId
     });
     
+    firestoreDb = getFirestore(firebaseApp);
     firebaseInitialized = true;
     log('Firebase Admin SDK initialized successfully with environment variables', 'firebase');
     return true;
@@ -75,8 +79,8 @@ export function initializeFirebase(config: {
 
     // If we have complete service account details
     if (config.privateKey && config.clientEmail) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
+      firebaseApp = initializeApp({
+        credential: cert({
           projectId: config.projectId,
           privateKey: config.privateKey.replace(/\\n/g, '\n'),
           clientEmail: config.clientEmail
@@ -85,11 +89,12 @@ export function initializeFirebase(config: {
     } 
     // Otherwise initialize with just project ID (for Google Cloud environments)
     else {
-      admin.initializeApp({
+      firebaseApp = initializeApp({
         projectId: config.projectId
       });
     }
 
+    firestoreDb = getFirestore(firebaseApp);
     firebaseInitialized = true;
     log('Firebase Admin SDK initialized successfully with provided config', 'firebase');
     return true;
@@ -104,7 +109,7 @@ export function initializeFirebase(config: {
  * @param doc Firestore document
  * @returns Model object with ID
  */
-function convertDoc<T>(doc: admin.firestore.DocumentSnapshot): T {
+function convertDoc<T>(doc: any): T {
   return {
     id: Number(doc.id),
     ...doc.data()
@@ -114,11 +119,11 @@ function convertDoc<T>(doc: admin.firestore.DocumentSnapshot): T {
 /**
  * Get Firestore instance (throw error if not initialized)
  */
-function getFirestore(): admin.firestore.Firestore {
-  if (!firebaseInitialized) {
+function getFirestoreDb(): Firestore {
+  if (!firebaseInitialized || !firestoreDb) {
     throw new Error('Firebase Admin SDK not initialized');
   }
-  return admin.firestore();
+  return firestoreDb;
 }
 
 /**
@@ -129,7 +134,7 @@ export class FirebaseStorage {
   // User Management
   async getUser(id: number): Promise<User | undefined> {
     try {
-      const doc = await getFirestore().collection(COLLECTIONS.USERS).doc(id.toString()).get();
+      const doc = await getFirestoreDb().collection(COLLECTIONS.USERS).doc(id.toString()).get();
       if (!doc.exists) return undefined;
       return convertDoc<User>(doc);
     } catch (error) {
@@ -140,7 +145,7 @@ export class FirebaseStorage {
   
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.USERS)
         .where('username', '==', username)
         .limit(1)
@@ -157,7 +162,7 @@ export class FirebaseStorage {
   async createUser(user: InsertUser): Promise<User> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.USERS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -166,7 +171,7 @@ export class FirebaseStorage {
       const id = snapshot.empty ? 1 : Number(snapshot.docs[0].data().id) + 1;
       const userWithId = { ...user, id };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.USERS)
         .doc(id.toString())
         .set(userWithId);
@@ -181,7 +186,7 @@ export class FirebaseStorage {
   // Project Management
   async getAllProjects(): Promise<Project[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.PROJECTS)
         .orderBy('id')
         .get();
@@ -195,7 +200,7 @@ export class FirebaseStorage {
   
   async getProject(id: number): Promise<Project | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.PROJECTS)
         .doc(id.toString())
         .get();
@@ -211,7 +216,7 @@ export class FirebaseStorage {
   async createProject(project: InsertProject): Promise<Project> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.PROJECTS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -235,7 +240,7 @@ export class FirebaseStorage {
         nextCheckIn: project.nextCheckIn || null
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.PROJECTS)
         .doc(id.toString())
         .set(projectWithId);
@@ -249,7 +254,7 @@ export class FirebaseStorage {
   
   async updateProject(id: number, updateData: Partial<InsertProject>): Promise<Project | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.PROJECTS).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.PROJECTS).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -270,7 +275,7 @@ export class FirebaseStorage {
   
   async deleteProject(id: number): Promise<boolean> {
     try {
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.PROJECTS)
         .doc(id.toString())
         .delete();
@@ -285,7 +290,7 @@ export class FirebaseStorage {
   // Feature Management
   async getFeaturesByProject(projectId: number): Promise<Feature[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.FEATURES)
         .where('projectId', '==', projectId)
         .orderBy('id')
@@ -300,7 +305,7 @@ export class FirebaseStorage {
   
   async getFeature(id: number): Promise<Feature | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.FEATURES)
         .doc(id.toString())
         .get();
@@ -316,7 +321,7 @@ export class FirebaseStorage {
   async createFeature(feature: InsertFeature): Promise<Feature> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.FEATURES)
         .orderBy('id', 'desc')
         .limit(1)
@@ -343,7 +348,7 @@ export class FirebaseStorage {
         optimizationRound: feature.optimizationRound ?? 0
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.FEATURES)
         .doc(id.toString())
         .set(featureWithId);
@@ -362,7 +367,7 @@ export class FirebaseStorage {
   
   async updateFeature(id: number, updateData: Partial<InsertFeature>): Promise<Feature | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.FEATURES).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.FEATURES).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -389,7 +394,7 @@ export class FirebaseStorage {
   
   async deleteFeature(id: number): Promise<boolean> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.FEATURES).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.FEATURES).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return false;
@@ -411,7 +416,7 @@ export class FirebaseStorage {
   // Milestone Management
   async getMilestonesByFeature(featureId: number): Promise<Milestone[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.MILESTONES)
         .where('featureId', '==', featureId)
         .orderBy('id')
@@ -426,7 +431,7 @@ export class FirebaseStorage {
   
   async getMilestone(id: number): Promise<Milestone | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.MILESTONES)
         .doc(id.toString())
         .get();
@@ -442,7 +447,7 @@ export class FirebaseStorage {
   async createMilestone(milestone: InsertMilestone): Promise<Milestone> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.MILESTONES)
         .orderBy('id', 'desc')
         .limit(1)
@@ -461,7 +466,7 @@ export class FirebaseStorage {
         percentOfFeature: milestone.percentOfFeature ?? 0
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.MILESTONES)
         .doc(id.toString())
         .set(milestoneWithId);
@@ -475,7 +480,7 @@ export class FirebaseStorage {
   
   async updateMilestone(id: number, updateData: Partial<InsertMilestone>): Promise<Milestone | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.MILESTONES).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.MILESTONES).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -495,7 +500,7 @@ export class FirebaseStorage {
   
   async deleteMilestone(id: number): Promise<boolean> {
     try {
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.MILESTONES)
         .doc(id.toString())
         .delete();
@@ -510,7 +515,7 @@ export class FirebaseStorage {
   // Goal Management
   async getGoalsByMilestone(milestoneId: number): Promise<Goal[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.GOALS)
         .where('milestoneId', '==', milestoneId)
         .orderBy('id')
@@ -525,7 +530,7 @@ export class FirebaseStorage {
   
   async getGoal(id: number): Promise<Goal | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.GOALS)
         .doc(id.toString())
         .get();
@@ -541,7 +546,7 @@ export class FirebaseStorage {
   async createGoal(goal: InsertGoal): Promise<Goal> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.GOALS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -560,7 +565,7 @@ export class FirebaseStorage {
         percentOfMilestone: goal.percentOfMilestone ?? 0
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.GOALS)
         .doc(id.toString())
         .set(goalWithId);
@@ -574,7 +579,7 @@ export class FirebaseStorage {
   
   async updateGoal(id: number, updateData: Partial<InsertGoal>): Promise<Goal | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.GOALS).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.GOALS).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -602,7 +607,7 @@ export class FirebaseStorage {
   async deleteGoal(id: number): Promise<boolean> {
     try {
       // Get milestone ID before deletion for progress recalculation
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.GOALS)
         .doc(id.toString())
         .get();
@@ -612,7 +617,7 @@ export class FirebaseStorage {
       const milestoneId = goal.milestoneId;
       
       // Delete the goal
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.GOALS)
         .doc(id.toString())
         .delete();
@@ -632,7 +637,7 @@ export class FirebaseStorage {
   // Activity Logs
   async getActivityLogsByProject(projectId: number): Promise<ActivityLog[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.ACTIVITY_LOGS)
         .where('projectId', '==', projectId)
         .orderBy('timestamp', 'desc')
@@ -647,7 +652,7 @@ export class FirebaseStorage {
   
   async getActivityLogsByFeature(featureId: number): Promise<ActivityLog[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.ACTIVITY_LOGS)
         .where('featureId', '==', featureId)
         .orderBy('timestamp', 'desc')
@@ -662,7 +667,7 @@ export class FirebaseStorage {
   
   async getActivityLogCheckpoints(projectId: number): Promise<ActivityLog[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.ACTIVITY_LOGS)
         .where('projectId', '==', projectId)
         .where('activityType', '==', 'checkpoint')
@@ -679,7 +684,7 @@ export class FirebaseStorage {
   async createActivityLog(log: InsertActivityLog): Promise<ActivityLog> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.ACTIVITY_LOGS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -703,7 +708,7 @@ export class FirebaseStorage {
         thinkingProcess: log.thinkingProcess ?? null
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.ACTIVITY_LOGS)
         .doc(id.toString())
         .set(logWithId);
@@ -731,7 +736,7 @@ export class FirebaseStorage {
   // External APIs
   async getExternalApisByProject(projectId: number): Promise<ExternalApi[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.EXTERNAL_APIS)
         .where('projectId', '==', projectId)
         .orderBy('id')
@@ -746,7 +751,7 @@ export class FirebaseStorage {
   
   async getExternalApi(id: number): Promise<ExternalApi | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.EXTERNAL_APIS)
         .doc(id.toString())
         .get();
@@ -762,7 +767,7 @@ export class FirebaseStorage {
   async createExternalApi(api: InsertExternalApi): Promise<ExternalApi> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.EXTERNAL_APIS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -778,7 +783,7 @@ export class FirebaseStorage {
         active: api.active ?? true
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.EXTERNAL_APIS)
         .doc(id.toString())
         .set(apiWithId);
@@ -792,7 +797,7 @@ export class FirebaseStorage {
   
   async updateExternalApi(id: number, api: Partial<InsertExternalApi>): Promise<ExternalApi | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.EXTERNAL_APIS).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.EXTERNAL_APIS).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -812,7 +817,7 @@ export class FirebaseStorage {
   
   async deleteExternalApi(id: number): Promise<boolean> {
     try {
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.EXTERNAL_APIS)
         .doc(id.toString())
         .delete();
@@ -827,7 +832,7 @@ export class FirebaseStorage {
   // Agent Tasks
   async getTasksByProject(projectId: number): Promise<AgentTask[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.AGENT_TASKS)
         .where('projectId', '==', projectId)
         .orderBy('createdAt', 'desc')
@@ -842,7 +847,7 @@ export class FirebaseStorage {
   
   async getPendingTasks(projectId: number): Promise<AgentTask[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.AGENT_TASKS)
         .where('projectId', '==', projectId)
         .where('status', '==', 'pending')
@@ -859,7 +864,7 @@ export class FirebaseStorage {
   
   async getTask(id: number): Promise<AgentTask | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.AGENT_TASKS)
         .doc(id.toString())
         .get();
@@ -875,7 +880,7 @@ export class FirebaseStorage {
   async createTask(task: InsertAgentTask): Promise<AgentTask> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.AGENT_TASKS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -897,7 +902,7 @@ export class FirebaseStorage {
         assignedAgent: task.assignedAgent ?? null
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.AGENT_TASKS)
         .doc(id.toString())
         .set(taskWithId);
@@ -911,7 +916,7 @@ export class FirebaseStorage {
   
   async updateTask(id: number, task: Partial<InsertAgentTask>): Promise<AgentTask | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.AGENT_TASKS).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.AGENT_TASKS).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -950,7 +955,7 @@ export class FirebaseStorage {
   // Web Accounts
   async getWebAccountsByProject(projectId: number): Promise<WebAccount[]> {
     try {
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.WEB_ACCOUNTS)
         .where('projectId', '==', projectId)
         .orderBy('id')
@@ -965,7 +970,7 @@ export class FirebaseStorage {
   
   async getWebAccount(id: number): Promise<WebAccount | undefined> {
     try {
-      const doc = await getFirestore()
+      const doc = await getFirestoreDb()
         .collection(COLLECTIONS.WEB_ACCOUNTS)
         .doc(id.toString())
         .get();
@@ -981,7 +986,7 @@ export class FirebaseStorage {
   async createWebAccount(account: InsertWebAccount): Promise<WebAccount> {
     try {
       // Get next available ID
-      const snapshot = await getFirestore()
+      const snapshot = await getFirestoreDb()
         .collection(COLLECTIONS.WEB_ACCOUNTS)
         .orderBy('id', 'desc')
         .limit(1)
@@ -996,7 +1001,7 @@ export class FirebaseStorage {
         metadata: account.metadata ?? null
       };
       
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.WEB_ACCOUNTS)
         .doc(id.toString())
         .set(accountWithId);
@@ -1010,7 +1015,7 @@ export class FirebaseStorage {
   
   async updateWebAccount(id: number, account: Partial<InsertWebAccount>): Promise<WebAccount | undefined> {
     try {
-      const docRef = getFirestore().collection(COLLECTIONS.WEB_ACCOUNTS).doc(id.toString());
+      const docRef = getFirestoreDb().collection(COLLECTIONS.WEB_ACCOUNTS).doc(id.toString());
       const doc = await docRef.get();
       
       if (!doc.exists) return undefined;
@@ -1030,7 +1035,7 @@ export class FirebaseStorage {
   
   async deleteWebAccount(id: number): Promise<boolean> {
     try {
-      await getFirestore()
+      await getFirestoreDb()
         .collection(COLLECTIONS.WEB_ACCOUNTS)
         .doc(id.toString())
         .delete();
