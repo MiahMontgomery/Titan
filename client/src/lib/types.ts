@@ -56,4 +56,8 @@ export interface WebSocketMessage<T = any> {
   id?: number;
   message?: string;
   codeSnippet?: string | null;
+  debugSteps?: string[];
+  isDebugging?: boolean;
+  isStepByStep?: boolean;
+  currentDebugStep?: number;
 }

@@ -80,6 +80,10 @@
   background-color: #262b36;
 }
 
+.bg-gray-850 {
+  background-color: #1a1e2a;
+}
+
 /* Thinking animation */
 @keyframes bounce {
   0%, 100% {

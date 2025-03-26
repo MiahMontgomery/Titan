@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import ProjectView from "@/pages/ProjectView";
 import Settings from "@/pages/Settings";
+import ReplitView from "@/pages/ReplitView";
 import { ProjectProvider } from "./context/ProjectContext";
 import { WebSocketProvider } from "./lib/websocket";
 import { Navigation } from "@/components/Navigation";
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/projects/:id" component={ProjectView} />
       <Route path="/settings" component={Settings} />
+      <Route path="/replit-view" component={ReplitView} />
       <Route component={NotFound} />
     </Switch>
   );
