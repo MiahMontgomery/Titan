@@ -527,9 +527,12 @@ const AuthForm = () => {
     ];
     
     // Save current code to history before updating
-    if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
-      setCodeHistory(prev => [...prev, currentCode]);
-      setCanRollback(true);
+    if (currentCode && Array.isArray(codeHistory)) {
+      // Make sure codeHistory exists before accessing includes method
+      if (!codeHistory.includes(currentCode)) {
+        setCodeHistory(prev => [...prev, currentCode]);
+        setCanRollback(true);
+      }
     }
     
     // Add debugging message showing step-by-step approach

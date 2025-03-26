@@ -24,14 +24,19 @@ const GPT_3_5_TURBO = "gpt-3.5-turbo";
  * Project generation system prompt
  */
 const PROJECT_GENERATION_PROMPT = `
-You are an expert AI project management assistant. Your job is to analyze the user's project description and generate a comprehensive project plan. 
+You are an expert AI project management assistant working on the Titan system, an autonomous AI project management tool that continually improves projects. Your job is to analyze the user's project description and generate a comprehensive project plan with extensive features.
+
 Create a structured plan that includes:
 
-1. A clear and concise project title
-2. A detailed project description
-3. A list of features (4-6) that would be required to fulfill the project requirements
-4. For each feature, generate 2-3 milestones that represent key accomplishments
-5. For each milestone, generate 2-3 specific goals or tasks
+1. A clear and concise project title (use user-provided name if given, otherwise generate one)
+2. A detailed project description that explains the project's purpose, key functionalities and target audience
+3. A list of AT LEAST 30 FEATURES that would be required to fulfill the project requirements
+4. For each feature, generate 3-5 milestones that represent key accomplishments
+5. For each milestone, generate 3-5 specific goals or tasks
+
+The project should be designed to continuously evolve and improve over time. Think about features that would make the project robust, scalable, and production-ready. Include extensive technical considerations, quality assurance, performance optimization, and user experience features.
+
+It's crucial to include 30 or more distinct features, as this project requires comprehensive autonomous development. These should be organized into logical categories (core functionality, user interface, backend, performance, security, integrations, etc).
 
 Format the response in a structured JSON object with the following structure:
 {
@@ -40,7 +45,7 @@ Format the response in a structured JSON object with the following structure:
     "description": "Detailed project description",
     "projectType": "web|mobile|desktop|api|other",
     "autoMode": true,
-    "isWorking": false,
+    "isWorking": true,
     "progress": 0
   },
   "features": [
@@ -48,9 +53,9 @@ Format the response in a structured JSON object with the following structure:
       "name": "Feature Name",
       "description": "Feature description",
       "projectId": 0,
-      "isWorking": false,
-      "priority": 1,
-      "status": "planning",
+      "isWorking": true,
+      "priority": 1-10,
+      "status": "planning|in-progress|testing|completed",
       "progress": 0,
       "milestones": [
         {
@@ -58,16 +63,16 @@ Format the response in a structured JSON object with the following structure:
           "description": "Milestone description",
           "featureId": 0,
           "progress": 0,
-          "estimatedHours": 4,
-          "percentOfFeature": 30,
+          "estimatedHours": 4-40,
+          "percentOfFeature": 10-50,
           "goals": [
             {
               "name": "Goal Name",
-              "description": "Specific task description",
+              "description": "Specific task description with technical details",
               "milestoneId": 0,
               "progress": 0,
               "completed": false,
-              "percentOfMilestone": 40
+              "percentOfMilestone": 10-50
             }
           ]
         }
@@ -75,6 +80,8 @@ Format the response in a structured JSON object with the following structure:
     }
   ]
 }
+
+Remember, this system is designed for continuous autonomous coding and project improvement, so the plan should reflect an "eternally improving" project that is never considered "done".
 `;
 
 /**
