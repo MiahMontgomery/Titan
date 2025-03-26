@@ -334,7 +334,8 @@ Generate a new feature based on the following prompt: "${prompt}"
     let responseData;
     try {
       responseData = JSON.parse(responseText);
-    } catch (parseError) {
+    } catch (error) {
+      const parseError = error as Error;
       console.error('Error parsing OpenAI feature response as JSON:', parseError);
       console.error('Received response:', responseText);
       throw new Error('Invalid response format from OpenAI for feature: ' + parseError.message);
@@ -352,9 +353,8 @@ Generate a new feature based on the following prompt: "${prompt}"
       estimatedDays: responseData.feature.estimatedDays || null,
       createdAt: new Date(),
       startDate: null,
-      endDate: null,
       dependencies: [],
-      notes: null,
+      aiGenerated: true,
       optimizationRound: 0
     };
 

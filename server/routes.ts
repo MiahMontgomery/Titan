@@ -638,13 +638,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: 'Generating comprehensive project structure with 30+ features from your description. This may take a minute...' 
       });
       
+      console.log(`Starting autonomous project generation for prompt: "${prompt.substring(0, 100)}..."`);
+      
       // Generate and create the project, passing optional name
       const project = await createProjectFromPrompt(prompt, name);
+      
+      // Set the project to working state immediately and ensure autoMode is enabled
+      await storage.updateProject(project.id, {
+        isWorking: true,
+        autoMode: true,
+        agentConfig: {
+          model: "gpt-4o",
+          maxTokens: 4000,
+          temperature: 0.8
+        }
+      });
+      
+      // Fetch the updated project for broadcasting
+      const updatedProject = await storage.getProject(project.id);
+      
+      // Log the autonomous project creation
+      await storage.createActivityLog({
+        projectId: project.id,
+        message: `Project ${project.name} created and set to autonomous improvement mode`,
+        timestamp: new Date(),
+        agentId: 'system',
+        activityType: 'project_autonomous_start',
+        isCheckpoint: true
+      });
+      
+      console.log(`Project ${project.name} (ID: ${project.id}) created and set to autonomous improvement mode`);
       
       // Broadcast the new project to all clients
       broadcast(wss, { 
         type: 'new-project', 
-        data: project 
+        data: updatedProject 
       });
       
       res.json({ 
@@ -701,11 +729,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate and create the feature
       const feature = await addFeatureFromPrompt(projectId, prompt);
       
+      // Set the feature to working state immediately
+      await storage.updateFeature(feature.id, {
+        isWorking: true,
+        status: 'in-progress'
+      });
+      
+      // Fetch the updated feature for broadcasting
+      const updatedFeature = await storage.getFeature(feature.id);
+      
+      // Log the autonomous feature creation
+      await storage.createActivityLog({
+        projectId,
+        featureId: feature.id,
+        message: `Feature ${feature.name} created and set to active development`,
+        timestamp: new Date(),
+        agentId: 'system',
+        activityType: 'feature_autonomous_start',
+        isCheckpoint: true
+      });
+      
+      console.log(`Feature ${feature.name} (ID: ${feature.id}) created and set to active development for project ${projectId}`);
+      
       // Broadcast the new feature to all clients
       broadcast(wss, { 
         type: 'new-feature', 
-        projectId: feature.projectId,
-        data: feature 
+        projectId: updatedFeature.projectId,
+        data: updatedFeature 
       });
       
       res.json({ 
