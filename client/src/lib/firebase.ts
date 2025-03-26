@@ -43,11 +43,26 @@ try {
       firebaseConfig.storageBucket = `${firebaseConfig.projectId}.appspot.com`;
     }
 
+    // Log Firebase configuration (without revealing API key)
+    console.log("Initializing Firebase with config:", {
+      projectId: firebaseConfig.projectId,
+      authDomain: firebaseConfig.authDomain,
+      storageBucket: firebaseConfig.storageBucket,
+      hasApiKey: !!firebaseConfig.apiKey,
+      hasAppId: !!firebaseConfig.appId
+    });
+
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     provider = new GoogleAuthProvider();
     initialized = true;
     console.log("Firebase initialized automatically with environment variables");
+  } else {
+    console.warn("Firebase initialization skipped, missing required config values:", {
+      hasApiKey: !!firebaseConfig.apiKey,
+      hasProjectId: !!firebaseConfig.projectId,
+      hasAppId: !!firebaseConfig.appId
+    });
   }
 } catch (error) {
   console.error("Error initializing Firebase:", error);
@@ -270,10 +285,11 @@ export function subscribeToFeaturesByProject(projectId: number, callback: (featu
           estimatedDays: data.estimatedDays,
           // Convert any date fields from Firestore Timestamp to JS Date
           createdAt: data.createdAt?.toDate() || new Date(),
-          startDate: data.startDate?.toDate() || null,
-          endDate: data.endDate?.toDate() || null,
-          // Map extended fields if they exist in Firestore
-          dependencies: data.dependencies || []
+          // Handle dates based on the schema
+          ...(data.startDate && { startDate: data.startDate.toDate() }),
+          ...(data.completionDate && { completionDate: data.completionDate.toDate() }),
+          // Map any additional fields from Firestore that match our schema
+          optimizationRound: data.optimizationRound || 0
         };
         
         // Add to features array

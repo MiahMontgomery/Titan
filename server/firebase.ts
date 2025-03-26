@@ -340,11 +340,11 @@ export class FirebaseStorage {
         priority: feature.priority ?? 0,
         estimatedDays: feature.estimatedDays ?? null,
         createdAt: feature.createdAt || timestamp,
-        startedAt: feature.startedAt || null,
-        completedAt: feature.completedAt || null,
-        dependsOn: feature.dependsOn || [],
-        blockedBy: feature.blockedBy || [],
-        supportingMaterials: feature.supportingMaterials || [],
+        startDate: feature.startDate || null,
+        completionDate: feature.completionDate || null,
+        dependencies: feature.dependencies || [],
+        blockReason: feature.blockReason || null,
+        implementationDetails: feature.implementationDetails || {},
         optimizationRound: feature.optimizationRound ?? 0
       };
       
