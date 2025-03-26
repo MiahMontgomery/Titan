@@ -198,7 +198,7 @@ const AuthForm = () => {
           // Update code if a code snippet was provided
           if ((data as any).codeSnippet) {
             // Save current code to history before updating
-            if (currentCode && !codeHistory.includes(currentCode)) {
+            if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
               setCodeHistory(prev => [...prev, currentCode]);
               setCanRollback(true);
             }
@@ -269,7 +269,7 @@ const AuthForm = () => {
           // If code was generated, update the editor
           if (activityLog.codeSnippet && activityLog.activityType === 'code_generation') {
             // Save current code to history before updating
-            if (currentCode && !codeHistory.includes(currentCode)) {
+            if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
               setCodeHistory(prev => [...prev, currentCode]);
               setCanRollback(true);
             }
@@ -387,7 +387,7 @@ const AuthForm = () => {
       setChatMessages(prev => prev.filter(msg => !msg.isThinking));
       
       // Save the current code to history before potential changes
-      if (currentCode && codeHistory && !codeHistory.includes(currentCode)) {
+      if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
         setCodeHistory(prev => [...prev, currentCode]);
         setCanRollback(true);
       }
@@ -436,7 +436,7 @@ const AuthForm = () => {
   
   // Handle code rollback
   const handleRollback = () => {
-    if (codeHistory.length > 0) {
+    if (Array.isArray(codeHistory) && codeHistory.length > 0) {
       const previousCode = codeHistory[codeHistory.length - 1];
       setCurrentCode(previousCode);
       setCodeHistory(prev => prev.slice(0, -1));
