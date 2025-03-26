@@ -1,0 +1,120 @@
+import OpenAI from 'openai';
+import { storage } from './storage';
+import { 
+  InsertProject, 
+  InsertFeature, 
+  InsertMilestone, 
+  InsertGoal,
+  InsertActivityLog,
+  Project,
+  Feature,
+  Milestone
+} from '@shared/schema';
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// Models - the newest OpenAI model is "gpt-4o" which was released May 13, 2024. Do not change this unless explicitly requested by the user.
+const GPT_4_TURBO = "gpt-4o";
+const GPT_3_5_TURBO = "gpt-3.5-turbo";
+
+/**
+ * Project generation system prompt
+ */
+const PROJECT_GENERATION_PROMPT = `
+You are an expert AI project management assistant working on the Titan system, an autonomous AI project management tool that continually improves projects. Your job is to analyze the user's project description and generate a comprehensive project plan with extensive features.
+
+Create a structured plan that includes:
+
+1. A clear and concise project title (use user-provided name if given, otherwise generate one)
+2. A detailed project description that explains the project's purpose, key functionalities and target audience
+3. A list of AT LEAST 30 FEATURES that would be required to fulfill the project requirements
+4. For each feature, generate 3-5 milestones that represent key accomplishments
+5. For each milestone, generate 3-5 specific goals or tasks
+
+The project should be designed to continuously evolve and improve over time. Think about features that would make the project robust, scalable, and production-ready. Include extensive technical considerations, quality assurance, performance optimization, and user experience features.
+
+It's crucial to include 30 or more distinct features, as this project requires comprehensive autonomous development. These should be organized into logical categories (core functionality, user interface, backend, performance, security, integrations, etc).
+
+Format the response in a structured JSON object with the following structure:
+{
+  "project": {
+    "name": "Project Title",
+    "description": "Detailed project description",
+    "projectType": "web|mobile|desktop|api|other",
+    "autoMode": true,
+    "isWorking": true,
+    "progress": 0
+  },
+  "features": [
+    {
+      "name": "Feature Name",
+      "description": "Feature description",
+      "projectId": 0,
+      "isWorking": true,
+      "priority": 1-10,
+      "status": "planning|in-progress|testing|completed",
+      "progress": 0,
+      "milestones": [
+        {
+          "name": "Milestone Name",
+          "description": "Milestone description",
+          "featureId": 0,
+          "progress": 0,
+          "estimatedHours": 4-40,
+          "percentOfFeature": 10-50,
+          "goals": [
+            {
+              "name": "Goal Name",
+              "description": "Specific task description with technical details",
+              "milestoneId": 0,
+              "progress": 0,
+              "completed": false,
+              "percentOfMilestone": 10-50
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+Remember, this system is designed for continuous autonomous coding and project improvement, so the plan should reflect an "eternally improving" project that is never considered "done".
+`;
+
+/**
+ * Feature generation system prompt
+ */
+const FEATURE_GENERATION_PROMPT = `
+You are an expert AI software development assistant. Your job is to analyze a project and generate a new feature for it.
+Given the project's title, description, and existing features, create a new feature that would enhance the project.
+
+Format the response in a structured JSON object with the following structure:
+{
+  "feature": {
+    "name": "Feature Name",
+    "description": "Feature description",
+    "projectId": 0,
+    "isWorking": false,
+    "priority": 1,
+    "status": "planning",
+    "progress": 0
+  },
+  "milestones": [
+    {
+      "name": "Milestone Name",
+      "description": "Milestone description",
+      "featureId": 0,
+      "progress": 0,
+      "estimatedHours": 4,
+      "percentOfFeature": 30,
+      "goals": [
+        {
+          "name": "Goal Name",
+          "description": "Specific task description",
+          "milestoneId": 0,
+          "progress": 0,
+          "completed": false,
+          "percentOfMilestone": 40
