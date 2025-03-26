@@ -8,39 +8,74 @@ export function Logo() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Ninja Star - Basic Shape */}
-        <path
-          d="M12 2L6 12L12 22L18 12L12 2Z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-accent"
-        />
-        {/* Horizontal Line */}
-        <path
-          d="M3 12L21 12"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          className="text-accent"
-        />
-        {/* Vertical Line */}
-        <path
-          d="M12 3L12 21"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          className="text-accent"
-        />
-        {/* Center Circle */}
-        <circle
-          cx="12"
-          cy="12"
-          r="2"
-          fill="currentColor"
-          className="text-accent"
-        />
+        {/* Ninja Star - Basic 4-pointed star shape based on reference image */}
+        <g className="text-accent">
+          {/* Top triangle */}
+          <path
+            d="M12 2L16 12L12 12L12 2Z"
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Right triangle */}
+          <path
+            d="M22 12L12 16L12 12L22 12Z"
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Bottom triangle */}
+          <path
+            d="M12 22L8 12L12 12L12 22Z"
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Left triangle */}
+          <path
+            d="M2 12L12 8L12 12L2 12Z"
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Center square */}
+          <path
+            d="M10 10L14 10L14 14L10 14Z"
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="0.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Fold lines */}
+          <path
+            d="M12 2L12 22"
+            stroke="white"
+            strokeWidth="0.25"
+            strokeOpacity="0.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M2 12L22 12"
+            stroke="white"
+            strokeWidth="0.25"
+            strokeOpacity="0.5"
+            strokeLinecap="round"
+          />
+        </g>
       </svg>
     </div>
   );
