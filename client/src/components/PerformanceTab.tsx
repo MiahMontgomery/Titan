@@ -91,16 +91,30 @@ const AuthForm = () => {
   );
 };`;
 
-  // Set up the initial code and welcome message
+  // Set up the initial code and welcome message in Replit-like style
   useEffect(() => {
     if (chatMessages.length === 0) {
       setCurrentCode(sampleCode);
       
-      // Add welcome message
+      // Add welcome messages in Replit-like style
       setChatMessages([
         {
           id: generateId(),
-          content: 'Welcome to the Titan AI Assistant! I can help you with coding, debugging, and planning your project. What would you like to work on today?',
+          content: "👋 I'm Titan, your autonomous development agent. I work 24/7 on your projects, constantly improving them without stopping.",
+          role: 'system',
+          timestamp: new Date(),
+          codeSnippet: null
+        },
+        {
+          id: generateId(),
+          content: "I'm currently analyzing your project and determining what to build next. I'll keep you updated on my progress in real-time.",
+          role: 'agent',
+          timestamp: new Date(),
+          codeSnippet: null
+        },
+        {
+          id: generateId(),
+          content: "You can ask me questions about what I'm doing, request changes, or give me additional instructions at any time. I'll continuously work on improving this project.",
           role: 'agent',
           timestamp: new Date(),
           codeSnippet: null
@@ -256,9 +270,9 @@ const AuthForm = () => {
             return updatedMessages;
           });
         } else {
-          // Add a new thinking message
+          // Add a new thinking message with Replit-like styling
           setIsThinking(true);
-          addChatMessage('🧠 ' + (data.message || 'Processing request...'), 'agent', null, true);
+          addChatMessage('🧠 **Thinking process started**\n\n' + (data.message || 'Processing request...'), 'agent', null, true);
         }
       }
       // Handle new project/feature creation events
@@ -299,9 +313,9 @@ const AuthForm = () => {
             
             setCurrentCode(activityLog.codeSnippet);
             
-            // Add message about code generation
+            // Add message about code generation with Replit-like styling
             addChatMessage(
-              `I've generated code for the goal: ${activityLog.message.replace('Generated code for goal: ', '')}`,
+              `✨ **Code Generated!**\n\nI've created code for: **${activityLog.message.replace('Generated code for goal: ', '')}**\n\nHere's what I did:`,
               'agent',
               activityLog.codeSnippet
             );
@@ -312,9 +326,9 @@ const AuthForm = () => {
             setChatMessages(prev => prev.filter(msg => !msg.isThinking));
             setIsThinking(false);
             
-            // Add the thinking as a chat message
+            // Add the thinking as a Replit-like chat message with formatting
             addChatMessage(
-              activityLog.thinkingProcess,
+              `📝 **Analysis & Planning**\n\n${activityLog.thinkingProcess}`,
               'agent',
               null
             );
@@ -343,9 +357,9 @@ const AuthForm = () => {
       inputRef.current.focus();
     }
     
-    // Show thinking state for AI
+    // Show thinking state for AI with Replit-like styling
     setIsThinking(true);
-    addChatMessage('🧠 Starting analysis...', 'agent', null, true);
+    addChatMessage('🧠 **Processing your request**\n\nStarting analysis of your query...', 'agent', null, true);
     
     // Simulate AI "thinking" with a timer
     const thinkingSteps = [
