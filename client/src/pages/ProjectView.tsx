@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { Project } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,8 @@ import { PerformanceTab } from "@/components/PerformanceTab";
 import { SalesTab } from "@/components/SalesTab";
 import { useProjectContext } from "@/context/ProjectContext";
 import { formatDistanceToNow } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
+import { Switch } from "@/components/ui/switch";
 
 type TabType = "progress" | "performance" | "sales";
 
@@ -17,6 +19,7 @@ export default function ProjectView() {
   const [, params] = useRoute<{ id: string }>("/projects/:id");
   const { toast } = useToast();
   const { projects } = useProjectContext();
+  const queryClient = useQueryClient();
   
   const projectId = parseInt(params?.id || "0");
   
@@ -28,6 +31,28 @@ export default function ProjectView() {
     queryKey: [`/api/projects/${projectId}`],
     retry: 1,
     enabled: !!projectId && projectId > 0,
+  });
+  
+  // Mutation for updating project
+  const updateProjectMutation = useMutation({
+    mutationFn: async (updates: Partial<Project>) => {
+      return apiRequest({
+        url: `/api/projects/${projectId}`,
+        method: 'PATCH',
+        data: updates
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update project settings.",
+      });
+    }
   });
   
   const project = projectData || contextProject;
@@ -73,7 +98,7 @@ export default function ProjectView() {
           {/* Status Indicator */}
           {project && (
             <div className="flex items-center ml-3">
-              <StatusIndicator isActive={project.isActive} showLabel size="sm" />
+              <StatusIndicator isWorking={project.isWorking} showLabel size="sm" />
             </div>
           )}
         </div>
@@ -85,6 +110,21 @@ export default function ProjectView() {
               <span className="text-gray-300 ml-1">
                 {formatDistanceToNow(new Date(project.lastUpdated), { addSuffix: true })}
               </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-400">Autonomous Mode:</span>
+              <Switch 
+                checked={project.autoMode}
+                onCheckedChange={(checked) => {
+                  updateProjectMutation.mutate({ autoMode: checked });
+                  toast({
+                    title: checked ? "Autonomous Mode Enabled" : "Autonomous Mode Disabled",
+                    description: checked 
+                      ? "Project will now continuously improve itself" 
+                      : "Project will require manual intervention",
+                  });
+                }}
+              />
             </div>
             <div className="w-32">
               <div className="flex justify-between text-xs mb-1">
