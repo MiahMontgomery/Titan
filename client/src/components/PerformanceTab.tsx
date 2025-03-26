@@ -21,6 +21,11 @@ interface ChatMessage {
   codeSnippet?: string | null;
   isThinking?: boolean;
   isError?: boolean;
+  isDebugging?: boolean;
+  isStepByStep?: boolean;
+  debugSteps?: string[];
+  currentDebugStep?: number;
+  canRollback?: boolean;
 }
 
 // Function to generate unique IDs for messages
@@ -147,7 +152,17 @@ const AuthForm = () => {
   }, [chatMessages]);
   
   // Function to add a message to the chat
-  const addChatMessage = useCallback((content: string, role: MessageRole, codeSnippet: string | null = null, isThinking?: boolean, isError?: boolean) => {
+  const addChatMessage = useCallback((
+    content: string, 
+    role: MessageRole, 
+    codeSnippet: string | null = null, 
+    isThinking?: boolean, 
+    isError?: boolean,
+    isDebugging?: boolean,
+    isStepByStep?: boolean,
+    debugSteps?: string[],
+    currentDebugStep?: number
+  ) => {
     const newMessage: ChatMessage = {
       id: generateId(),
       content,
@@ -155,7 +170,12 @@ const AuthForm = () => {
       timestamp: new Date(),
       codeSnippet,
       isThinking,
-      isError
+      isError,
+      isDebugging,
+      isStepByStep,
+      debugSteps,
+      currentDebugStep,
+      canRollback: codeSnippet ? true : false
     };
     
     setChatMessages(prev => [...prev, newMessage]);
@@ -171,8 +191,11 @@ const AuthForm = () => {
         codeSnippet: codeSnippet || null,
         featureId: null,
         milestoneId: null,
-        activityType: 'chat',
-        details: {},
+        activityType: isDebugging ? 'debugging' : isStepByStep ? 'explanation' : 'chat',
+        details: { 
+          debugSteps: debugSteps || [],
+          hasRollback: codeSnippet ? true : false
+        },
         isCheckpoint: false,
         thinkingProcess: null
       });
@@ -392,7 +415,24 @@ const AuthForm = () => {
         setCanRollback(true);
       }
       
-      // Send request to the server
+      // Check for special debug command patterns to simulate Replit-like responses
+      if (userMessage.toLowerCase().includes('debug') || userMessage.toLowerCase().includes('fix') || 
+          userMessage.toLowerCase().includes('error') || userMessage.toLowerCase().includes('issue')) {
+        
+        // Simulate debugging response
+        simulateDebuggingResponse(userMessage);
+        return;
+      } 
+      // Check for 'explain' or 'how' to simulate step-by-step explanations
+      else if (userMessage.toLowerCase().includes('explain') || userMessage.toLowerCase().includes('how') || 
+               userMessage.toLowerCase().includes('step') || userMessage.toLowerCase().includes('walk')) {
+        
+        // Simulate explanation response with steps
+        simulateStepByStepResponse(userMessage);
+        return;
+      }
+      
+      // Regular response flow - send request to the server
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -432,6 +472,163 @@ const AuthForm = () => {
     } finally {
       setIsThinking(false);
     }
+  };
+  
+  // Simulated debugging response that mimics Replit agent
+  const simulateDebuggingResponse = (userMessage: string) => {
+    // Create a modified version of code with a fix
+    const improvedCode = currentCode ? 
+      currentCode.replace(
+        '// Form inputs will be added here', 
+        `<input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          className="w-full p-2 mb-3 border rounded"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          className="w-full p-2 mb-3 border rounded"
+          required
+        />
+        <button 
+          type="submit" 
+          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : formType === 'login' ? 'Login' : 'Sign Up'}
+        </button>
+        <p className="mt-3 text-center">
+          {formType === 'login' ? "Don't have an account? " : "Already have an account? "}
+          <button
+            type="button"
+            onClick={() => setFormType(formType === 'login' ? 'signup' : 'login')}
+            className="text-blue-500 hover:underline"
+          >
+            {formType === 'login' ? 'Sign Up' : 'Login'}
+          </button>
+        </p>`
+      ) : sampleCode;
+    
+    // Debugging steps
+    const debugSteps = [
+      "Identifying the issue: The form layout is missing input elements for email and password.",
+      "Checking the form container: The container markup is correct but needs form elements.",
+      "Adding email input field with proper event handling and validation attributes.",
+      "Adding password input with secure type and onChange event handler.",
+      "Adding submit button with loading state handling and conditional text.",
+      "Adding toggle between login/signup modes for better user experience.",
+      "Testing the form rendering and validating the markup structure."
+    ];
+    
+    // Save current code to history before updating
+    if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
+      setCodeHistory(prev => [...prev, currentCode]);
+      setCanRollback(true);
+    }
+    
+    // Add debugging message showing step-by-step approach
+    addChatMessage(
+      "I've analyzed the form component and found that it's missing the input fields and submit button. Let me debug and fix this issue by adding the necessary form elements.",
+      'agent',
+      improvedCode,
+      false,
+      false,
+      true,
+      false,
+      debugSteps,
+      0
+    );
+    
+    // Simulate progressive debugging steps with delays
+    let step = 0;
+    const debugInterval = setInterval(() => {
+      if (step < debugSteps.length) {
+        setChatMessages(prev => {
+          const lastIndex = prev.length - 1;
+          const lastMessage = prev[lastIndex];
+          if (lastMessage && lastMessage.isDebugging) {
+            const updatedMessages = [...prev];
+            updatedMessages[lastIndex] = {
+              ...lastMessage,
+              currentDebugStep: step + 1
+            };
+            return updatedMessages;
+          }
+          return prev;
+        });
+        step++;
+      } else {
+        clearInterval(debugInterval);
+        
+        // Set the final code
+        setCurrentCode(improvedCode);
+      }
+    }, 1000);
+  };
+  
+  // Simulated step-by-step explanation that mimics Replit agent
+  const simulateStepByStepResponse = (userMessage: string) => {
+    // Create explanation steps
+    const explanationSteps = [
+      "First, we declare a functional React component with state variables for form management.",
+      "We create state hooks for form type (login/signup), email, password, loading state, and error handling.",
+      "The handleSubmit function prevents default form submission behavior and manages API interactions.",
+      "During form submission, we set loading state to true and clear any previous errors.",
+      "We wrap the API call in a try/catch block to handle potential errors gracefully.",
+      "In the render method, we create a conditional UI that changes based on the form type and loading state.",
+      "Finally, we include a toggle mechanism to switch between login and signup modes for better UX."
+    ];
+    
+    // Add explanation message with step-by-step approach
+    addChatMessage(
+      "Here's a detailed explanation of how the authentication form works in the e-commerce site:",
+      'agent',
+      null,
+      false,
+      false,
+      false,
+      true,
+      explanationSteps,
+      0
+    );
+    
+    // Simulate progressive explanation steps with delays
+    let step = 0;
+    const explainInterval = setInterval(() => {
+      if (step < explanationSteps.length) {
+        setChatMessages(prev => {
+          const lastIndex = prev.length - 1;
+          const lastMessage = prev[lastIndex];
+          if (lastMessage && lastMessage.isStepByStep) {
+            const updatedMessages = [...prev];
+            updatedMessages[lastIndex] = {
+              ...lastMessage,
+              currentDebugStep: step + 1
+            };
+            return updatedMessages;
+          }
+          return prev;
+        });
+        step++;
+      } else {
+        clearInterval(explainInterval);
+        
+        // Add a summary message after explanation
+        setTimeout(() => {
+          addChatMessage(
+            "This form implementation follows React best practices by using controlled inputs, clean state management, and proper error handling. The component is modular and could be easily integrated into the authentication flow of your e-commerce application.",
+            'agent',
+            null
+          );
+        }, 1000);
+      }
+    }, 1000);
   };
   
   // Handle code rollback
@@ -529,20 +726,101 @@ const AuthForm = () => {
                     </div>
                   )}
                   
+                  {/* Debugging UI */}
+                  {message.isDebugging && (
+                    <div className="mb-3 border border-amber-500/30 bg-amber-500/10 rounded-md p-2">
+                      <div className="flex items-center mb-2">
+                        <span className="text-amber-400 text-xs font-medium flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          DEBUGGING MODE
+                        </span>
+                      </div>
+                      <div className="text-amber-200 text-xs">Analyzing and fixing code issues step-by-step</div>
+                    </div>
+                  )}
+                  
+                  {/* Step-by-Step Explanation UI */}
+                  {message.isStepByStep && Array.isArray(message.debugSteps) && message.debugSteps.length > 0 && (
+                    <div className="mb-3 border border-blue-500/30 bg-blue-500/10 rounded-md p-2">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-blue-400 text-xs font-medium flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                          </svg>
+                          STEP-BY-STEP EXPLANATION
+                        </span>
+                        <div className="text-xs text-blue-300">
+                          {message.currentDebugStep || 0}/{message.debugSteps.length} steps
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {message.debugSteps.map((step, index) => (
+                          <div 
+                            key={index}
+                            className={`p-2 rounded text-sm ${
+                              (message.currentDebugStep || 0) > index 
+                                ? 'bg-blue-800/20 text-blue-100' 
+                                : (message.currentDebugStep || 0) === index 
+                                  ? 'bg-blue-500/20 border-l-2 border-blue-400 text-blue-100' 
+                                  : 'text-blue-300/50'
+                            }`}
+                          >
+                            <div className="flex items-start">
+                              <div className="flex-shrink-0 w-5 text-center mr-1">
+                                {(message.currentDebugStep || 0) > index ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (index + 1)}
+                              </div>
+                              <div>{step}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Regular message content */}
                   {message.content && message.content.split('\n').map((line, i) => (
                     <p key={i} className={i > 0 ? 'mt-2' : ''}>
                       {line}
                     </p>
                   ))}
                   
-                  {/* If has code snippet, display a button to view it */}
+                  {/* If has code snippet, display a button to view it with enhanced UI */}
                   {message.codeSnippet && (
-                    <button 
-                      className="mt-2 text-xs text-blue-400 hover:text-blue-300"
-                      onClick={() => setCurrentCode(message.codeSnippet || null)}
-                    >
-                      View updated code
-                    </button>
+                    <div className="mt-3 flex flex-col">
+                      <div className="flex justify-between items-center">
+                        <button 
+                          className="px-3 py-1 bg-accent/20 hover:bg-accent/30 text-accent-foreground rounded-md text-xs flex items-center gap-1"
+                          onClick={() => setCurrentCode(message.codeSnippet || null)}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                          View code in editor
+                        </button>
+                        
+                        {message.canRollback && (
+                          <button 
+                            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md text-xs flex items-center gap-1"
+                            onClick={handleRollback}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                            Roll back this change
+                          </button>
+                        )}
+                      </div>
+                      <div className="mt-2 text-xs text-gray-400">
+                        {message.canRollback ? "You can roll back to the previous version if needed" : ""}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
