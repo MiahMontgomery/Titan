@@ -4,7 +4,10 @@ import {
   Milestone, InsertMilestone,
   Goal, InsertGoal,
   ActivityLog, InsertActivityLog,
-  User, InsertUser
+  User, InsertUser,
+  ExternalApi, InsertExternalApi,
+  AgentTask, InsertAgentTask,
+  WebAccount, InsertWebAccount
 } from "@shared/schema";
 
 export interface IStorage {
@@ -43,7 +46,33 @@ export interface IStorage {
   
   // Activity logs
   getActivityLogsByProject(projectId: number): Promise<ActivityLog[]>;
+  getActivityLogsByFeature(featureId: number): Promise<ActivityLog[]>;
+  getActivityLogCheckpoints(projectId: number): Promise<ActivityLog[]>;
   createActivityLog(log: InsertActivityLog): Promise<ActivityLog>;
+  createCheckpoint(log: InsertActivityLog): Promise<ActivityLog>;
+  
+  // External APIs
+  getExternalApisByProject(projectId: number): Promise<ExternalApi[]>;
+  getExternalApi(id: number): Promise<ExternalApi | undefined>;
+  createExternalApi(api: InsertExternalApi): Promise<ExternalApi>;
+  updateExternalApi(id: number, api: Partial<InsertExternalApi>): Promise<ExternalApi | undefined>;
+  deleteExternalApi(id: number): Promise<boolean>;
+  
+  // Agent Tasks
+  getTasksByProject(projectId: number): Promise<AgentTask[]>;
+  getPendingTasks(projectId: number): Promise<AgentTask[]>;
+  getTask(id: number): Promise<AgentTask | undefined>;
+  createTask(task: InsertAgentTask): Promise<AgentTask>;
+  updateTask(id: number, task: Partial<InsertAgentTask>): Promise<AgentTask | undefined>;
+  completeTask(id: number, result: any): Promise<AgentTask | undefined>;
+  failTask(id: number, errorDetails: string): Promise<AgentTask | undefined>;
+  
+  // Web Accounts
+  getWebAccountsByProject(projectId: number): Promise<WebAccount[]>;
+  getWebAccount(id: number): Promise<WebAccount | undefined>;
+  createWebAccount(account: InsertWebAccount): Promise<WebAccount>;
+  updateWebAccount(id: number, account: Partial<InsertWebAccount>): Promise<WebAccount | undefined>;
+  deleteWebAccount(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -53,6 +82,9 @@ export class MemStorage implements IStorage {
   private milestones: Map<number, Milestone>;
   private goals: Map<number, Goal>;
   private activityLogs: Map<number, ActivityLog>;
+  private externalApis: Map<number, ExternalApi>;
+  private agentTasks: Map<number, AgentTask>;
+  private webAccounts: Map<number, WebAccount>;
   
   private userId: number;
   private projectId: number;
