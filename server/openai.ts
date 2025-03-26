@@ -222,9 +222,8 @@ export async function generateProject(description: string): Promise<{
         estimatedDays: f.estimatedDays || null,
         createdAt: new Date(),
         startDate: null,
-        endDate: null,
         dependencies: [],
-        notes: null,
+        aiGenerated: true,
         optimizationRound: 0
       };
 

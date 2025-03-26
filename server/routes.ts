@@ -752,11 +752,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Feature ${feature.name} (ID: ${feature.id}) created and set to active development for project ${projectId}`);
       
       // Broadcast the new feature to all clients
-      broadcast(wss, { 
-        type: 'new-feature', 
-        projectId: updatedFeature.projectId,
-        data: updatedFeature 
-      });
+      if (updatedFeature) {
+        broadcast(wss, { 
+          type: 'new-feature', 
+          projectId: updatedFeature.projectId,
+          data: updatedFeature 
+        });
+      } else {
+        // If updatedFeature is undefined, fall back to the original feature
+        broadcast(wss, { 
+          type: 'new-feature', 
+          projectId: feature.projectId,
+          data: feature 
+        });
+      }
       
       res.json({ 
         success: true, 
