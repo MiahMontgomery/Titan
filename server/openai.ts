@@ -10,6 +10,7 @@ import {
   Feature,
   Milestone
 } from '@shared/schema';
+import { broadcastThinking } from './chatHandler';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -743,6 +744,9 @@ export async function improveProject(projectId: number): Promise<void> {
       return;
     }
     
+    // Broadcast thinking message to the Performance tab
+    broadcastThinking(projectId, `Starting autonomous improvement cycle for project ${project.name}...`);
+    
     // Log the activity for the automation start
     await storage.createActivityLog({
       projectId,
@@ -757,10 +761,12 @@ export async function improveProject(projectId: number): Promise<void> {
     // Check if there are features 
     const features = await storage.getFeaturesByProject(projectId);
     console.log(`Found ${features.length} features for project ${project.name}, checking for work to do`);
+    broadcastThinking(projectId, `Analyzing ${features.length} features for project ${project.name}, identifying work to be done...`);
     
     // We should always have features - if there are none or very few, generate a new feature
     if (features.length < 3) {
       console.log(`Project ${project.name} needs more features. Generating a new feature...`);
+      broadcastThinking(projectId, `Project ${project.name} needs more features. Generating a comprehensive new feature...`);
       
       // Generate a new feature for the project
       const featurePrompt = `The project ${project.name} needs more features. Please generate a comprehensive 
@@ -824,14 +830,19 @@ export async function improveProject(projectId: number): Promise<void> {
       const target = incompleteGoals[targetIndex];
       
       console.log(`Working on goal: ${target.goal.name} for feature: ${target.feature.name}`);
+      broadcastThinking(projectId, `Working on goal: ${target.goal.name} for feature: ${target.feature.name}...`);
       
       // Generate code for this goal
+      broadcastThinking(projectId, `Generating implementation code for ${target.goal.name}...`);
       const { explanation, code, language } = await generateCodeForGoal(
         projectId,
         target.feature.id,
         target.milestone.id,
         target.goal.id
       );
+      
+      // Broadcast the completed code with explanation
+      broadcastThinking(projectId, explanation, code);
       
       // Log the activity
       await storage.createActivityLog({
@@ -861,6 +872,7 @@ export async function improveProject(projectId: number): Promise<void> {
     } else {
       // If all goals are complete, we definitely need a new feature
       console.log("All goals are complete. Generating a new feature...");
+      broadcastThinking(projectId, `All goals for ${project.name} are complete. Generating a new feature to continue development...`);
       
       const featurePrompt = `The project ${project.name} has completed all its current goals and needs a new feature. 
       Generate a completely new, substantial feature that would extend the project's capabilities. 
@@ -871,6 +883,7 @@ export async function improveProject(projectId: number): Promise<void> {
       try {
         // Add a new feature to the project
         console.log("Adding new feature due to all goals being complete");
+        broadcastThinking(projectId, `Generating a complex new feature for ${project.name}...`);
         const newFeature = await addFeatureFromPrompt(projectId, featurePrompt);
         
         // Log this major action

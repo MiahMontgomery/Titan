@@ -57,7 +57,12 @@ export function broadcastThinking(projectId: number, message: string, codeSnippe
  */
 function extractCodeSnippet(response: string): string | null {
   const codeBlockRegex = /```([a-zA-Z0-9]*)\n([\s\S]*?)```/g;
-  const matches = [...response.matchAll(codeBlockRegex)];
+  let match;
+  const matches: RegExpExecArray[] = [];
+  
+  while ((match = codeBlockRegex.exec(response)) !== null) {
+    matches.push(match);
+  }
   
   if (matches.length > 0) {
     // Return the first code block found
