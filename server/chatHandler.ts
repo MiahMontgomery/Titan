@@ -36,9 +36,25 @@ function isFeatureRequest(message: string): boolean {
 
 /**
  * Broadcast thinking message to clients for a specific project
+ * @param projectId The project ID
+ * @param message The thinking message
+ * @param codeSnippet Optional code snippet
+ * @param debugSteps Optional debugging steps as an array of strings
+ * @param isDebugging Whether this is a debugging message
+ * @param stepByStep Whether to display this as a step-by-step process
  */
-export function broadcastThinking(projectId: number, message: string, codeSnippet?: string | null): void {
+export function broadcastThinking(
+  projectId: number, 
+  message: string, 
+  codeSnippet?: string | null,
+  debugSteps?: string[],
+  isDebugging?: boolean,
+  stepByStep?: boolean
+): void {
   if (!wss) return;
+  
+  // Log to console for debugging purposes
+  console.log(`Broadcasting thinking for project ${projectId}: ${message.substring(0, 100)}...`);
   
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
@@ -46,7 +62,11 @@ export function broadcastThinking(projectId: number, message: string, codeSnippe
         type: 'thinking',
         projectId,
         message,
-        codeSnippet
+        codeSnippet,
+        debugSteps,
+        isDebugging,
+        stepByStep,
+        timestamp: new Date().toISOString()
       }));
     }
   });
@@ -118,15 +138,44 @@ export async function handleChatMessage(req: Request, res: Response) {
       return res.status(404).json({ error: 'Project not found' });
     }
     
-    // Broadcast thinking status
-    broadcastThinking(projectIdNum, 'Thinking about your request...');
+    // Initial thinking broadcast
+    broadcastThinking(
+      projectIdNum, 
+      'Thinking about your request...', 
+      null, 
+      ['Analyzing request', 'Preparing response', 'Formulating code if needed'], 
+      false, 
+      true
+    );
     
     try {
+      // Broadcast detailed processing steps
+      broadcastThinking(
+        projectIdNum,
+        'Analyzing project context and requirements...',
+        null,
+        ['Processing request parameters', 'Checking project details', 'Retrieving relevant history'],
+        false,
+        true
+      );
+      
       // Generate thinking with OpenAI
       const thinking = await generateThinking(projectIdNum, message);
       
       // Extract code snippet if present
       const codeSnippet = extractCodeSnippet(thinking);
+      
+      // Broadcast detailed processing results with code
+      if (codeSnippet) {
+        broadcastThinking(
+          projectIdNum,
+          'Generated code solution based on your request:',
+          codeSnippet,
+          ['Parsing requirements', 'Generating solution', 'Optimizing code', 'Finalizing implementation'],
+          true,
+          true
+        );
+      }
       
       // Log the activity
       await storage.createActivityLog({

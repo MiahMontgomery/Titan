@@ -457,12 +457,22 @@ export async function generateCodeForGoal(
   featureId: number, 
   milestoneId: number, 
   goalId: number
-): Promise<{ explanation: string; code: string; language: string }> {
+): Promise<{ explanation: string; code: string; language: string; debugSteps: string[] }> {
   if (!isOpenAIConfigured()) {
     throw new Error('OpenAI API key not configured');
   }
 
   try {
+    // Send initial thinking message
+    broadcastThinking(
+      projectId,
+      "Starting code generation process...",
+      null,
+      ["Initializing code generation", "Gathering context", "Preparing prompt"], 
+      true,
+      true
+    );
+
     // Get context for the AI
     const project = await storage.getProject(projectId);
     const feature = await storage.getFeature(featureId);
@@ -473,6 +483,22 @@ export async function generateCodeForGoal(
       throw new Error('One or more required entities not found');
     }
     
+    // Send progress update
+    broadcastThinking(
+      projectId,
+      "Retrieved project metadata and context",
+      null,
+      [
+        "✓ Retrieved project: " + project.name,
+        "✓ Retrieved feature: " + feature.name,
+        "✓ Retrieved milestone: " + milestone.name,
+        "✓ Retrieved goal: " + goal.name,
+        "→ Formulating prompt for AI"
+      ],
+      true,
+      true
+    );
+    
     // Prepare context for OpenAI
     const context = `
 Project: ${project.name} - ${project.description}
@@ -480,7 +506,7 @@ Feature: ${feature.name} - ${feature.description}
 Milestone: ${milestone.name} - ${milestone.description}
 Goal: ${goal.name} - ${goal.description}
 
-Generate code to implement this goal.
+Generate production-ready code to implement this goal. Include detailed line-by-line explanations.
 `;
 
     // Fill in template placeholders with actual values
@@ -494,6 +520,23 @@ Generate code to implement this goal.
       .replace('{{GOAL_NAME}}', goal.name || '')
       .replace('{{GOAL_DESCRIPTION}}', goal.description || '');
 
+    // Send progress update
+    broadcastThinking(
+      projectId,
+      "Prepared detailed prompt with context",
+      context.substring(0, 500) + "...",
+      [
+        "✓ Formulated system prompt",
+        "✓ Prepared context with requirements",
+        "→ Sending to OpenAI for code generation"
+      ],
+      true,
+      true
+    );
+
+    // Capture start time for performance logging
+    const startTime = Date.now();
+    
     const completion = await openai.chat.completions.create({
       model: GPT_4_TURBO,
       messages: [
@@ -503,16 +546,53 @@ Generate code to implement this goal.
       temperature: 0.7,
     });
 
+    // Calculate response time
+    const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
+    
+    // Send progress update
+    broadcastThinking(
+      projectId,
+      `Received response from AI (in ${responseTime}s)`,
+      null,
+      [
+        "✓ Generated code solution",
+        "→ Parsing response",
+        "→ Extracting code block",
+        "→ Preparing explanation"
+      ],
+      true,
+      true
+    );
+
     const response = completion.choices[0]?.message?.content || '';
     
     // Extract code block and explanation
     const codeMatch = response.match(/```([a-zA-Z]+)?\n([\s\S]*?)\n```/);
     
     if (!codeMatch) {
+      broadcastThinking(
+        projectId,
+        "No code block found in response",
+        response.substring(0, 500) + "...",
+        [
+          "✓ Received AI response",
+          "✗ Failed to extract code block",
+          "→ Using full response as explanation"
+        ],
+        true,
+        true
+      );
+      
       return {
         explanation: response,
         code: '',
-        language: ''
+        language: '',
+        debugSteps: [
+          "Retrieved project context",
+          "Generated AI response",
+          "No code block found in response",
+          "Using full response as explanation"
+        ]
       };
     }
     
@@ -524,10 +604,32 @@ Generate code to implement this goal.
     const explanationParts = response.split('```');
     const explanation = explanationParts[0].trim();
     
+    // Send final progress update with code
+    broadcastThinking(
+      projectId,
+      "Code generation complete",
+      code,
+      [
+        "✓ Generated explanation: " + explanation.substring(0, 100) + "...",
+        "✓ Extracted code block (" + code.split('\n').length + " lines)",
+        "✓ Identified language: " + (language || "unspecified"),
+        "✓ Code generation task complete"
+      ],
+      true,
+      true
+    );
+    
     return {
       explanation,
       code,
-      language
+      language,
+      debugSteps: [
+        "Retrieved project context",
+        "Generated AI prompt with detailed specifications",
+        `Received AI response in ${responseTime} seconds`,
+        `Extracted ${code.split('\n').length} lines of ${language} code`,
+        "Parsed explanation and documentation"
+      ]
     };
   } catch (error) {
     console.error('Error generating code with OpenAI:', error);
