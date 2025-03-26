@@ -120,22 +120,19 @@ export class LowDBStorage implements IStorage {
       const user = await this.createUser({
         username: 'demo',
         email: 'demo@example.com',
-        fullName: 'Demo User',
-        isAdmin: true,
-        preferences: {}
+        name: 'Demo User',
+        password: 'password123'
       });
       
       // Create a sample project
       const project = await this.createProject({
         name: 'Sample Project',
         description: 'A sample project to demonstrate the system',
-        status: 'active',
         lastUpdated: new Date(),
         isWorking: true,
         progress: 25,
         nextCheckIn: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
         lastCheckIn: new Date(),
-        estimatedDays: 14,
         priority: 1,
         projectType: 'web',
         agentConfig: {
@@ -144,8 +141,7 @@ export class LowDBStorage implements IStorage {
           temperature: 0.7,
         },
         autoMode: true,
-        checkpoints: {},
-        tags: ['sample', 'demo']
+        checkpoints: {}
       });
       
       // Create a sample feature
@@ -209,9 +205,6 @@ export class LowDBStorage implements IStorage {
         agentId: 'system',
         featureId: null,
         milestoneId: null,
-        actionType: 'create',
-        relatedEntityType: 'project',
-        relatedEntityId: project.id,
         thinkingProcess: null
       });
       
@@ -225,9 +218,6 @@ export class LowDBStorage implements IStorage {
         codeSnippet: null,
         agentId: 'system',
         milestoneId: null,
-        actionType: 'create',
-        relatedEntityType: 'feature',
-        relatedEntityId: feature.id,
         thinkingProcess: null
       });
       
@@ -579,9 +569,10 @@ export class LowDBStorage implements IStorage {
       milestoneId: insertLog.milestoneId ?? null,
       codeSnippet: insertLog.codeSnippet ?? null,
       agentId: insertLog.agentId ?? null,
-      actionType: insertLog.actionType ?? 'info',
-      relatedEntityType: insertLog.relatedEntityType ?? 'project',
-      relatedEntityId: insertLog.relatedEntityId ?? insertLog.projectId,
+      activityType: insertLog.activityType ?? 'general',
+      details: insertLog.details ?? null,
+      urls: insertLog.urls ?? [],
+      changes: insertLog.changes ?? null,
       thinkingProcess: insertLog.thinkingProcess ?? null
     };
     
@@ -670,6 +661,7 @@ export class LowDBStorage implements IStorage {
   
   async createTask(task: InsertAgentTask): Promise<AgentTask> {
     const id = this.db.data.nextTaskId++;
+    const now = new Date();
     
     const agentTask: AgentTask = {
       ...task,
@@ -678,12 +670,14 @@ export class LowDBStorage implements IStorage {
       description: task.description ?? null,
       progress: task.progress ?? 0,
       priority: task.priority ?? 1,
-      createdAt: new Date(),
+      createdAt: now,
       featureId: task.featureId ?? null,
       assignedAgent: task.assignedAgent ?? 'system',
-      taskData: task.taskData ?? {},
+      result: task.result ?? null,
       errorDetails: task.errorDetails ?? null,
-      completionDetails: task.completionDetails ?? null,
+      deadline: task.deadline ?? null,
+      startTime: task.startTime ?? null,
+      completionTime: task.completionTime ?? null,
       parentTaskId: task.parentTaskId ?? null
     };
     
@@ -759,7 +753,7 @@ export class LowDBStorage implements IStorage {
       status: account.status || 'active',
       createdAt: new Date(),
       profileUrl: account.profileUrl ?? null,
-      accountType: account.accountType || 'standard',
+      accountType: account.accountType || 'standard', // Ensure accountType is always set
       lastActivity: account.lastActivity ?? null,
       cookies: account.cookies ?? {}
     };

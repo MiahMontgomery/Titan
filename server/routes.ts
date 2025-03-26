@@ -40,20 +40,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Pass WebSocket server to chat handler
   setWebSocketServer(wss);
   
-  // Try to initialize Firebase Admin SDK using environment variables
+  // We're now using LowDB as the default storage implementation
+  // The storage implementation is already set to LowDB in storage.ts
+  console.log('Using LowDB storage for data persistence');
+  
+  // For backward compatibility, still attempt to initialize Firebase
+  // but don't change the storage implementation
   try {
     let firebaseInitialized = initializeFirebaseFromEnv();
-    
     if (firebaseInitialized) {
-      console.log('Firebase initialized successfully, using Firebase storage');
-      // Set storage to Firebase
-      setStorage(getFirebaseStorage());
-    } else {
-      console.log('Using in-memory storage for now.');
+      console.log('Firebase also initialized successfully (but not used as primary storage)');
     }
   } catch (error) {
-    console.log(`Firebase initialization failed with error: ${error}. Using in-memory storage.`);
-    // We don't need to set the storage here, as it already defaults to MemStorage
+    console.log(`Firebase initialization failed with error: ${error}. This is expected and won't affect functionality.`);
   }
   
   // We'll check if we need to initialize sample data
@@ -935,13 +934,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const initialized = initializeFirebase(serviceAccount);
         
         if (initialized) {
-          // Switch to Firebase storage implementation
-          const firebaseStorage = getFirebaseStorage();
-          setStorage(firebaseStorage);
+          // We're using LowDB as primary storage, but Firebase is initialized for compatibility
+          // const firebaseStorage = getFirebaseStorage();
+          // setStorage(firebaseStorage);
           
           return res.json({ 
             success: true, 
-            message: "Firebase integration successfully configured with cloud persistence" 
+            message: "Firebase integration successfully configured but using LowDB for primary data persistence" 
           });
         }
       } 
@@ -950,23 +949,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const initialized = initializeFirebase({ projectId: config.projectId });
         
         if (initialized) {
-          // Switch to Firebase storage implementation
-          const firebaseStorage = getFirebaseStorage();
-          setStorage(firebaseStorage);
+          // We're using LowDB as primary storage, but Firebase is initialized for compatibility
+          // const firebaseStorage = getFirebaseStorage();
+          // setStorage(firebaseStorage);
           
           return res.json({ 
             success: true, 
-            message: "Firebase integration successfully configured with cloud persistence using default credentials" 
+            message: "Firebase integration successfully configured but using LowDB for primary data persistence" 
           });
         }
       }
       
-      // If we can't initialize Firestore but do have project config for client,
-      // still acknowledge success but note we're using in-memory storage
+      // If we can't initialize Firebase but do have project config for client,
+      // still acknowledge success but note we're using LowDB
       return res.json({ 
         success: true, 
-        message: "Firebase client configured successfully, using in-memory storage (no server persistence)",
-        warning: "For full cloud persistence, please provide Firebase service account credentials"
+        message: "Firebase client configured successfully, using LowDB for data persistence",
+        warning: "Firebase integration is optional and not required for system functionality"
       });
     } catch (error) {
       console.error('Error setting up Firebase:', error);
