@@ -484,14 +484,14 @@ Generate code to implement this goal.
 
     // Fill in template placeholders with actual values
     const codeGenerationPrompt = CODE_GENERATION_PROMPT_TEMPLATE
-      .replace('{{PROJECT_NAME}}', project.name)
-      .replace('{{PROJECT_DESCRIPTION}}', project.description)
-      .replace('{{FEATURE_NAME}}', feature.name)
-      .replace('{{FEATURE_DESCRIPTION}}', feature.description)
-      .replace('{{MILESTONE_NAME}}', milestone.name)
-      .replace('{{MILESTONE_DESCRIPTION}}', milestone.description)
-      .replace('{{GOAL_NAME}}', goal.name)
-      .replace('{{GOAL_DESCRIPTION}}', goal.description);
+      .replace('{{PROJECT_NAME}}', project.name || '')
+      .replace('{{PROJECT_DESCRIPTION}}', project.description || '')
+      .replace('{{FEATURE_NAME}}', feature.name || '')
+      .replace('{{FEATURE_DESCRIPTION}}', feature.description || '')
+      .replace('{{MILESTONE_NAME}}', milestone.name || '')
+      .replace('{{MILESTONE_DESCRIPTION}}', milestone.description || '')
+      .replace('{{GOAL_NAME}}', goal.name || '')
+      .replace('{{GOAL_DESCRIPTION}}', goal.description || '');
 
     const completion = await openai.chat.completions.create({
       model: GPT_4_TURBO,
@@ -746,16 +746,52 @@ export async function improveProject(projectId: number): Promise<void> {
     // Log the activity for the automation start
     await storage.createActivityLog({
       projectId,
-      message: `Auto-generated activity at ${new Date().toLocaleTimeString()}`,
+      message: `Starting intelligent autonomous development cycle for project ${project.name}`,
       timestamp: new Date(),
-      agentId: `agent-${Math.floor(Math.random() * 10) + 1}`,
+      agentId: `titan-agent`,
       codeSnippet: null,
       activityType: 'auto_improvement',
+      isCheckpoint: true,
     });
     
-    // Check if there are features with low progress
+    // Check if there are features 
     const features = await storage.getFeaturesByProject(projectId);
     console.log(`Found ${features.length} features for project ${project.name}, checking for work to do`);
+    
+    // We should always have features - if there are none or very few, generate a new feature
+    if (features.length < 3) {
+      console.log(`Project ${project.name} needs more features. Generating a new feature...`);
+      
+      // Generate a new feature for the project
+      const featurePrompt = `The project ${project.name} needs more features. Please generate a comprehensive 
+      new feature for this project. The project is described as: ${project.description}. 
+      Current features: ${features.map(f => f.name).join(', ')}. 
+      Focus on creating complex, detailed implementation with many milestones and goals.`;
+      
+      try {
+        // Add a new feature to the project
+        console.log("Autonomously adding new feature to project via prompt:", featurePrompt);
+        const newFeature = await addFeatureFromPrompt(projectId, featurePrompt);
+        
+        // Log this major action
+        await storage.createActivityLog({
+          projectId,
+          featureId: newFeature.id,
+          message: `Added new feature: ${newFeature.name}`,
+          timestamp: new Date(),
+          agentId: 'titan-agent',
+          codeSnippet: null,
+          activityType: 'feature_creation',
+          isCheckpoint: true,
+          thinkingProcess: `Analyzed project needs and determined that a new feature was required. Generated feature: ${newFeature.name} - ${newFeature.description}`
+        });
+        
+        console.log(`Successfully added new feature: ${newFeature.name}`);
+        return; // Exit after adding a feature to avoid doing too much at once
+      } catch (featureError) {
+        console.error("Error creating new feature:", featureError);
+      }
+    }
     
     // Get incomplete goals to work on
     const incompleteGoals = [];
@@ -779,11 +815,15 @@ export async function improveProject(projectId: number): Promise<void> {
       }
     }
     
+    console.log(`Found ${incompleteGoals.length} incomplete goals to work on`);
+    
     // If we have incomplete goals, work on one
     if (incompleteGoals.length > 0) {
       // Pick a random goal to work on
       const targetIndex = Math.floor(Math.random() * incompleteGoals.length);
       const target = incompleteGoals[targetIndex];
+      
+      console.log(`Working on goal: ${target.goal.name} for feature: ${target.feature.name}`);
       
       // Generate code for this goal
       const { explanation, code, language } = await generateCodeForGoal(
@@ -798,16 +838,16 @@ export async function improveProject(projectId: number): Promise<void> {
         projectId,
         featureId: target.feature.id,
         milestoneId: target.milestone.id,
-        message: `Working on goal: ${target.goal.name}`,
+        message: `Implemented goal: ${target.goal.name}`,
         timestamp: new Date(),
-        agentId: 'ai-agent',
+        agentId: 'titan-agent',
         codeSnippet: code,
         activityType: 'code_generation',
         details: { 
           language,
           goalId: target.goal.id
         },
-        isCheckpoint: false,
+        isCheckpoint: true,
         thinkingProcess: explanation
       });
       
@@ -816,25 +856,40 @@ export async function improveProject(projectId: number): Promise<void> {
         progress: 100,
         completed: true
       });
+      
+      console.log(`Successfully completed goal: ${target.goal.name}`);
     } else {
-      // If all goals are complete, suggest a new feature
-      const prompt = `The project ${project.name} needs a new feature to improve it. The project is described as: ${project.description}`;
+      // If all goals are complete, we definitely need a new feature
+      console.log("All goals are complete. Generating a new feature...");
       
-      // Generate thinking about what to improve
-      const thinking = await generateThinking(projectId, prompt);
+      const featurePrompt = `The project ${project.name} has completed all its current goals and needs a new feature. 
+      Generate a completely new, substantial feature that would extend the project's capabilities. 
+      The project is described as: ${project.description}. 
+      Current features: ${features.map(f => f.name).join(', ')}. 
+      Think of a major new capability that would take this project to the next level.`;
       
-      // Log the activity
-      await storage.createActivityLog({
-        projectId,
-        message: `Analyzing project for improvements`,
-        timestamp: new Date(),
-        agentId: 'ai-agent',
-        codeSnippet: null,
-        activityType: 'project_analysis',
-        details: { prompt },
-        isCheckpoint: true,
-        thinkingProcess: thinking
-      });
+      try {
+        // Add a new feature to the project
+        console.log("Adding new feature due to all goals being complete");
+        const newFeature = await addFeatureFromPrompt(projectId, featurePrompt);
+        
+        // Log this major action
+        await storage.createActivityLog({
+          projectId,
+          featureId: newFeature.id,
+          message: `Added new feature: ${newFeature.name} as all existing goals were complete`,
+          timestamp: new Date(),
+          agentId: 'titan-agent',
+          codeSnippet: null,
+          activityType: 'feature_creation',
+          isCheckpoint: true,
+          thinkingProcess: `All goals were complete. Project needed continued improvement. Generated new feature: ${newFeature.name} - ${newFeature.description}`
+        });
+        
+        console.log(`Successfully added new feature: ${newFeature.name}`);
+      } catch (featureError) {
+        console.error("Error creating new feature:", featureError);
+      }
     }
   } catch (error) {
     console.error('Error improving project:', error);
@@ -843,7 +898,7 @@ export async function improveProject(projectId: number): Promise<void> {
       projectId,
       message: `Error during project improvement: ${error instanceof Error ? error.message : 'Unknown error'}`,
       timestamp: new Date(),
-      agentId: 'ai-agent',
+      agentId: 'titan-agent',
       codeSnippet: null,
       activityType: 'error',
       details: { error: String(error) },
@@ -857,10 +912,31 @@ export async function improveProject(projectId: number): Promise<void> {
  * Setup a regular job to improve all auto-mode projects
  * @param intervalMinutes Minutes between improvement runs
  */
-export function setupProjectImprovement(intervalMinutes: number = 5): void {
+export function setupProjectImprovement(intervalMinutes: number = 1): void {
   // Run improvement for all auto-mode projects periodically
-  // Using 5-minute intervals for more frequent autonomous development
+  // Using 1-minute intervals for more frequent autonomous development
   console.log(`Setting up autonomous project improvement with ${intervalMinutes}-minute intervals`);
+  
+  // Immediate execution when starting up to avoid waiting for the first interval
+  setTimeout(async () => {
+    try {
+      console.log("Running immediate autonomous improvement run...");
+      const projects = await storage.getAllProjects();
+      console.log(`Checking ${projects.length} projects for immediate autonomous improvement...`);
+      
+      for (const project of projects) {
+        if (project.autoMode && project.isWorking) {
+          console.log(`Immediately improving project: ${project.name} (ID: ${project.id})`);
+          // Run improvement for this project right away
+          await improveProject(project.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error in immediate project improvement cycle:', error);
+    }
+  }, 5000); // Wait 5 seconds after startup
+  
+  // Set up regular interval checks
   setInterval(async () => {
     try {
       const projects = await storage.getAllProjects();
