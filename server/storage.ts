@@ -513,4 +513,23 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Storage factory to get the appropriate storage implementation
+let storageImplementation: IStorage = new MemStorage();
+
+/**
+ * Get the current storage implementation
+ */
+export function getStorage(): IStorage {
+  return storageImplementation;
+}
+
+/**
+ * Set the storage implementation
+ * @param storage Storage implementation to use
+ */
+export function setStorage(storage: IStorage): void {
+  storageImplementation = storage;
+}
+
+// Export a singleton instance for compatibility with existing code
+export const storage = storageImplementation;

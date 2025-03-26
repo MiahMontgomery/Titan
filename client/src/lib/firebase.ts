@@ -154,33 +154,208 @@ export async function createActivityLog(log: Omit<ActivityLog, "id">): Promise<A
   });
 }
 
-// Data subscription functions (mocked for now - would be implemented with Firebase Firestore in a real app)
+import { getFirestore, collection, query, where, orderBy, onSnapshot, doc } from "firebase/firestore";
+
+// Data subscription functions with real-time Firestore updates
 export function subscribeToProjects(callback: (projects: Project[]) => void): () => void {
-  // Currently using the REST API, but would be replaced with Firebase Firestore subscriptions
-  getProjects().then(callback).catch(console.error);
+  if (!initialized || !app) {
+    console.warn("Firebase not initialized, using REST fallback");
+    getProjects().then(callback).catch(console.error);
+    return () => console.log("Unsubscribed from projects (REST fallback)");
+  }
   
-  // Return unsubscribe function
-  return () => {
-    console.log("Unsubscribed from projects");
-  };
+  try {
+    const db = getFirestore(app);
+    const projectsRef = collection(db, 'projects');
+    const q = query(projectsRef, orderBy('id'));
+    
+    return onSnapshot(q, (snapshot) => {
+      const projects: Project[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        projects.push({
+          id: Number(doc.id),
+          ...data,
+          lastUpdated: data.lastUpdated?.toDate() || new Date(), // Convert Firestore Timestamp to JS Date
+          lastCheckIn: data.lastCheckIn?.toDate() || null,
+          nextCheckIn: data.nextCheckIn?.toDate() || null
+        } as Project);
+      });
+      callback(projects);
+    }, (error) => {
+      console.error("Error subscribing to projects:", error);
+      // Fall back to REST API on error
+      getProjects().then(callback).catch(console.error);
+    });
+  } catch (error) {
+    console.error("Error setting up projects subscription:", error);
+    // Fall back to REST API
+    getProjects().then(callback).catch(console.error);
+    return () => console.log("Unsubscribed from projects (REST fallback)");
+  }
 }
 
 export function subscribeToFeaturesByProject(projectId: number, callback: (features: Feature[]) => void): () => void {
-  // Currently using the REST API, but would be replaced with Firebase Firestore subscriptions
-  getFeaturesByProject(projectId).then(callback).catch(console.error);
+  if (!initialized || !app) {
+    console.warn("Firebase not initialized, using REST fallback");
+    getFeaturesByProject(projectId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from features for project ${projectId} (REST fallback)`);
+  }
   
-  // Return unsubscribe function
-  return () => {
-    console.log(`Unsubscribed from features for project ${projectId}`);
-  };
+  try {
+    const db = getFirestore(app);
+    const featuresRef = collection(db, 'features');
+    const q = query(
+      featuresRef,
+      where('projectId', '==', projectId),
+      orderBy('priority', 'desc'),
+      orderBy('id')
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+      const features: Feature[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        features.push({
+          id: Number(doc.id),
+          ...data,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          startDate: data.startDate?.toDate() || null,
+          endDate: data.endDate?.toDate() || null,
+          startedAt: data.startedAt?.toDate() || null,
+          completedAt: data.completedAt?.toDate() || null
+        } as Feature);
+      });
+      callback(features);
+    }, (error) => {
+      console.error(`Error subscribing to features for project ${projectId}:`, error);
+      // Fall back to REST API on error
+      getFeaturesByProject(projectId).then(callback).catch(console.error);
+    });
+  } catch (error) {
+    console.error(`Error setting up features subscription for project ${projectId}:`, error);
+    // Fall back to REST API
+    getFeaturesByProject(projectId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from features for project ${projectId} (REST fallback)`);
+  }
+}
+
+export function subscribeToMilestonesByFeature(featureId: number, callback: (milestones: Milestone[]) => void): () => void {
+  if (!initialized || !app) {
+    console.warn("Firebase not initialized, using REST fallback");
+    getMilestonesByFeature(featureId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from milestones for feature ${featureId} (REST fallback)`);
+  }
+  
+  try {
+    const db = getFirestore(app);
+    const milestonesRef = collection(db, 'milestones');
+    const q = query(
+      milestonesRef,
+      where('featureId', '==', featureId),
+      orderBy('id')
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+      const milestones: Milestone[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        milestones.push({
+          id: Number(doc.id),
+          ...data,
+          createdAt: data.createdAt?.toDate() || new Date()
+        } as Milestone);
+      });
+      callback(milestones);
+    }, (error) => {
+      console.error(`Error subscribing to milestones for feature ${featureId}:`, error);
+      // Fall back to REST API on error
+      getMilestonesByFeature(featureId).then(callback).catch(console.error);
+    });
+  } catch (error) {
+    console.error(`Error setting up milestones subscription for feature ${featureId}:`, error);
+    // Fall back to REST API
+    getMilestonesByFeature(featureId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from milestones for feature ${featureId} (REST fallback)`);
+  }
+}
+
+export function subscribeToGoalsByMilestone(milestoneId: number, callback: (goals: Goal[]) => void): () => void {
+  if (!initialized || !app) {
+    console.warn("Firebase not initialized, using REST fallback");
+    getGoalsByMilestone(milestoneId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from goals for milestone ${milestoneId} (REST fallback)`);
+  }
+  
+  try {
+    const db = getFirestore(app);
+    const goalsRef = collection(db, 'goals');
+    const q = query(
+      goalsRef,
+      where('milestoneId', '==', milestoneId),
+      orderBy('id')
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+      const goals: Goal[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        goals.push({
+          id: Number(doc.id),
+          ...data,
+          createdAt: data.createdAt?.toDate() || new Date()
+        } as Goal);
+      });
+      callback(goals);
+    }, (error) => {
+      console.error(`Error subscribing to goals for milestone ${milestoneId}:`, error);
+      // Fall back to REST API on error
+      getGoalsByMilestone(milestoneId).then(callback).catch(console.error);
+    });
+  } catch (error) {
+    console.error(`Error setting up goals subscription for milestone ${milestoneId}:`, error);
+    // Fall back to REST API
+    getGoalsByMilestone(milestoneId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from goals for milestone ${milestoneId} (REST fallback)`);
+  }
 }
 
 export function subscribeToActivityLogs(projectId: number, callback: (logs: ActivityLog[]) => void): () => void {
-  // Currently using the REST API, but would be replaced with Firebase Firestore subscriptions
-  getActivityLogsByProject(projectId).then(callback).catch(console.error);
+  if (!initialized || !app) {
+    console.warn("Firebase not initialized, using REST fallback");
+    getActivityLogsByProject(projectId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from activity logs for project ${projectId} (REST fallback)`);
+  }
   
-  // Return unsubscribe function
-  return () => {
-    console.log(`Unsubscribed from activity logs for project ${projectId}`);
-  };
+  try {
+    const db = getFirestore(app);
+    const logsRef = collection(db, 'activityLogs');
+    const q = query(
+      logsRef,
+      where('projectId', '==', projectId),
+      orderBy('timestamp', 'desc')
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+      const logs: ActivityLog[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        logs.push({
+          id: Number(doc.id),
+          ...data,
+          timestamp: data.timestamp?.toDate() || new Date()
+        } as ActivityLog);
+      });
+      callback(logs);
+    }, (error) => {
+      console.error(`Error subscribing to activity logs for project ${projectId}:`, error);
+      // Fall back to REST API on error
+      getActivityLogsByProject(projectId).then(callback).catch(console.error);
+    });
+  } catch (error) {
+    console.error(`Error setting up activity logs subscription for project ${projectId}:`, error);
+    // Fall back to REST API
+    getActivityLogsByProject(projectId).then(callback).catch(console.error);
+    return () => console.log(`Unsubscribed from activity logs for project ${projectId} (REST fallback)`);
+  }
 }
