@@ -29,14 +29,43 @@ const COLLECTIONS = {
 };
 
 /**
+ * Attempt to initialize Firebase Admin with environment variables
+ * @returns True if initialization was successful
+ */
+export function initializeFirebaseFromEnv(): boolean {
+  // Check for required environment variables
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  
+  if (!projectId) {
+    log('Firebase initialization from environment skipped, missing FIREBASE_PROJECT_ID', 'firebase');
+    return false;
+  }
+  
+  try {
+    // Initialize with Google Application Default Credentials if available
+    // This will work in Google Cloud environments
+    admin.initializeApp({
+      projectId
+    });
+    
+    firebaseInitialized = true;
+    log('Firebase Admin SDK initialized successfully with environment variables', 'firebase');
+    return true;
+  } catch (error) {
+    log(`Error initializing Firebase Admin SDK from environment: ${error}`, 'firebase');
+    return false;
+  }
+}
+
+/**
  * Initialize Firebase Admin with service account
  * @param config Firebase configuration
  * @returns True if initialization was successful
  */
 export function initializeFirebase(config: {
   projectId: string;
-  privateKey: string;
-  clientEmail: string;
+  privateKey?: string;
+  clientEmail?: string;
 }): boolean {
   try {
     if (firebaseInitialized) {
@@ -44,16 +73,25 @@ export function initializeFirebase(config: {
       return true;
     }
 
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: config.projectId,
-        privateKey: config.privateKey.replace(/\\n/g, '\n'),
-        clientEmail: config.clientEmail
-      }),
-    });
+    // If we have complete service account details
+    if (config.privateKey && config.clientEmail) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: config.projectId,
+          privateKey: config.privateKey.replace(/\\n/g, '\n'),
+          clientEmail: config.clientEmail
+        }),
+      });
+    } 
+    // Otherwise initialize with just project ID (for Google Cloud environments)
+    else {
+      admin.initializeApp({
+        projectId: config.projectId
+      });
+    }
 
     firebaseInitialized = true;
-    log('Firebase Admin SDK initialized successfully', 'firebase');
+    log('Firebase Admin SDK initialized successfully with provided config', 'firebase');
     return true;
   } catch (error) {
     log(`Error initializing Firebase Admin SDK: ${error}`, 'firebase');

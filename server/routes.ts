@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage, getStorage, setStorage } from "./storage";
 import { WebSocketServer, WebSocket } from "ws";
 import { z } from "zod";
-import { initializeFirebase, getFirebaseStorage } from "./firebase";
+import { initializeFirebase, initializeFirebaseFromEnv, getFirebaseStorage } from "./firebase";
 import { 
   createProjectFromPrompt, 
   addFeatureFromPrompt, 
