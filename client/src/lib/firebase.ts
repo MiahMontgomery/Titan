@@ -13,38 +13,76 @@ interface FirebaseConfig {
   appId: string;
 }
 
-// Initialize with empty config - will be updated when user configures Firebase
-let firebaseConfig: FirebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  appId: "",
+// Get Firebase configuration from environment variables or saved config
+const firebaseConfig: FirebaseConfig = {
+  apiKey: import.meta.env.FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.FIREBASE_APP_ID || "",
 };
 
-let app: ReturnType<typeof initializeApp> | null = null;
-let auth: ReturnType<typeof getAuth> | null = null;
-let provider: GoogleAuthProvider | null = null;
+// Initialize Firebase app if secrets are provided
+let app = null;
+let auth = null;
+let provider = null;
 let initialized = false;
 
-// Initialize Firebase with configuration
-export function initializeFirebase(config: Record<string, string>) {
-  try {
-    firebaseConfig = {
-      apiKey: config.apiKey,
-      authDomain: config.authDomain || `${config.projectId}.firebaseapp.com`,
-      projectId: config.projectId,
-      storageBucket: config.storageBucket || `${config.projectId}.appspot.com`,
-      messagingSenderId: config.messagingSenderId,
-      appId: config.appId,
-    };
-    
+try {
+  // Only initialize if we have required config
+  if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId) {
+    // Auto-fill auth domain and storage bucket if not provided
+    if (!firebaseConfig.authDomain) {
+      firebaseConfig.authDomain = `${firebaseConfig.projectId}.firebaseapp.com`;
+    }
+    if (!firebaseConfig.storageBucket) {
+      firebaseConfig.storageBucket = `${firebaseConfig.projectId}.appspot.com`;
+    }
+
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     provider = new GoogleAuthProvider();
     initialized = true;
+    console.log("Firebase initialized automatically with environment variables");
+  }
+} catch (error) {
+  console.error("Error initializing Firebase:", error);
+  initialized = false;
+}
+
+// Initialize or update Firebase with configuration
+export function initializeFirebase(config: Record<string, string>) {
+  try {
+    const newConfig = {
+      apiKey: config.apiKey || firebaseConfig.apiKey,
+      authDomain: config.authDomain || `${config.projectId}.firebaseapp.com`,
+      projectId: config.projectId || firebaseConfig.projectId,
+      storageBucket: config.storageBucket || `${config.projectId}.appspot.com`,
+      messagingSenderId: config.messagingSenderId || firebaseConfig.messagingSenderId,
+      appId: config.appId || firebaseConfig.appId,
+    };
     
-    console.log("Firebase initialized successfully");
+    // Only reinitialize if Firebase hasn't been initialized yet or if config changed
+    if (!initialized || 
+        newConfig.apiKey !== firebaseConfig.apiKey ||
+        newConfig.projectId !== firebaseConfig.projectId ||
+        newConfig.appId !== firebaseConfig.appId) {
+      
+      if (app) {
+        // If we're here, we need to clean up the existing app (in real Firebase, you'd need to use a different name)
+        console.log("Updating Firebase configuration");
+      }
+      
+      Object.assign(firebaseConfig, newConfig);
+      app = initializeApp(firebaseConfig, "titan-app");
+      auth = getAuth(app);
+      provider = new GoogleAuthProvider();
+      initialized = true;
+      
+      console.log("Firebase initialized successfully with provided config");
+    }
+    
     return true;
   } catch (error) {
     console.error("Error initializing Firebase:", error);
