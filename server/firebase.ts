@@ -1,7 +1,7 @@
 import { initializeApp, cert, App } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { log } from './vite';
-import { IStorage } from './storage';
+import { IStorage, MemStorage, setStorage } from './storage';
 import {
   Project, InsertProject,
   Feature, InsertFeature,
@@ -18,6 +18,12 @@ import {
 let firebaseInitialized = false;
 let firestoreDb: Firestore | null = null;
 let firebaseApp: App | null = null;
+
+// Create a fallback memory storage
+const fallbackStorage = new MemStorage();
+
+// Create firebase storage instance singleton
+let firebaseStorage: IStorage | null = null;
 
 // Firestore collection names
 const COLLECTIONS = {
@@ -195,6 +201,22 @@ export class FirebaseStorage implements IStorage {
       return snapshot.docs.map(doc => convertDoc<Project>(doc));
     } catch (error) {
       log(`Error getting all projects: ${error}`, 'firebase');
+      
+      // If we encounter an authentication error, try to use in-memory fallback
+      if (String(error).includes("Could not refresh access token") || 
+          String(error).includes("Cannot read properties of undefined") ||
+          String(error).includes("auth/project-not-found")) {
+        // Create a fresh memory storage instance
+        const memStorage = new MemStorage();
+        
+        // Replace the current Firebase storage with memory storage
+        firebaseStorage = memStorage;
+        log('Falling back to in-memory storage due to Firebase authentication error', 'firebase');
+        
+        // Return projects from the memory storage (this will be empty initially)
+        return await memStorage.getAllProjects();
+      }
+      
       return [];
     }
   }
@@ -1136,15 +1158,24 @@ export class FirebaseStorage implements IStorage {
   }
 }
 
-// Create firebase storage instance singleton 
-let firebaseStorage: FirebaseStorage | null = null;
-
 /**
  * Get Firebase storage instance (create if doesn't exist)
+ * Falls back to memory storage if Firebase initialization fails
  */
-export function getFirebaseStorage(): FirebaseStorage {
+export function getFirebaseStorage(): IStorage {
   if (!firebaseStorage) {
-    firebaseStorage = new FirebaseStorage();
+    try {
+      // Check if Firebase is initialized properly
+      if (!firebaseInitialized || !firestoreDb) {
+        log('Firebase is not properly initialized, falling back to memory storage', 'firebase');
+        firebaseStorage = new MemStorage();
+      } else {
+        firebaseStorage = new FirebaseStorage();
+      }
+    } catch (error) {
+      log(`Error creating Firebase storage, falling back to memory storage: ${error}`, 'firebase');
+      firebaseStorage = new MemStorage();
+    }
   }
   return firebaseStorage;
 }

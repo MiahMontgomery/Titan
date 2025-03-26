@@ -40,59 +40,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Pass WebSocket server to chat handler
   setWebSocketServer(wss);
   
-  // For now, we'll use in-memory storage while we work out Firebase issues
-  console.log('Using in-memory storage for now.');
+  // Try to initialize Firebase Admin SDK using environment variables
+  try {
+    let firebaseInitialized = initializeFirebaseFromEnv();
+    
+    if (firebaseInitialized) {
+      console.log('Firebase initialized successfully, using Firebase storage');
+      // Set storage to Firebase
+      setStorage(getFirebaseStorage());
+    } else {
+      console.log('Using in-memory storage for now.');
+    }
+  } catch (error) {
+    console.log(`Firebase initialization failed with error: ${error}. Using in-memory storage.`);
+    // We don't need to set the storage here, as it already defaults to MemStorage
+  }
   
   // We'll check if we need to initialize sample data
-  const memStorage = getStorage();
-  const projects = await memStorage.getAllProjects();
+  const storage = getStorage();
+  const projects = await storage.getAllProjects();
   
   if (projects.length === 0) {
     console.log('No projects found, initializing sample data...');
     
     // Create sample projects
-    const project1 = await memStorage.createProject({
+    const project1 = await storage.createProject({
       name: "E-Commerce Website",
       description: "Build a full-featured e-commerce website with product catalog, cart, and checkout",
       isWorking: true,
       progress: 45,
-      lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      projectType: "generic",
+      agentConfig: {},
+      autoMode: false,
+      checkpoints: {},
+      priority: 0
     });
     
-    const project2 = await memStorage.createProject({
+    const project2 = await storage.createProject({
       name: "Mobile App",
       description: "Develop a cross-platform mobile application",
       isWorking: false,
       progress: 70,
-      lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+      lastUpdated: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      projectType: "generic",
+      agentConfig: {},
+      autoMode: false,
+      checkpoints: {},
+      priority: 0
     });
     
-    const project3 = await memStorage.createProject({
+    const project3 = await storage.createProject({
       name: "Content Management System",
       description: "Create a CMS for managing digital content",
       isWorking: true,
       progress: 20,
-      lastUpdated: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+      lastUpdated: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+      projectType: "generic",
+      agentConfig: {},
+      autoMode: false,
+      checkpoints: {},
+      priority: 0
     });
     
     console.log('Sample projects created:', project1.id, project2.id, project3.id);
     
     // Sample features for first project
-    const feature1 = await memStorage.createFeature({
+    const feature1 = await storage.createFeature({
       projectId: project1.id,
       name: "User Authentication System",
       description: "Implement secure login and registration",
       progress: 25
     });
     
-    const feature2 = await memStorage.createFeature({
+    const feature2 = await storage.createFeature({
       projectId: project1.id,
       name: "Product Catalog",
       description: "Product listings with search and filter",
       progress: 90
     });
     
-    const feature3 = await memStorage.createFeature({
+    const feature3 = await storage.createFeature({
       projectId: project1.id,
       name: "Shopping Cart",
       description: "Add/remove items and checkout process",
@@ -102,7 +130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log("Created features for project", project1.id, ":", feature1.id, feature2.id, feature3.id);
     
     // Sample milestones for first feature
-    const milestone1 = await memStorage.createMilestone({
+    const milestone1 = await storage.createMilestone({
       featureId: feature1.id,
       name: "Setup user database schema",
       description: "Define user model with required fields",
@@ -112,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log("Created milestone for feature", feature1.id, ":", milestone1.id);
     
     // Sample goals for first milestone
-    const goal1 = await memStorage.createGoal({
+    const goal1 = await storage.createGoal({
       milestoneId: milestone1.id,
       name: "Define user model with required fields",
       progress: 100
