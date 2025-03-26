@@ -31,7 +31,7 @@
       "autoMode": true,
       "priority": 2,
       "id": 3,
-      "lastUpdated": "2025-03-26T15:18:54.076Z",
+      "lastUpdated": "2025-03-26T15:19:57.906Z",
       "checkpoints": {},
       "lastCheckIn": null,
       "nextCheckIn": null
@@ -132,6 +132,44 @@
       "implementationDetails": {},
       "optimizationRound": 0,
       "aiGenerated": true
+    },
+    {
+      "projectId": 3,
+      "name": "Physical Products Marketplace",
+      "description": "Develop a system for managing and selling physical items such as used clothing, accessories, photos, and other personalized merchandise.",
+      "progress": 0,
+      "isWorking": true,
+      "priority": 2,
+      "status": "in_progress",
+      "id": 8,
+      "estimatedDays": null,
+      "createdAt": "2025-03-26T15:19:34.254Z",
+      "startDate": null,
+      "completionDate": null,
+      "dependencies": [],
+      "blockReason": null,
+      "implementationDetails": {},
+      "optimizationRound": 0,
+      "aiGenerated": true
+    },
+    {
+      "projectId": 3,
+      "name": "Digital Products Store",
+      "description": "Create a system for developing, managing and selling digital products like eBooks, stickers, custom fantasy writing, and other persona-specific digital merchandise across platforms like Etsy and Google Books.",
+      "progress": 0,
+      "isWorking": true,
+      "priority": 3,
+      "status": "in_progress",
+      "id": 9,
+      "estimatedDays": null,
+      "createdAt": "2025-03-26T15:19:57.906Z",
+      "startDate": null,
+      "completionDate": null,
+      "dependencies": [],
+      "blockReason": null,
+      "implementationDetails": {},
+      "optimizationRound": 0,
+      "aiGenerated": true
     }
   ],
   "milestones": [
@@ -154,6 +192,86 @@
       "percentOfFeature": 40,
       "id": 2,
       "createdAt": "2025-03-26T15:17:51.402Z"
+    },
+    {
+      "featureId": 3,
+      "name": "MotherCeline Persona Development",
+      "description": "Create a complete personality profile, backstory, speech patterns, preferences, and visual identity for the nurturing MotherCeline persona.",
+      "estimatedHours": 20,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 3,
+      "createdAt": "2025-03-26T15:20:27.975Z"
+    },
+    {
+      "featureId": 3,
+      "name": "Bratty Little Persona Development",
+      "description": "Create a comprehensive persona for a bratty little character including name, personality traits, backstory, linguistics, visual identity, and target demographic analysis.",
+      "estimatedHours": 20,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 4,
+      "createdAt": "2025-03-26T15:20:39.862Z"
+    },
+    {
+      "featureId": 3,
+      "name": "Mature Woman Persona Development",
+      "description": "Create a fully developed persona for an older mature woman character, including name, personality profile, backstory, speech patterns, visual identity, and target market analysis.",
+      "estimatedHours": 20,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 5,
+      "createdAt": "2025-03-26T15:20:47.585Z"
+    },
+    {
+      "featureId": 3,
+      "name": "Persona Management System",
+      "description": "Create a unified dashboard and management system to track, update, and maintain consistency across all personas, their analytics, and content scheduling.",
+      "estimatedHours": 30,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 6,
+      "createdAt": "2025-03-26T15:20:53.225Z"
+    },
+    {
+      "featureId": 4,
+      "name": "AI Voiceover Generation System",
+      "description": "Develop a system that creates realistic, persona-specific AI-generated voiceovers for content, including variable tones, emotions, and accents.",
+      "estimatedHours": 40,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 7,
+      "createdAt": "2025-03-26T15:20:58.898Z"
+    },
+    {
+      "featureId": 4,
+      "name": "Hypnosis Video Generation",
+      "description": "Create a system for generating hypnosis videos with persona-appropriate scripting, visuals, audio, and specialized hypnotic techniques.",
+      "estimatedHours": 50,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 8,
+      "createdAt": "2025-03-26T15:21:05.832Z"
+    },
+    {
+      "featureId": 4,
+      "name": "Hentai/Adult Content Generator",
+      "description": "Develop an AI system for creating high-quality adult content including hentai videos, images, and animations tailored to each persona and their target audience.",
+      "estimatedHours": 60,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 9,
+      "createdAt": "2025-03-26T15:21:14.768Z"
+    },
+    {
+      "featureId": 4,
+      "name": "Content Management & Scheduling System",
+      "description": "Build a comprehensive system for managing, scheduling, and optimizing content generation across all content types and personas.",
+      "estimatedHours": 35,
+      "progress": 0,
+      "percentOfFeature": 25,
+      "id": 10,
+      "createdAt": "2025-03-26T15:21:23.753Z"
     }
   ],
   "goals": [
@@ -214,6 +332,38 @@
       "urls": [],
       "changes": null,
       "thinkingProcess": null
+    },
+    {
+      "projectId": 3,
+      "message": "Auto-generated activity at 3:20:05 PM",
+      "timestamp": "2025-03-26T15:20:05.980Z",
+      "agentId": "agent-3",
+      "codeSnippet": null,
+      "id": 9,
+      "isCheckpoint": false,
+      "featureId": null,
+      "milestoneId": null,
+      "activityType": "general",
+      "details": null,
+      "urls": [],
+      "changes": null,
+      "thinkingProcess": null
+    },
+    {
+      "projectId": 3,
+      "message": "Auto-generated activity at 3:21:05 PM",
+      "timestamp": "2025-03-26T15:21:05.981Z",
+      "agentId": "agent-1",
+      "codeSnippet": null,
+      "id": 10,
+      "isCheckpoint": false,
+      "featureId": null,
+      "milestoneId": null,
+      "activityType": "general",
+      "details": null,
+      "urls": [],
+      "changes": null,
+      "thinkingProcess": null
     }
   ],
   "externalApis": [],
@@ -221,10 +371,10 @@
   "webAccounts": [],
   "nextUserId": 3,
   "nextProjectId": 4,
-  "nextFeatureId": 8,
-  "nextMilestoneId": 3,
+  "nextFeatureId": 10,
+  "nextMilestoneId": 11,
   "nextGoalId": 5,
-  "nextLogId": 9,
+  "nextLogId": 11,
   "nextApiId": 1,
   "nextTaskId": 1,
   "nextAccountId": 1
