@@ -214,15 +214,27 @@ CRITICAL DEVELOPMENT REQUIREMENTS:
 5. Each code file must be 50-200 lines long (not trivially short samples)
 6. Put each file in a separate code block with proper syntax highlighting
 7. Implementations must use real external libraries, frameworks and APIs when appropriate
-4. Build highly maintainable, well-documented code with proper commenting
-5. Follow industry best practices for the language and frameworks used
-6. Focus on production-ready code that can be integrated immediately
-7. Consider system architecture integration patterns to work with existing code
-8. Provide detailed explanations that explain WHY certain approaches were chosen
-9. Consider security, performance, and scalability from the beginning
+8. Build highly maintainable, well-documented code with proper commenting
+9. Follow industry best practices for the language and frameworks used
+10. Focus on production-ready code that can be integrated immediately
+11. Consider system architecture integration patterns to work with existing code
+12. Provide detailed explanations that explain WHY certain approaches were chosen
+13. Consider security, performance, and scalability from the beginning
+
+REVENUE FOCUS FOR FINDOM:
+1. Prioritize code that directly enables monetization capabilities
+2. Always include payment processing hooks or integration points even in non-payment features
+3. Design for multi-platform content distribution to maximize audience reach
+4. Implement analytics tracking to measure revenue performance
+5. Create code that supports subscription models, pay-per-view, and tipping
+6. Design flexible payment tier structures that maximize revenue
+7. Implement A/B testing capabilities for revenue optimization
+8. Include user engagement and retention mechanisms to improve lifetime value
+9. Build analytics dashboards to track revenue KPIs
+10. Ensure cross-platform content management to reach wider audiences
 
 IMPLEMENTATION GUIDANCE:
-- Focus on creating self-contained modules that solve real business problems
+- Focus on creating self-contained modules that solve real business problems and enable revenue generation
 - If your implementation requires multiple files, provide a clear folder structure and file organization
 - Reference persistent data storage where appropriate (database models, etc.)
 - If relevant, include frontend integration that works with the backend API
@@ -231,6 +243,18 @@ IMPLEMENTATION GUIDANCE:
 - For user interfaces, consider responsive design, accessibility, and meaningful user interactions
 - Include proper validation, error boundary handling, and user feedback mechanisms
 - Consider automated testing approaches where relevant
+
+REVENUE ACCELERATION GUIDANCE:
+- Design code for immediate deployment and revenue generation within days
+- Integrate with popular payment processors like Stripe, PayPal, or cryptocurrency options
+- Build for multi-platform content distribution (OnlyFans, Patreon, custom website, etc.)
+- Include subscription management with tiered pricing models
+- Implement pay-per-view or pay-per-content access controls
+- Create analytics dashboards that measure revenue performance
+- Design referral and affiliate systems to expand audience reach
+- Develop promotional tools for cross-selling and upselling
+- Include A/B testing capabilities to optimize conversion rates
+- Track user behavior to identify monetization opportunities
 
 FORMAT YOUR RESPONSE WITH:
 1. A thorough explanation of your approach and thought process
@@ -958,9 +982,19 @@ export async function improveProject(projectId: number): Promise<void> {
       
       // Generate a new feature for the project
       const featurePrompt = `The project ${project.name} needs more features. Please generate a comprehensive 
-      new feature for this project. The project is described as: ${project.description}. 
+      new feature for this project with a strong focus on quick revenue generation. 
+      
+      For FINDOM specifically, prioritize these areas:
+      1. Immediate Revenue Generation - Features that directly enable monetization
+      2. Multi-platform Distribution - Features that deploy content across different platforms
+      3. Audience Growth - Features that attract and retain paying users
+      4. Analytics - Features that provide actionable insights on monetization
+      5. Automation - Features that reduce human effort in content management
+      
+      The project is described as: ${project.description}. 
       Current features: ${features.map(f => f.name).join(', ')}. 
-      Focus on creating complex, detailed implementation with many milestones and goals.`;
+      Focus on creating complex, detailed implementation with many milestones and goals, 
+      but ensure it contributes directly to revenue generation within days, not weeks.`;
       
       try {
         // Add a new feature to the project
@@ -1013,9 +1047,32 @@ export async function improveProject(projectId: number): Promise<void> {
     
     // If we have incomplete goals, work on one
     if (incompleteGoals.length > 0) {
-      // Pick a random goal to work on
-      const targetIndex = Math.floor(Math.random() * incompleteGoals.length);
-      const target = incompleteGoals[targetIndex];
+      // Prioritize persona development goals first (since that's a critical foundation for FINDOM)
+      let personaGoals = incompleteGoals.filter(g => 
+        g.feature.name.toLowerCase().includes('persona') || 
+        g.milestone.name.toLowerCase().includes('persona') || 
+        g.goal.name.toLowerCase().includes('persona') ||
+        g.feature.name.toLowerCase().includes('motherceline') || 
+        g.milestone.name.toLowerCase().includes('motherceline') || 
+        g.goal.name.toLowerCase().includes('motherceline')
+      );
+      
+      // If we have persona goals, prioritize those
+      let target;
+      if (personaGoals.length > 0) {
+        console.log(`Found ${personaGoals.length} persona-related goals to prioritize`);
+        const targetIndex = Math.floor(Math.random() * personaGoals.length);
+        target = personaGoals[targetIndex];
+      } else {
+        // Otherwise, pick a random goal but prioritize features with less progress
+        const prioritizedIncompleteGoals = incompleteGoals.sort((a, b) => 
+          (a.feature.progress || 0) - (b.feature.progress || 0)
+        );
+        
+        // Pick from the first third of the sorted list to focus on less complete features
+        const targetIndex = Math.floor(Math.random() * Math.max(3, Math.ceil(prioritizedIncompleteGoals.length / 3)));
+        target = prioritizedIncompleteGoals[targetIndex];
+      }
       
       console.log(`Working on goal: ${target.goal.name} for feature: ${target.feature.name}`);
       broadcastThinking(projectId, `Working on goal: ${target.goal.name} for feature: ${target.feature.name}...`);
@@ -1062,11 +1119,18 @@ export async function improveProject(projectId: number): Promise<void> {
       console.log("All goals are complete. Generating a new feature...");
       broadcastThinking(projectId, `All goals for ${project.name} are complete. Generating a new feature to continue development...`);
       
-      const featurePrompt = `The project ${project.name} has completed all its current goals and needs a new feature. 
-      Generate a completely new, substantial feature that would extend the project's capabilities. 
-      The project is described as: ${project.description}. 
-      Current features: ${features.map(f => f.name).join(', ')}. 
-      Think of a major new capability that would take this project to the next level.`;
+      const featurePrompt = `The project ${project.name} has completed all its current goals and needs a new feature.
+      For FINDOM specifically, prioritize the following areas:
+      1. Immediate Revenue Generation - Features that directly enable monetization
+      2. Multi-platform Distribution - Features that deploy content across different platforms
+      3. Audience Growth - Features that attract and retain paying users
+      4. Analytics - Features that provide actionable insights on monetization
+      5. Automation - Features that reduce human effort in content management
+      
+      Generate a completely new, substantial feature that would extend the project's capabilities with a focus on these priorities.
+      The project is described as: ${project.description}.
+      Current features: ${features.map(f => f.name).join(', ')}.
+      Think of a major new capability that would take this project to the next level with an emphasis on immediate revenue generation.`;
       
       try {
         // Add a new feature to the project
@@ -1147,9 +1211,9 @@ function getFileExtension(language: string): string {
   return extensionMap[language.toLowerCase()] || 'txt';
 }
 
-export function setupProjectImprovement(intervalMinutes: number = 1): void {
+export function setupProjectImprovement(intervalMinutes: number = 3): void {
   // Run improvement for all auto-mode projects periodically
-  // Using 1-minute intervals for more frequent autonomous development
+  // Default to 3-minute intervals for balanced autonomous development (was 1-minute)
   console.log(`Setting up autonomous project improvement with ${intervalMinutes}-minute intervals`);
   
   // Immediate execution when starting up to avoid waiting for the first interval
