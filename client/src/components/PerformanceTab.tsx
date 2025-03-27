@@ -908,97 +908,173 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
     <div className="h-full flex flex-col">
       {/* Chat interface with code panel */}
       <div className="flex flex-col h-full">
-        {/* Three-panel layout: Code Editor, Preview, and Chat */}
-        <div className="flex h-1/2 border-b border-gray-700">
-          {/* Left panel: Code Editor */}
-          <div className="w-1/2 border-r border-gray-700 overflow-hidden flex flex-col">
-            <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
-              <div className="flex items-center">
-                <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                </svg>
-                <span className="text-sm font-medium text-gray-300">Code Editor</span>
-                <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
-                  Active Implementation
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
-                  <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
-                  <span className="text-xs text-gray-300">Auto-Developing</span>
-                </div>
-                <button 
-                  className={`py-1 px-3 rounded text-xs flex items-center space-x-1 ${canRollback ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
-                  onClick={handleRollback}
-                  disabled={!canRollback}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                  </svg>
-                  <span>Roll Back</span>
-                </button>
-              </div>
-            </div>
-            <div className="flex-1 overflow-auto bg-gray-900 font-mono text-sm">
-              <div className="flex items-center bg-gray-800/50 px-4 py-1 text-xs text-gray-400 border-b border-gray-700">
-                <div className="flex-1">
-                  {currentCode ? 
-                    "Generated implementation for Document Template Management System" : 
-                    "No active code implementation"
-                  }
-                </div>
-                <div>FINDOM / AI-Driven Legal and Compliance Automation System</div>
-              </div>
-              <div className="p-4">
-                {currentCode ? (
-                  <SyntaxHighlightedCode code={currentCode} />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-500">
-                    <div className="text-center">
-                      <svg className="h-12 w-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                      </svg>
-                      <div className="text-gray-400">
-                        AI is currently generating code...
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Ask a question or wait for the next implementation
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Vertical stacked layout: Jump Box, Live Preview, Code View, and Chat */}
+        
+        {/* Jump to bottom of chat box */}
+        <div className="p-3 bg-gray-800 border border-gray-700 rounded-md mb-4 hover:ring-2 hover:ring-accent transition-all duration-200 cursor-pointer relative group">
+          <div 
+            className="absolute top-2 right-2 bg-gray-700 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Close this box
+              e.currentTarget.parentElement?.classList.add('hidden');
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
           </div>
-          
-          {/* Right panel: Live Preview */}
-          <div className="w-1/2 overflow-hidden flex flex-col">
-            <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
-              <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-sm font-medium text-gray-300">Live Preview</span>
-                <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-500/20 text-green-300 rounded">
-                  Real-time Output
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></div>
-                  <span className="text-xs text-gray-300">Auto-Refresh</span>
-                </div>
-              </div>
+          <div 
+            className="flex items-center"
+            onClick={() => {
+              // Scroll to bottom of chat
+              if (messagesContainerRef.current) {
+                messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+              }
+            }}
+          >
+            <div className="bg-accent/20 p-2 rounded-full mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div className="flex-1 overflow-hidden">
-              <LivePreview projectId={projectId} height="100%" />
+            <div className="flex-1">
+              <h3 className="font-medium text-gray-200">Jump to Latest Messages</h3>
+              <p className="text-sm text-gray-400">Click here to scroll to the most recent AI agent messages</p>
+            </div>
+            <div className="bg-accent/10 px-3 py-1 rounded text-accent text-sm">
+              Jump ↓
             </div>
           </div>
         </div>
         
-        {/* Chat panel (bottom) */}
-        <div className="h-1/2 flex flex-col">
+        {/* Live web/action view */}
+        <div className="flex-1 border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col">
+          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Live Preview</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-500/20 text-green-300 rounded">
+                Active Development
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></div>
+                <span className="text-xs text-gray-300">Auto-Refresh</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 min-h-[300px]">
+            <LivePreview projectId={projectId} height="100%" />
+          </div>
+        </div>
+        
+        {/* Code panel */}
+        <div className="border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col">
+          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+            <div className="flex items-center">
+              <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Code Editor</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                Active Implementation
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
+                <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
+                <span className="text-xs text-gray-300">Auto-Developing</span>
+              </div>
+              <button 
+                className={`py-1 px-3 rounded text-xs flex items-center space-x-1 ${canRollback ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
+                onClick={handleRollback}
+                disabled={!canRollback}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+                <span>Roll Back</span>
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 bg-gray-900 font-mono text-sm max-h-[300px] overflow-auto">
+            <div className="flex items-center bg-gray-800/50 px-4 py-1 text-xs text-gray-400 border-b border-gray-700">
+              <div className="flex-1">
+                {currentCode ? 
+                  "Generated implementation for Document Template Management System" : 
+                  "No active code implementation"
+                }
+              </div>
+              <div>FINDOM / AI-Driven Legal and Compliance Automation System</div>
+            </div>
+            <div className="p-4">
+              {currentCode ? (
+                <SyntaxHighlightedCode code={currentCode} />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                    <svg className="h-12 w-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <div className="text-gray-400">
+                      AI is currently generating code...
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Ask a question or wait for the next implementation
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Development Logs Panel */}
+        <div className="border border-gray-700 rounded-md overflow-hidden mb-4">
+          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Development Logs</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-amber-500/20 text-amber-300 rounded">
+                Live Updates
+              </span>
+            </div>
+          </div>
+          <div className="max-h-[150px] overflow-y-auto bg-gray-900 p-3">
+            <div className="space-y-2 text-xs font-mono">
+              <div className="flex items-start">
+                <span className="text-green-400 min-w-[80px] mr-2">[07:54:59]</span>
+                <span className="text-green-300">✓ Autonomous improvement cycle started for FINDOM project</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-blue-400 min-w-[80px] mr-2">[07:55:03]</span>
+                <span className="text-blue-300">→ Working on AI Algorithm Development for Strategy Optimization</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-blue-400 min-w-[80px] mr-2">[07:55:07]</span>
+                <span className="text-blue-300">→ Implementing reinforcement learning model for monetization strategy</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-green-400 min-w-[80px] mr-2">[07:55:20]</span>
+                <span className="text-green-300">✓ Successfully generated monetization environment simulation</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-gray-400 min-w-[80px] mr-2">[07:56:00]</span>
+                <span className="text-gray-300">PerformanceTab UI updated with vertical stacked layout</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Chat panel */}
+        <div className="flex-1 flex flex-col border border-gray-700 rounded-md overflow-hidden min-h-[250px]">
           {/* Messages area */}
           <div
             ref={messagesContainerRef}
