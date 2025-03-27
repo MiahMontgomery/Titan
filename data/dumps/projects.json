@@ -1,0 +1,21 @@
+[
+  {
+    "name": "FINDOM",
+    "description": "A comprehensive AI-driven adult content platform that determines the most effective niche strategy, generates targeted content, performs market analytics, manages multiple personas, and automates content distribution and sales across multiple platforms.",
+    "isWorking": true,
+    "progress": 30,
+    "projectType": "marketing",
+    "agentConfig": {
+      "model": "gpt-4o",
+      "maxTokens": 4000,
+      "temperature": 0.8
+    },
+    "autoMode": true,
+    "priority": 2,
+    "id": 3,
+    "lastUpdated": "2025-03-27T09:54:18.268Z",
+    "checkpoints": {},
+    "lastCheckIn": null,
+    "nextCheckIn": null
+  }
+]

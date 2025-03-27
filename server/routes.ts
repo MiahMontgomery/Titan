@@ -17,9 +17,12 @@ import {
   insertFeatureSchema, 
   insertMilestoneSchema, 
   insertGoalSchema,
-  insertActivityLogSchema 
+  insertActivityLogSchema,
+  insertWebAccountSchema
 } from "@shared/schema";
 import { handleChatMessage, setWebSocketServer } from "./chatHandler";
+import { initializeWebAutomation, getWebAutomationService } from "./webAutomation";
+import { getBrowserClient } from "./browserClient";
 
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
@@ -1040,6 +1043,146 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/chat', handleChatMessage);
   
   // Project Export API
+  // Web Automation API Endpoints
+  
+  // Get all web accounts for a project
+  app.get('/api/projects/:id/web-accounts', async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const webAccounts = await storage.getWebAccounts(projectId);
+      res.json(webAccounts);
+    } catch (error) {
+      console.error('Error getting web accounts:', error);
+      res.status(500).json({ error: 'Failed to get web accounts' });
+    }
+  });
+
+  // Create a new web account for a project
+  app.post('/api/projects/:id/web-accounts', async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const webAccountData = req.body;
+      
+      // Validate required fields
+      if (!webAccountData.service || !webAccountData.accountName) {
+        return res.status(400).json({ error: 'Service and account name are required' });
+      }
+      
+      const accountType = webAccountData.accountType || 'social';
+      const webAccount = await storage.createWebAccount({
+        ...webAccountData,
+        projectId,
+        accountType,
+        status: 'active',
+        lastActivity: new Date(),
+        createdAt: new Date()
+      });
+      
+      res.status(201).json(webAccount);
+    } catch (error) {
+      console.error('Error creating web account:', error);
+      res.status(500).json({ error: 'Failed to create web account' });
+    }
+  });
+
+  // Update a web account
+  app.put('/api/web-accounts/:id', async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      const updated = await storage.updateWebAccount(accountId, updateData);
+      if (!updated) {
+        return res.status(404).json({ error: 'Web account not found' });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating web account:', error);
+      res.status(500).json({ error: 'Failed to update web account' });
+    }
+  });
+
+  // Delete a web account
+  app.delete('/api/web-accounts/:id', async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const success = await storage.deleteWebAccount(accountId);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Web account not found' });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting web account:', error);
+      res.status(500).json({ error: 'Failed to delete web account' });
+    }
+  });
+
+  // Get automation status for a project
+  app.get('/api/projects/:id/automation-status', async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const project = await storage.getProject(projectId);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      const automationService = getWebAutomationService(projectId);
+      const accounts = await storage.getWebAccounts(projectId);
+      
+      res.json({
+        projectId,
+        autoMode: project.autoMode || false,
+        accountsCount: accounts.length,
+        lastAutomationRun: project.lastAutomationRun || null,
+        isActive: accounts.length > 0 && (project.autoMode || false)
+      });
+    } catch (error) {
+      console.error('Error getting automation status:', error);
+      res.status(500).json({ error: 'Failed to get automation status' });
+    }
+  });
+
+  // Toggle automation mode for a project
+  app.post('/api/projects/:id/toggle-automation', async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const { autoMode } = req.body;
+      
+      if (typeof autoMode !== 'boolean') {
+        return res.status(400).json({ error: 'autoMode must be a boolean value' });
+      }
+      
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      const updatedProject = await storage.updateProject(projectId, { 
+        autoMode,
+        lastAutomationRun: autoMode ? new Date() : project.lastAutomationRun
+      });
+      
+      // If turning on automation, ensure the service is running
+      if (autoMode) {
+        const automationService = getWebAutomationService(projectId);
+        automationService.setupAutomationSchedule();
+      }
+      
+      res.json({
+        projectId,
+        autoMode,
+        message: autoMode ? 'Automation enabled' : 'Automation disabled'
+      });
+    } catch (error) {
+      console.error('Error toggling automation:', error);
+      res.status(500).json({ error: 'Failed to toggle automation' });
+    }
+  });
+
   app.post('/api/projects/:id/export', async (req, res) => {
     try {
       const projectId = parseInt(req.params.id);
@@ -1126,6 +1269,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (isOpenAIConfigured()) {
     console.log("OpenAI is configured, starting autonomous project improvement cycle...");
     setupProjectImprovement(5); // Check every 5 minutes for autonomous improvement
+    
+    // Initialize 24/7 autonomous web automation for FINDOM projects
+    setTimeout(async () => {
+      try {
+        console.log("Initializing 24/7 autonomous web automation for FINDOM projects...");
+        await initializeWebAutomation();
+        console.log("FINDOM web automation initialized successfully");
+      } catch (error) {
+        console.error("Error initializing web automation:", error);
+      }
+    }, 10000); // Wait 10 seconds after startup to ensure everything is initialized
   } else {
     console.log("OpenAI API key not configured. Autonomous project improvement is disabled.");
     console.log("Please configure the OpenAI API key in Settings to enable autonomous coding.");
