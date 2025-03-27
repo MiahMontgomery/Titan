@@ -69,6 +69,30 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
     </html>
   `;
 
+  // Track auto-refresh state
+  const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
+  
+  // Listen for the custom auto-refresh toggle event 
+  useEffect(() => {
+    const handleAutoRefreshToggle = () => {
+      setAutoRefresh(prev => {
+        const newState = !prev;
+        setLogs(prev => [...prev, {
+          message: `Auto-refresh ${newState ? 'enabled' : 'disabled'}`,
+          type: newState ? 'success' : 'info',
+          timestamp: new Date()
+        }]);
+        return newState;
+      });
+    };
+    
+    window.addEventListener('toggle-auto-refresh', handleAutoRefreshToggle);
+    
+    return () => {
+      window.removeEventListener('toggle-auto-refresh', handleAutoRefreshToggle);
+    };
+  }, []);
+  
   // Setup WebSocket subscription to capture HTML content and logs
   useEffect(() => {
     // Set initial HTML
@@ -93,9 +117,14 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
         timestamp: new Date(timestamp.getTime() + 200)
       },
       {
-        message: 'Working on Auto-Developing FINDOM Project ID #3',
+        message: 'Auto-refresh enabled by default',
         type: 'success',
         timestamp: new Date(timestamp.getTime() + 300)
+      },
+      {
+        message: 'Working on Auto-Developing FINDOM Project ID #3',
+        type: 'success',
+        timestamp: new Date(timestamp.getTime() + 400)
       }
     ]);
 
@@ -106,7 +135,7 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
         return;
       }
 
-      // Add to logs depending on message type
+      // Always add to logs, regardless of auto-refresh setting
       if (data.type === 'thinking') {
         setLogs(prev => [...prev, {
           message: `AI thinking: ${data.message || 'Processing...'}`,
@@ -118,43 +147,53 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
         const snippet = data.codeSnippet || '';
         const language = detectLanguage(snippet);
         
-        // If this is HTML or contains significant viewable content, update the preview
-        if (language === 'html' || data.codeSnippet && (data.codeSnippet.includes('<html>') || data.codeSnippet.includes('<body>'))) {
-          // Extract the HTML from the code snippet
-          const htmlContent = extractHtml(data.codeSnippet || '');
-          if (htmlContent) {
-            setCurrentHtml(htmlContent);
+        // Only update the preview content if auto-refresh is enabled
+        if (autoRefresh) {
+          // If this is HTML or contains significant viewable content, update the preview
+          if (language === 'html' || data.codeSnippet && (data.codeSnippet.includes('<html>') || data.codeSnippet.includes('<body>'))) {
+            // Extract the HTML from the code snippet
+            const htmlContent = extractHtml(data.codeSnippet || '');
+            if (htmlContent) {
+              setCurrentHtml(htmlContent);
+              
+              setLogs(prev => [...prev, {
+                message: 'Updated live preview with new HTML content',
+                type: 'success',
+                timestamp: new Date()
+              }]);
+            }
+          }
+          // For React/UI components, generate a demo HTML to show how it might look
+          else if (
+            data.codeSnippet && (
+              data.codeSnippet.includes('import React') || 
+              (data.codeSnippet.includes('function') && 
+              data.codeSnippet.includes('return') && 
+              data.codeSnippet.includes('<'))
+            )
+          ) {
+            const snippet = data.codeSnippet || '';
+            const componentName = extractComponentName(snippet);
+            const componentDemo = generateComponentDemo(componentName, snippet);
+            
+            setCurrentHtml(componentDemo);
             
             setLogs(prev => [...prev, {
-              message: 'Updated live preview with new HTML content',
+              message: `Generated preview for React component: ${componentName || 'Unknown Component'}`,
               type: 'success',
               timestamp: new Date()
             }]);
           }
-        }
-        // For React/UI components, generate a demo HTML to show how it might look
-        else if (
-          data.codeSnippet && (
-            data.codeSnippet.includes('import React') || 
-            (data.codeSnippet.includes('function') && 
-            data.codeSnippet.includes('return') && 
-            data.codeSnippet.includes('<'))
-          )
-        ) {
-          const snippet = data.codeSnippet || '';
-          const componentName = extractComponentName(snippet);
-          const componentDemo = generateComponentDemo(componentName, snippet);
-          
-          setCurrentHtml(componentDemo);
-          
+        } else {
+          // Log that we received an update but didn't refresh due to settings
           setLogs(prev => [...prev, {
-            message: `Generated preview for React component: ${componentName || 'Unknown Component'}`,
-            type: 'success',
+            message: `New code received but preview not updated (auto-refresh disabled)`,
+            type: 'info',
             timestamp: new Date()
           }]);
         }
         
-        // Add code generation log
+        // Always add code generation log
         if (data.codeSnippet) {
           const snippet = data.codeSnippet || '';
           setLogs(prev => [...prev, {
@@ -182,7 +221,7 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
     });
 
     return unsubscribe;
-  }, [projectId, subscribe]);
+  }, [projectId, subscribe, autoRefresh]);
 
   // Generate a demo HTML for a React component
   const generateComponentDemo = (componentName: string, code: string): string => {
@@ -415,21 +454,27 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
   return (
     <div className="flex flex-col h-full border border-gray-700 rounded-md overflow-hidden" style={{ height }}>
       {/* Tabs */}
-      <div className="flex bg-gray-800 border-b border-gray-700">
-        <button 
-          className={`px-4 py-2 text-sm font-medium ${activeTab === 'preview' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-200'}`}
-          onClick={() => setActiveTab('preview')}
-        >
-          Preview
-        </button>
-        {showLogs && (
+      <div className="flex bg-gray-800 border-b border-gray-700 justify-between">
+        <div className="flex">
           <button 
-            className={`px-4 py-2 text-sm font-medium ${activeTab === 'logs' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-200'}`}
-            onClick={() => setActiveTab('logs')}
+            className={`px-4 py-2 text-sm font-medium ${activeTab === 'preview' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-200'}`}
+            onClick={() => setActiveTab('preview')}
           >
-            Logs
+            Preview
           </button>
-        )}
+          {showLogs && (
+            <button 
+              className={`px-4 py-2 text-sm font-medium ${activeTab === 'logs' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-200'}`}
+              onClick={() => setActiveTab('logs')}
+            >
+              Logs
+            </button>
+          )}
+        </div>
+        <div className="flex items-center px-3">
+          <div className={`h-2 w-2 rounded-full mr-2 ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
+          <span className="text-xs text-gray-400">{autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}</span>
+        </div>
       </div>
       
       {/* Content area */}

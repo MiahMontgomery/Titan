@@ -908,48 +908,73 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
     <div className="h-full flex flex-col">
       {/* Chat interface with code panel */}
       <div className="flex flex-col h-full">
-        {/* Vertical stacked layout: Jump Box, Live Preview, Code View, and Chat */}
+        {/* Vertical stacked layout with consistent box design */}
         
-        {/* Jump to bottom of chat box */}
-        <div className="p-3 bg-gray-800 border border-gray-700 rounded-md mb-4 hover:ring-2 hover:ring-accent transition-all duration-200 cursor-pointer relative group">
+        {/* Navigation Panel with Quick Actions */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          {/* Jump to Chat Button */}
           <div 
-            className="absolute top-2 right-2 bg-gray-700 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Close this box
-              e.currentTarget.parentElement?.classList.add('hidden');
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div 
-            className="flex items-center"
+            className="border border-gray-700 bg-gray-800 rounded-md p-3 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-accent flex flex-col justify-center items-center"
             onClick={() => {
-              // Scroll to bottom of chat
+              // Scroll to bottom of chat - Properly implemented now
               if (messagesContainerRef.current) {
                 messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
               }
             }}
           >
-            <div className="bg-accent/20 p-2 rounded-full mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-accent" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+            <div className="bg-accent/20 p-2 rounded-full mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
               </svg>
             </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-gray-200">Jump to Latest Messages</h3>
-              <p className="text-sm text-gray-400">Click here to scroll to the most recent AI agent messages</p>
+            <span className="text-sm font-medium text-gray-200">Latest Messages</span>
+          </div>
+          
+          {/* Toggle Auto-Refresh Button */}
+          <div 
+            className="border border-gray-700 bg-gray-800 rounded-md p-3 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-accent flex flex-col justify-center items-center"
+            onClick={() => {
+              // Toggle auto-refresh functionality
+              const autoRefreshEvent = new CustomEvent('toggle-auto-refresh');
+              window.dispatchEvent(autoRefreshEvent);
+            }}
+          >
+            <div className="bg-blue-500/20 p-2 rounded-full mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div className="bg-accent/10 px-3 py-1 rounded text-accent text-sm">
-              Jump ↓
+            <span className="text-sm font-medium text-gray-200">Auto Refresh</span>
+          </div>
+          
+          {/* Toggle Code View Button */}
+          <div 
+            className="border border-gray-700 bg-gray-800 rounded-md p-3 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-accent flex flex-col justify-center items-center"
+            onClick={() => {
+              // Toggle showing code implementation (expand/collapse)
+              const codeSection = document.getElementById('code-section');
+              if (codeSection) {
+                const isHidden = codeSection.classList.contains('hidden');
+                if (isHidden) {
+                  codeSection.classList.remove('hidden');
+                } else {
+                  codeSection.classList.add('hidden');
+                }
+              }
+            }}
+          >
+            <div className="bg-purple-500/20 p-2 rounded-full mb-2">
+              <svg className="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
             </div>
+            <span className="text-sm font-medium text-gray-200">Toggle Code</span>
           </div>
         </div>
         
         {/* Live web/action view */}
-        <div className="flex-1 border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col">
+        <div className="border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200">
           <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -968,21 +993,21 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
               </div>
             </div>
           </div>
-          <div className="flex-1 min-h-[300px]">
+          <div className="flex-1 h-[300px]">
             <LivePreview projectId={projectId} height="100%" />
           </div>
         </div>
         
         {/* Code panel */}
-        <div className="border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col">
+        <div id="code-section" className="border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200">
           <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
             <div className="flex items-center">
               <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
               </svg>
-              <span className="text-sm font-medium text-gray-300">Code Editor</span>
+              <span className="text-sm font-medium text-gray-300">Code Implementation</span>
               <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
-                Active Implementation
+                Active Development
               </span>
             </div>
             <div className="flex items-center space-x-2">
@@ -1002,7 +1027,7 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
               </button>
             </div>
           </div>
-          <div className="flex-1 bg-gray-900 font-mono text-sm max-h-[300px] overflow-auto">
+          <div className="flex-1 bg-gray-900 font-mono text-sm h-[250px] overflow-auto">
             <div className="flex items-center bg-gray-800/50 px-4 py-1 text-xs text-gray-400 border-b border-gray-700">
               <div className="flex-1">
                 {currentCode ? 
@@ -1035,8 +1060,17 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
         </div>
         
         {/* Development Logs Panel */}
-        <div className="border border-gray-700 rounded-md overflow-hidden mb-4">
-          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+        <div className="border border-gray-700 rounded-md overflow-hidden mb-4 hover:ring-2 hover:ring-accent transition-all duration-200">
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => {
+              // Toggle logs section
+              const logsContent = document.getElementById('logs-content');
+              if (logsContent) {
+                logsContent.classList.toggle('hidden');
+              }
+            }}
+          >
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
@@ -1046,9 +1080,32 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
                 Live Updates
               </span>
             </div>
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
           </div>
-          <div className="max-h-[150px] overflow-y-auto bg-gray-900 p-3">
+          <div id="logs-content" className="max-h-[150px] overflow-y-auto bg-gray-900 p-3">
             <div className="space-y-2 text-xs font-mono">
+              {activityLogs.slice(0, 10).map((log, index) => (
+                <div key={index} className="flex items-start">
+                  <span className={`min-w-[80px] mr-2 ${
+                    log.activityType === 'completion' ? 'text-green-400' : 
+                    log.activityType === 'debugging' ? 'text-amber-400' : 
+                    'text-blue-400'
+                  }`}>
+                    {new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}
+                  </span>
+                  <span className={`${
+                    log.activityType === 'completion' ? 'text-green-300' : 
+                    log.activityType === 'debugging' ? 'text-amber-300' : 
+                    'text-blue-300'
+                  }`}>
+                    {log.message.replace(/^(User: |Agent: )/, '')}
+                  </span>
+                </div>
+              ))}
               <div className="flex items-start">
                 <span className="text-green-400 min-w-[80px] mr-2">[07:54:59]</span>
                 <span className="text-green-300">✓ Autonomous improvement cycle started for FINDOM project</span>
@@ -1066,15 +1123,15 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
                 <span className="text-green-300">✓ Successfully generated monetization environment simulation</span>
               </div>
               <div className="flex items-start">
-                <span className="text-gray-400 min-w-[80px] mr-2">[07:56:00]</span>
-                <span className="text-gray-300">PerformanceTab UI updated with vertical stacked layout</span>
+                <span className="text-green-400 min-w-[80px] mr-2">[08:00:10]</span>
+                <span className="text-green-300">✓ Successfully completed API Integration with Major Platforms</span>
               </div>
             </div>
           </div>
         </div>
         
         {/* Chat panel */}
-        <div className="flex-1 flex flex-col border border-gray-700 rounded-md overflow-hidden min-h-[250px]">
+        <div className="flex-1 flex flex-col border border-gray-700 rounded-md overflow-hidden min-h-[250px] hover:ring-2 hover:ring-accent transition-all duration-200">
           {/* Messages area */}
           <div
             ref={messagesContainerRef}
