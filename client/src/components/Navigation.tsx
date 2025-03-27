@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { Logo } from '@/components/ui/Logo';
-import { Settings, Home, ChevronRight, User, LogOut, Terminal, Code } from 'lucide-react';
+import { Settings, Home, ChevronRight, User, LogOut, Terminal, Code, Users, Bot } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -20,6 +20,8 @@ export function Navigation() {
   const navItems = [
     { label: 'Dashboard', path: '/', icon: <Home size={20} /> },
     { label: 'Replit View', path: '/replit-view', icon: <Terminal size={20} /> },
+    { label: 'Web Accounts', path: '/web-accounts', icon: <Users size={20} /> },
+    { label: 'Automation', path: '/automation', icon: <Bot size={20} /> },
     { label: 'Settings', path: '/settings', icon: <Settings size={20} /> },
   ];
   

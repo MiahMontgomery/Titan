@@ -570,6 +570,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Web Accounts
+  app.get('/api/web-accounts', async (req, res) => {
+    try {
+      const accounts = await storage.getWebAccountsByProject(3); // Default to FINDOM project ID 3
+      res.json(accounts);
+    } catch (error) {
+      console.error('Error fetching web accounts:', error);
+      res.status(500).json({ error: 'Failed to fetch web accounts' });
+    }
+  });
+  
+  app.post('/api/web-accounts', async (req, res) => {
+    try {
+      const result = insertWebAccountSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      const account = await storage.createWebAccount(result.data);
+      
+      // Create an activity log
+      await storage.createActivityLog({
+        projectId: account.projectId,
+        message: `Added new ${account.service} account: ${account.accountName}`,
+        timestamp: new Date(),
+        agentId: 'findom-agent',
+        activityType: 'system'
+      });
+      
+      // Broadcast to all clients
+      broadcast(wss, { 
+        type: 'new-web-account', 
+        projectId: account.projectId,
+        data: account 
+      });
+      
+      res.status(201).json(account);
+    } catch (error) {
+      console.error('Error creating web account:', error);
+      res.status(500).json({ error: 'Failed to create web account' });
+    }
+  });
+  
+  app.get('/api/web-accounts/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const account = await storage.getWebAccount(id);
+      
+      if (!account) {
+        return res.status(404).json({ error: 'Web account not found' });
+      }
+      
+      res.json(account);
+    } catch (error) {
+      console.error('Error fetching web account:', error);
+      res.status(500).json({ error: 'Failed to fetch web account' });
+    }
+  });
+  
+  app.delete('/api/web-accounts/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const account = await storage.getWebAccount(id);
+      
+      if (!account) {
+        return res.status(404).json({ error: 'Web account not found' });
+      }
+      
+      const success = await storage.deleteWebAccount(id);
+      
+      if (success) {
+        // Create an activity log
+        await storage.createActivityLog({
+          projectId: account.projectId,
+          message: `Removed ${account.service} account: ${account.accountName}`,
+          timestamp: new Date(),
+          agentId: 'findom-agent',
+          activityType: 'system'
+        });
+        
+        // Broadcast to all clients
+        broadcast(wss, { 
+          type: 'delete-web-account', 
+          projectId: account.projectId,
+          data: { id }
+        });
+        
+        res.json({ success: true });
+      } else {
+        res.status(500).json({ error: 'Failed to delete web account' });
+      }
+    } catch (error) {
+      console.error('Error deleting web account:', error);
+      res.status(500).json({ error: 'Failed to delete web account' });
+    }
+  });
+  
   // Stubs for external integrations
   
   // Telegram integration stub

@@ -740,6 +740,11 @@ export class LowDBStorage implements IStorage {
     return this.db.data.webAccounts.filter(account => account.projectId === projectId);
   }
   
+  async getWebAccounts(projectId: number): Promise<WebAccount[]> {
+    // Alias for getWebAccountsByProject for consistency with the IStorage interface
+    return this.getWebAccountsByProject(projectId);
+  }
+  
   async getWebAccount(id: number): Promise<WebAccount | undefined> {
     return this.db.data.webAccounts.find(account => account.id === id);
   }
