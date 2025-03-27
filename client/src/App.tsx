@@ -5,25 +5,15 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import ProjectView from "@/pages/ProjectView";
-import Settings from "@/pages/Settings";
-import ReplitView from "@/pages/ReplitView";
 import { ProjectProvider } from "./context/ProjectContext";
 import { WebSocketProvider } from "./lib/websocket";
 import { Navigation } from "@/components/Navigation";
-
-// Import the new pages
-import WebAccounts from "@/pages/WebAccounts";
-import AutomationDashboard from "@/pages/AutomationDashboard";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/projects/:id" component={ProjectView} />
-      <Route path="/settings" component={Settings} />
-      <Route path="/replit-view" component={ReplitView} />
-      <Route path="/web-accounts" component={WebAccounts} />
-      <Route path="/automation" component={AutomationDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
