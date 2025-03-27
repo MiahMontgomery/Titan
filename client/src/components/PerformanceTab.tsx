@@ -1207,6 +1207,22 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
               </span>
             </div>
             <div>
+              {/* Scroll to Latest Button - Inline in the header */}
+              <button
+                className="px-2 py-1 bg-accent/20 hover:bg-accent/30 rounded-md text-xs flex items-center gap-1 text-accent mr-2"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent panel toggle
+                  // Scroll to bottom of chat
+                  if (messagesContainerRef.current) {
+                    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+                  }
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Latest
+              </button>
               {expandedPanel === 'chat' ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -1243,10 +1259,14 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
                   {message.isThinking && (
                     <div className="flex items-center mb-1 border-b border-gray-600 pb-1 mb-2">
                       <div className="h-5 w-5 relative mr-2">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="h-4 w-4 bg-blue-500 rounded-full"></div>
+                        {/* Logo spinner instead of standard spinner */}
+                        <div className="absolute inset-0 flex items-center justify-center animate-spin">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#3B82F6" />
+                            <path d="M2 17L12 22L22 17" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M2 12L12 17L22 12" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
                         </div>
-                        <div className="absolute inset-0 h-5 w-5 border-2 border-blue-300 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                       <span className="text-blue-300 text-sm font-medium">AI Processing</span>
                       <div className="ml-auto px-2 py-0.5 bg-blue-500/20 rounded text-xs text-blue-300">
@@ -1403,7 +1423,13 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
                 `}
               >
                 {isThinking ? (
-                  <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 animate-spin">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#60A5FA" />
+                      <path d="M2 17L12 22L22 17" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 12L12 17L22 12" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
                 ) : (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7"></path>
