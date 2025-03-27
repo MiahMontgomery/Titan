@@ -6,9 +6,10 @@ interface LivePreviewProps {
   projectId?: number;
   height?: string;
   showLogs?: boolean;
+  code?: string;
 }
 
-export function LivePreview({ projectId, height = '100%', showLogs = true }: LivePreviewProps) {
+export function LivePreview({ projectId, height = '100%', showLogs = true, code }: LivePreviewProps) {
   const [activeTab, setActiveTab] = useState<'preview'|'logs'>('preview');
   const [currentHtml, setCurrentHtml] = useState<string | null>(null);
   const [logs, setLogs] = useState<{message: string, type: 'info' | 'error' | 'warning' | 'success', timestamp: Date}[]>([]);
@@ -93,10 +94,51 @@ export function LivePreview({ projectId, height = '100%', showLogs = true }: Liv
     };
   }, []);
   
+  // Process code prop when it changes
+  useEffect(() => {
+    if (code) {
+      const language = detectLanguage(code);
+      // If this is HTML or contains significant viewable content, update the preview
+      if (language === 'html' || code.includes('<html>') || code.includes('<body>')) {
+        // Extract the HTML from the code snippet
+        const htmlContent = extractHtml(code);
+        if (htmlContent) {
+          setCurrentHtml(htmlContent);
+          
+          setLogs(prev => [...prev, {
+            message: 'Updated live preview with new HTML content from prop',
+            type: 'success',
+            timestamp: new Date()
+          }]);
+        }
+      }
+      // For React/UI components, generate a demo HTML to show how it might look
+      else if (
+        code.includes('import React') || 
+        (code.includes('function') && 
+        code.includes('return') && 
+        code.includes('<'))
+      ) {
+        const componentName = extractComponentName(code);
+        const componentDemo = generateComponentDemo(componentName, code);
+        
+        setCurrentHtml(componentDemo);
+        
+        setLogs(prev => [...prev, {
+          message: `Generated preview for React component: ${componentName || 'Unknown Component'}`,
+          type: 'success',
+          timestamp: new Date()
+        }]);
+      }
+    }
+  }, [code]);
+
   // Setup WebSocket subscription to capture HTML content and logs
   useEffect(() => {
-    // Set initial HTML
-    setCurrentHtml(initialHtml);
+    // Set initial HTML if no code prop
+    if (!code) {
+      setCurrentHtml(initialHtml);
+    }
     
     // Add initial log
     const timestamp = new Date();

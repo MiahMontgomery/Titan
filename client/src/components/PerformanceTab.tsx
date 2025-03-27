@@ -6,6 +6,7 @@ import { useWebSocketContext } from '@/lib/websocket';
 import { Separator } from '@/components/ui/separator';
 import { WebSocketMessage } from '@/lib/types';
 import { LivePreview } from '@/components/LivePreview';
+import { NinjaStarSpinner } from '@/components/NinjaStarSpinner';
 
 interface PerformanceTabProps {
   projectId: number;
@@ -404,7 +405,7 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
       }
       
       // Handle thinking updates from the server (progressive updates)
-      else if (data.type === 'thinking-update') {
+      else if (data.type === 'thinking') {
         console.log('Received thinking update via WebSocket:', data);
         
         setIsThinking(true);
@@ -872,10 +873,7 @@ export function calculateTieredDiscount(amount: number, tiers: DiscountTier[]): 
             {isThinking && !chatMessages.some(m => m.isThinking) && (
               <div className="flex items-center space-x-2 text-blue-400 text-sm animate-pulse p-2 border border-blue-900/30 bg-blue-900/10 rounded-md">
                 <div className="w-5 h-5">
-                  <svg className="animate-spin" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
+                  <NinjaStarSpinner size="1.25rem" color="currentColor" />
                 </div>
                 <span>AI thinking...</span>
               </div>
@@ -908,10 +906,7 @@ export function calculateTieredDiscount(amount: number, tiers: DiscountTier[]): 
                     <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                   </svg>
                 ) : (
-                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
+                  <NinjaStarSpinner size="1.25rem" color="currentColor" />
                 )}
               </button>
             </div>
