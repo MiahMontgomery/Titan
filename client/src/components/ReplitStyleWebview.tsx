@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useWebSocketContext } from '@/lib/websocket';
 import { WebSocketMessage } from '@/lib/types';
+import { LivePreview } from '@/components/LivePreview';
 
 export function ReplitStyleWebview() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -172,125 +173,170 @@ export function ReplitStyleWebview() {
         </div>
       </div>
       
-      <div className="flex flex-1 overflow-hidden divide-x divide-gray-700">
-        {/* Console/Terminal panel */}
-        <div className="w-1/2 flex flex-col overflow-hidden">
-          <div className="bg-gray-850 text-xs text-gray-400 px-3 py-1 font-semibold border-b border-gray-800">
-            Console
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Tabs for sections */}
+        <div className="flex bg-gray-850 text-xs text-gray-400 border-b border-gray-800">
+          <div className="flex-1 flex">
+            <div className="px-4 py-2 font-semibold bg-gray-750 text-gray-300 border-r border-gray-800">Terminal</div>
+            <div className="px-4 py-2 font-semibold">Code</div>
+            <div className="px-4 py-2 font-semibold">Components</div>
           </div>
-          <div className="flex-1 overflow-y-auto p-2 bg-gray-850 text-sm font-mono">
-            {messages.map((message, index) => (
-              <div key={index} className="mb-3">
-                {/* System message */}
-                {message.type === 'system' && (
-                  <div className="text-blue-400 opacity-75 px-2 py-1 text-xs">
-                    {message.content}
-                  </div>
-                )}
-                
-                {/* User message */}
-                {message.type === 'user' && (
-                  <div>
-                    <div className="text-gray-500 text-xs">&gt; User input:</div>
-                    <div className="bg-gray-800 rounded px-2 py-1.5 text-gray-200">
-                      {message.content}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Agent message */}
-                {message.type === 'agent' && (
-                  <div>
-                    <div className="text-gray-500 text-xs">&gt; Agent response:</div>
-                    <div className="bg-gray-800 rounded px-2 py-1.5 text-gray-200">
-                      {message.content}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Thinking message (Replit style) */}
-                {message.type === 'thinking' && (
-                  <div>
-                    <div className="flex items-center text-green-500 text-xs">
-                      <svg className="animate-spin mr-1 h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Titan thinking:
-                    </div>
-                    <div className="bg-gray-800 border-l-2 border-green-600 rounded px-2 py-1.5 text-gray-300 whitespace-pre-wrap">
-                      {message.content.split('\n').map((line: string, idx: number) => (
-                        <div key={idx} className="text-xs leading-relaxed">
-                          {line.startsWith('✓') ? (
-                            <span className="text-green-400">{line}</span>
-                          ) : line.startsWith('→') ? (
-                            <span className="text-blue-400">{line}</span>
-                          ) : line.startsWith('✗') ? (
-                            <span className="text-red-400">{line}</span>
-                          ) : (
-                            <span>{line}</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Show debug steps if any */}
-                    {message.steps && message.steps.length > 0 && (
-                      <div className="mt-1 ml-3 text-xs">
-                        <div className="text-blue-400">Steps:</div>
-                        {message.steps.map((step: string, stepIdx: number) => (
-                          <div key={stepIdx} className="flex items-start ml-2 mb-0.5">
-                            <div className="text-green-500 mr-1">{stepIdx + 1}.</div>
-                            <div className="text-gray-300">{step}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {/* Code generation result */}
-                {message.type === 'code-generation' && (
-                  <div>
-                    <div className="text-gray-500 text-xs mb-1">&gt; Generated code:</div>
-                    <div className="flex items-center text-green-500 text-xs mb-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      Successfully generated {message.filename}
-                    </div>
-                    <div className="text-gray-300 text-xs mb-1 italic">
-                      {message.content}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+          <div className="px-4 py-2 font-semibold text-green-500 flex items-center">
+            <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
+            Building FINDOM Project
           </div>
         </div>
         
-        {/* Code editor panel */}
-        <div className="w-1/2 flex flex-col overflow-hidden">
-          <div className="bg-gray-850 text-xs text-gray-400 px-3 py-1 flex justify-between items-center border-b border-gray-800">
-            <div className="font-semibold flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-              {codeFilename || 'No file selected'}
+        {/* Main content area */}
+        <div className="flex flex-1 overflow-hidden divide-x divide-gray-700">
+          {/* Console/Terminal panel */}
+          <div className="w-1/3 flex flex-col overflow-hidden">
+            <div className="bg-gray-850 text-xs text-gray-400 px-3 py-1 font-semibold border-b border-gray-800 flex items-center justify-between">
+              <div>Console</div>
+              <div className="text-green-500 flex items-center text-xs">
+                <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
+                Active
+              </div>
             </div>
-            <div>
-              {codeLanguage && <span className="text-xs px-1.5 py-0.5 bg-gray-700 rounded">{codeLanguage}</span>}
+            <div className="flex-1 overflow-y-auto p-2 bg-gray-850 text-sm font-mono">
+              {messages.map((message, index) => (
+                <div key={index} className="mb-3">
+                  {/* System message */}
+                  {message.type === 'system' && (
+                    <div className="text-blue-400 opacity-75 px-2 py-1 text-xs">
+                      {message.content}
+                    </div>
+                  )}
+                  
+                  {/* User message */}
+                  {message.type === 'user' && (
+                    <div>
+                      <div className="text-gray-500 text-xs">&gt; User input:</div>
+                      <div className="bg-gray-800 rounded px-2 py-1.5 text-gray-200">
+                        {message.content}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Agent message */}
+                  {message.type === 'agent' && (
+                    <div>
+                      <div className="text-gray-500 text-xs">&gt; Agent response:</div>
+                      <div className="bg-gray-800 rounded px-2 py-1.5 text-gray-200">
+                        {message.content}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Thinking message (Replit style) */}
+                  {message.type === 'thinking' && (
+                    <div>
+                      <div className="flex items-center text-green-500 text-xs">
+                        <svg className="animate-spin mr-1 h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Titan thinking:
+                      </div>
+                      <div className="bg-gray-800 border-l-2 border-green-600 rounded px-2 py-1.5 text-gray-300 whitespace-pre-wrap">
+                        {message.content.split('\n').map((line: string, idx: number) => (
+                          <div key={idx} className="text-xs leading-relaxed">
+                            {line.startsWith('✓') ? (
+                              <span className="text-green-400">{line}</span>
+                            ) : line.startsWith('→') ? (
+                              <span className="text-blue-400">{line}</span>
+                            ) : line.startsWith('✗') ? (
+                              <span className="text-red-400">{line}</span>
+                            ) : (
+                              <span>{line}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Show debug steps if any */}
+                      {message.steps && message.steps.length > 0 && (
+                        <div className="mt-1 ml-3 text-xs">
+                          <div className="text-blue-400">Steps:</div>
+                          {message.steps.map((step: string, stepIdx: number) => (
+                            <div key={stepIdx} className="flex items-start ml-2 mb-0.5">
+                              <div className="text-green-500 mr-1">{stepIdx + 1}.</div>
+                              <div className="text-gray-300">{step}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Code generation result */}
+                  {message.type === 'code-generation' && (
+                    <div>
+                      <div className="text-gray-500 text-xs mb-1">&gt; Generated code:</div>
+                      <div className="flex items-center text-green-500 text-xs mb-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Successfully generated {message.filename}
+                      </div>
+                      <div className="text-gray-300 text-xs mb-1 italic">
+                        {message.content}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
             </div>
           </div>
-          <div className="flex-1 overflow-auto bg-gray-900 p-4 text-sm font-mono">
-            {currentCode ? (
-              <pre className="text-gray-300 whitespace-pre-wrap">{currentCode}</pre>
-            ) : (
-              <div className="flex h-full items-center justify-center text-gray-500 text-sm">
-                No code to display yet. Watch the console for AI activity...
+          
+          {/* Middle section: Code editor panel */}
+          <div className="w-1/3 flex flex-col overflow-hidden">
+            <div className="bg-gray-850 text-xs text-gray-400 px-3 py-1 flex justify-between items-center border-b border-gray-800">
+              <div className="font-semibold flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                {codeFilename || 'No file selected'}
               </div>
-            )}
+              <div>
+                {codeLanguage && <span className="text-xs px-1.5 py-0.5 bg-gray-700 rounded">{codeLanguage}</span>}
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto bg-gray-900 p-4 text-sm font-mono">
+              {currentCode ? (
+                <pre className="text-gray-300 whitespace-pre-wrap">{currentCode}</pre>
+              ) : (
+                <div className="flex h-full items-center justify-center text-gray-500 text-sm">
+                  No code to display yet. Watch the console for AI activity...
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right section: Live Preview */}
+          <div className="w-1/3 flex flex-col overflow-hidden">
+            <div className="bg-gray-850 text-xs text-gray-400 px-3 py-1 flex justify-between items-center border-b border-gray-800">
+              <div className="font-semibold flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                </svg>
+                Live Preview
+              </div>
+              <div className="text-blue-400 flex items-center text-xs">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></div>
+                Auto Refresh
+              </div>
+            </div>
+            <div className="flex-1 overflow-hidden bg-gray-900">
+              <div className="h-full">
+                {/* Use the LivePreview component here */}
+                <div className="h-full" style={{ height: '100%' }}>
+                  <LivePreview projectId={3} height="100%" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
