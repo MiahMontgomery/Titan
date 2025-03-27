@@ -42,10 +42,35 @@ export function PerformanceTab({ projectId }: PerformanceTabProps) {
   const [codeHistory, setCodeHistory] = useState<string[]>([]);
   const [canRollback, setCanRollback] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
+  const [showCode, setShowCode] = useState(true);
   
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { sendMessage, subscribe, connected } = useWebSocketContext();
+  
+  // Handle panel toggle for expansion/collapse
+  const togglePanelExpansion = (panelId: string) => {
+    if (expandedPanel === panelId) {
+      // If clicking the already expanded panel, collapse it
+      setExpandedPanel(null);
+    } else {
+      // Otherwise, expand the clicked panel
+      setExpandedPanel(panelId);
+    }
+  };
+  
+  // Helper function to determine panel height based on expansion state
+  const getPanelHeight = (panelId: string): string => {
+    // When expanded, take up more space, otherwise use standard height
+    if (expandedPanel === panelId) {
+      return '400px'; // Expanded height
+    } else if (expandedPanel === null) {
+      return '250px'; // Standard height when nothing is expanded
+    } else {
+      return '150px'; // Reduced height when another panel is expanded
+    }
+  };
   
   // Fetch activity logs
   const { data: activityLogs = [] } = useQuery<ActivityLog[]>({
@@ -974,8 +999,13 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
         </div>
         
         {/* Live web/action view */}
-        <div className="border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200">
-          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+        <div 
+          className={`border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200`}
+        >
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('preview')}
+          >
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -991,16 +1021,31 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
                 <div className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></div>
                 <span className="text-xs text-gray-300">Auto-Refresh</span>
               </div>
+              {expandedPanel === 'preview' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
             </div>
           </div>
-          <div className="flex-1 h-[300px]">
+          <div className="flex-1" style={{ height: getPanelHeight('preview') }}>
             <LivePreview projectId={projectId} height="100%" />
           </div>
         </div>
         
         {/* Code panel */}
-        <div id="code-section" className="border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200">
-          <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+        <div 
+          id="code-section" 
+          className={`border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200 ${!showCode ? 'hidden' : ''}`}
+        >
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('code')}
+          >
             <div className="flex items-center">
               <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
@@ -1017,7 +1062,10 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
               </div>
               <button 
                 className={`py-1 px-3 rounded text-xs flex items-center space-x-1 ${canRollback ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
-                onClick={handleRollback}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent panel toggle
+                  handleRollback();
+                }}
                 disabled={!canRollback}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1025,9 +1073,18 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
                 </svg>
                 <span>Roll Back</span>
               </button>
+              {expandedPanel === 'code' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
             </div>
           </div>
-          <div className="flex-1 bg-gray-900 font-mono text-sm h-[250px] overflow-auto">
+          <div className="flex-1 bg-gray-900 font-mono text-sm overflow-auto" style={{ height: getPanelHeight('code') }}>
             <div className="flex items-center bg-gray-800/50 px-4 py-1 text-xs text-gray-400 border-b border-gray-700">
               <div className="flex-1">
                 {currentCode ? 
@@ -1063,13 +1120,7 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
         <div className="border border-gray-700 rounded-md overflow-hidden mb-4 hover:ring-2 hover:ring-accent transition-all duration-200">
           <div 
             className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
-            onClick={() => {
-              // Toggle logs section
-              const logsContent = document.getElementById('logs-content');
-              if (logsContent) {
-                logsContent.classList.toggle('hidden');
-              }
-            }}
+            onClick={() => togglePanelExpansion('logs')}
           >
             <div className="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -1081,12 +1132,18 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
               </span>
             </div>
             <div>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
+              {expandedPanel === 'logs' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
             </div>
           </div>
-          <div id="logs-content" className="max-h-[150px] overflow-y-auto bg-gray-900 p-3">
+          <div id="logs-content" className="overflow-y-auto bg-gray-900 p-3" style={{ maxHeight: getPanelHeight('logs') }}>
             <div className="space-y-2 text-xs font-mono">
               {activityLogs.slice(0, 10).map((log, index) => (
                 <div key={index} className="flex items-start">
@@ -1131,11 +1188,41 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
         </div>
         
         {/* Chat panel */}
-        <div className="flex-1 flex flex-col border border-gray-700 rounded-md overflow-hidden min-h-[250px] hover:ring-2 hover:ring-accent transition-all duration-200">
+        <div 
+          className="flex-1 flex flex-col border border-gray-700 rounded-md overflow-hidden min-h-[250px] hover:ring-2 hover:ring-accent transition-all duration-200"
+        >
+          {/* Header with expandable control */}
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('chat')}
+          >
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Chat Interface</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-indigo-500/20 text-indigo-300 rounded">
+                Interactive
+              </span>
+            </div>
+            <div>
+              {expandedPanel === 'chat' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+          </div>
           {/* Messages area */}
           <div
             ref={messagesContainerRef}
             className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-800"
+            style={{ height: getPanelHeight('chat') }}
           >
             {chatMessages.map(message => (
               <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
