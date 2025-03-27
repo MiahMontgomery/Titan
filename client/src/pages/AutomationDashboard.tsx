@@ -35,7 +35,12 @@ import {
   FileText, 
   Play,
   Pause,
-  Activity
+  Activity,
+  Globe,
+  ScreenShare,
+  MousePointer,
+  Keyboard,
+  Image
 } from "lucide-react";
 import { 
   HoverCard,
@@ -58,11 +63,25 @@ interface AutomationActivity {
   details?: any;
 }
 
+// Types for browser activities
+interface BrowserSession {
+  id: string;
+  timestamp: Date;
+  accountId: number;
+  platform: string;
+  url: string;
+  action: string;
+  screenshot?: string; // Base64 encoded image
+  status: 'active' | 'complete' | 'error';
+}
+
 export default function AutomationDashboard() {
   const { toast } = useToast();
   const webSocketContext = useWebSocket();
   const [automationRunning, setAutomationRunning] = useState(true);
   const [activities, setActivities] = useState<AutomationActivity[]>([]);
+  const [browserSessions, setBrowserSessions] = useState<BrowserSession[]>([]);
+  const [activeBrowserSession, setActiveBrowserSession] = useState<BrowserSession | null>(null);
   const [automationStats, setAutomationStats] = useState({
     messagesProcessed: 0,
     messagesResponded: 0,
@@ -223,6 +242,101 @@ export default function AutomationDashboard() {
     }, 10000); // New activity every 10 seconds
     
     return () => clearInterval(interval);
+  }, [automationRunning]);
+
+  // Simulate browser sessions
+  useEffect(() => {
+    if (automationRunning) {
+      // Sample URLs that might be accessed by the automation
+      const urls = [
+        'https://onlyfans.com/login',
+        'https://onlyfans.com/dashboard',
+        'https://onlyfans.com/my/subscribers',
+        'https://onlyfans.com/my/statements',
+        'https://twitter.com/login',
+        'https://twitter.com/home',
+        'https://instagram.com/login',
+        'https://instagram.com/direct/inbox',
+      ];
+
+      // Generate initial browser sessions
+      const initialSessions: BrowserSession[] = [
+        {
+          id: 'session-' + Date.now() + '-1',
+          timestamp: new Date(Date.now() - 15 * 60000),
+          accountId: 1,
+          platform: 'onlyfans',
+          url: 'https://onlyfans.com/login',
+          action: 'Logging in to OnlyFans account',
+          status: 'complete'
+        },
+        {
+          id: 'session-' + Date.now() + '-2',
+          timestamp: new Date(Date.now() - 10 * 60000),
+          accountId: 1,
+          platform: 'onlyfans',
+          url: 'https://onlyfans.com/my/subscribers',
+          action: 'Checking subscriber messages',
+          status: 'complete'
+        }
+      ];
+
+      setBrowserSessions(initialSessions);
+      
+      // Set the active browser session
+      setActiveBrowserSession(initialSessions[1]);
+
+      // Simulate new browser sessions arriving
+      const interval = setInterval(() => {
+        if (automationRunning) {
+          const platforms = ['onlyfans', 'instagram', 'twitter'];
+          const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+          
+          // Select a URL that matches the platform
+          const platformUrls = urls.filter(url => url.includes(randomPlatform));
+          const randomUrl = platformUrls[Math.floor(Math.random() * platformUrls.length)];
+          
+          // Create actions based on URL
+          let action = 'Browsing';
+          if (randomUrl.includes('login')) {
+            action = 'Logging in to account';
+          } else if (randomUrl.includes('subscribers') || randomUrl.includes('inbox')) {
+            action = 'Checking messages';
+          } else if (randomUrl.includes('statements')) {
+            action = 'Checking earnings';
+          } else if (randomUrl.includes('home')) {
+            action = 'Browsing timeline';
+          }
+          
+          const newSession: BrowserSession = {
+            id: 'session-' + Date.now(),
+            timestamp: new Date(),
+            accountId: 1, // Assuming account ID 1 for demo
+            platform: randomPlatform,
+            url: randomUrl,
+            action: `${action} on ${randomPlatform}`,
+            status: 'active'
+          };
+          
+          // Add to sessions and update active session
+          setBrowserSessions(prev => [newSession, ...prev].slice(0, 20));
+          setActiveBrowserSession(newSession);
+          
+          // Mark the session as complete after 5 seconds
+          setTimeout(() => {
+            setBrowserSessions(prev => 
+              prev.map(session => 
+                session.id === newSession.id 
+                  ? { ...session, status: 'complete' } 
+                  : session
+              )
+            );
+          }, 5000);
+        }
+      }, 15000); // New browser session every 15 seconds
+      
+      return () => clearInterval(interval);
+    }
   }, [automationRunning]);
 
   // Function to get icon for activity type
@@ -469,6 +583,182 @@ export default function AutomationDashboard() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Live Browser View Section */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold mb-4">Live Browser View</h2>
+        <p className="text-gray-400 mb-6">
+          Real-time visualization of the FINDOM agent's web browsing activities
+        </p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Browser History */}
+          <Card className="border border-gray-800">
+            <CardHeader>
+              <CardTitle>Browser History</CardTitle>
+              <CardDescription>
+                Recent web navigation activities
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[400px]">
+                <div className="space-y-3">
+                  {browserSessions.map((session) => (
+                    <div 
+                      key={session.id}
+                      className={`p-2 rounded-md border border-gray-800 hover:bg-gray-900/50 transition-colors cursor-pointer ${
+                        activeBrowserSession?.id === session.id ? 'bg-gray-800' : ''
+                      }`}
+                      onClick={() => setActiveBrowserSession(session)}
+                    >
+                      <div className="flex items-center mb-1">
+                        <Globe className="h-4 w-4 mr-2" />
+                        <div className="text-sm font-medium truncate">
+                          {session.url.replace(/https?:\/\//, '')}
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs text-gray-400">{session.platform}</div>
+                        <div className="text-xs text-gray-500">{formatDate(session.timestamp)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* Browser Visualization */}
+          <Card className="border border-gray-800 lg:col-span-3">
+            <CardHeader>
+              <CardTitle>
+                <div className="flex justify-between items-center">
+                  <span>Active Browser Session</span>
+                  <Badge variant="outline" className="ml-2">
+                    {activeBrowserSession?.status || 'inactive'}
+                  </Badge>
+                </div>
+              </CardTitle>
+              <CardDescription>
+                {activeBrowserSession ? activeBrowserSession.action : 'No active browsing session'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {activeBrowserSession ? (
+                <div className="space-y-4">
+                  {/* URL Bar */}
+                  <div className="flex items-center border border-gray-700 rounded-md px-3 py-2 bg-gray-900">
+                    <Globe className="h-4 w-4 mr-2 text-gray-400" />
+                    <div className="text-sm text-gray-300 truncate">
+                      {activeBrowserSession.url}
+                    </div>
+                  </div>
+                  
+                  {/* Browser Viewport (Simulated) */}
+                  <div className="border border-gray-700 rounded-md bg-gray-900 overflow-hidden">
+                    <div className="border-b border-gray-800 p-2 bg-gray-800 flex items-center justify-between">
+                      <div className="flex space-x-1">
+                        <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                        <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+                        <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {activeBrowserSession.platform} - {activeBrowserSession.action}
+                      </div>
+                    </div>
+                    <div className="flex justify-center items-center relative h-[300px] bg-gray-950 text-center">
+                      {/* Simulated website content */}
+                      {activeBrowserSession.url.includes('login') ? (
+                        <div className="space-y-4 max-w-md mx-auto p-6">
+                          <div className="text-xl font-bold text-center mb-6">Log In</div>
+                          <div className="border border-gray-800 rounded-md p-3 bg-gray-900">Username</div>
+                          <div className="border border-gray-800 rounded-md p-3 bg-gray-900">Password</div>
+                          <div className="bg-blue-600 rounded-md p-3 text-white font-medium">Sign In</div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4 w-full max-w-2xl p-4">
+                          <div className="h-8 bg-gray-800 rounded-md w-1/2 mx-auto"></div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="h-20 bg-gray-800 rounded-md"></div>
+                            <div className="h-20 bg-gray-800 rounded-md"></div>
+                            <div className="h-20 bg-gray-800 rounded-md"></div>
+                            <div className="h-20 bg-gray-800 rounded-md"></div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Show automation happening */}
+                      {activeBrowserSession.status === 'active' && (
+                        <>
+                          <div 
+                            className="absolute h-6 w-6 border-2 border-yellow-400 rounded-full pointer-events-none"
+                            style={{ 
+                              left: `${Math.random() * 70 + 15}%`, 
+                              top: `${Math.random() * 70 + 15}%`,
+                              transition: 'all 0.5s ease-out'
+                            }}
+                          ></div>
+                          <div className="absolute bottom-4 right-4 bg-gray-800 text-xs text-gray-300 px-2 py-1 rounded">
+                            <div className="flex items-center">
+                              <Keyboard className="h-3 w-3 mr-1" />
+                              <span>Automated input</span>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Activity Log */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Browser Activity Log</h4>
+                    <div className="text-xs text-gray-400 space-y-1 border border-gray-800 rounded-md p-2 bg-gray-900/50">
+                      <div className="flex items-center">
+                        <ScreenShare className="h-3 w-3 mr-2" />
+                        <span>Navigated to {activeBrowserSession.url}</span>
+                      </div>
+                      {activeBrowserSession.url.includes('login') && (
+                        <>
+                          <div className="flex items-center">
+                            <MousePointer className="h-3 w-3 mr-2" />
+                            <span>Clicked on username field</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Keyboard className="h-3 w-3 mr-2" />
+                            <span>Entered account credentials</span>
+                          </div>
+                          <div className="flex items-center">
+                            <MousePointer className="h-3 w-3 mr-2" />
+                            <span>Clicked Sign In button</span>
+                          </div>
+                        </>
+                      )}
+                      {activeBrowserSession.url.includes('subscribers') && (
+                        <>
+                          <div className="flex items-center">
+                            <MousePointer className="h-3 w-3 mr-2" />
+                            <span>Scanning for new messages</span>
+                          </div>
+                          <div className="flex items-center">
+                            <MessageSquare className="h-3 w-3 mr-2" />
+                            <span>Analyzing conversation context</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-[400px] text-gray-400">
+                  <Globe className="h-16 w-16 mb-4 opacity-20" />
+                  <p>No active browsing session</p>
+                  <p className="text-sm">Start the automation to see browser activities</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
