@@ -175,11 +175,15 @@ export const webAccounts = pgTable("web_accounts", {
   projectId: integer("project_id").notNull(),
   service: text("service").notNull(), // Service name (e.g., "GitHub", "Upwork", "LinkedIn")
   accountName: text("account_name").notNull(), // Username or account identifier
+  username: text("username").notNull(), // Login username for the service
+  password: text("password").notNull(), // Login password for the service
   profileUrl: text("profile_url"), // URL to the profile
   status: text("status").default("active").notNull(), // Status: setup, active, suspended, etc.
   accountType: text("account_type").default("service").notNull(), // Type: service, social, marketplace, etc.
   lastActivity: timestamp("last_activity"), // When the account was last used
   cookies: jsonb("cookies"), // Browser session data
+  lastBrowserSession: timestamp("last_browser_session"), // When the account was last used in a browser session
+  sessionNotes: text("session_notes"), // Notes about the browser session
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

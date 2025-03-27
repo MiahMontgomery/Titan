@@ -50,6 +50,8 @@ export default function WebAccounts() {
     accountName: "",
     accountType: "model",
     profileUrl: "",
+    username: "",
+    password: "",
     projectId: 3, // We'll default to the FINDOM project (ID: 3)
   });
 
@@ -61,8 +63,13 @@ export default function WebAccounts() {
 
   // Create new account mutation
   const createAccount = useMutation({
-    mutationFn: (accountData: any) => 
-      apiRequest("/api/web-accounts", "POST", accountData),
+    mutationFn: async (accountData: any) => {
+      return await apiRequest({ 
+        url: "/api/web-accounts", 
+        method: "POST", 
+        data: accountData 
+      });
+    },
     onSuccess: () => {
       toast({
         title: "Account added",
@@ -75,13 +82,15 @@ export default function WebAccounts() {
         accountName: "",
         accountType: "model",
         profileUrl: "",
+        username: "",
+        password: "",
         projectId: 3,
       });
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to add web account: " + error,
+        description: "Failed to add web account: " + String(error),
         variant: "destructive",
       });
     },
@@ -89,8 +98,12 @@ export default function WebAccounts() {
 
   // Delete account mutation
   const deleteAccount = useMutation({
-    mutationFn: (id: number) => 
-      apiRequest(`/api/web-accounts/${id}`, "DELETE"),
+    mutationFn: async (id: number) => {
+      return await apiRequest({
+        url: `/api/web-accounts/${id}`,
+        method: "DELETE"
+      });
+    },
     onSuccess: () => {
       toast({
         title: "Account deleted",
@@ -101,7 +114,7 @@ export default function WebAccounts() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to delete web account: " + error,
+        description: "Failed to delete web account: " + String(error),
         variant: "destructive",
       });
     },
@@ -335,6 +348,33 @@ export default function WebAccounts() {
                 }
                 className="col-span-3"
                 placeholder="https://..."
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="username" className="text-right">
+                Username
+              </Label>
+              <Input
+                id="username"
+                value={newAccount.username}
+                onChange={(e) =>
+                  setNewAccount({ ...newAccount, username: e.target.value })
+                }
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="password" className="text-right">
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                value={newAccount.password}
+                onChange={(e) =>
+                  setNewAccount({ ...newAccount, password: e.target.value })
+                }
+                className="col-span-3"
               />
             </div>
           </div>
