@@ -17,6 +17,7 @@ export const projects = pgTable("projects", {
   priority: integer("priority").default(5).notNull(), // Priority level (1-10)
   lastCheckIn: timestamp("last_check_in"), // Last time the project agent checked in
   nextCheckIn: timestamp("next_check_in"), // Scheduled time for next check-in
+  lastAutomationRun: timestamp("last_automation_run"), // Last time the automation was run for this project
 });
 
 // Feature Table

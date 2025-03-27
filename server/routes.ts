@@ -22,6 +22,7 @@ import {
 } from "@shared/schema";
 import { handleChatMessage, setWebSocketServer } from "./chatHandler";
 import { initializeWebAutomation, getWebAutomationService } from "./webAutomation";
+import { initializeFindomAgents, getFindomAgent } from "./findomAgent";
 import { getBrowserClient } from "./browserClient";
 
 // Helper to broadcast to all clients
@@ -1276,6 +1277,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("Initializing 24/7 autonomous web automation for FINDOM projects...");
         await initializeWebAutomation();
         console.log("FINDOM web automation initialized successfully");
+        
+        // Initialize FINDOM agents after web automation is ready
+        try {
+          console.log("Starting 24/7 autonomous FINDOM agents...");
+          await initializeFindomAgents();
+          console.log("FINDOM agents initialized successfully");
+        } catch (agentError) {
+          console.error("Error initializing FINDOM agents:", agentError);
+        }
       } catch (error) {
         console.error("Error initializing web automation:", error);
       }

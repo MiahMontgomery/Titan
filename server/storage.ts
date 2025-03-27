@@ -70,6 +70,7 @@ export interface IStorage {
   // Web Accounts
   getWebAccountsByProject(projectId: number): Promise<WebAccount[]>;
   getWebAccount(id: number): Promise<WebAccount | undefined>;
+  getWebAccounts(projectId: number): Promise<WebAccount[]>; // Alias for getWebAccountsByProject
   createWebAccount(account: InsertWebAccount): Promise<WebAccount>;
   updateWebAccount(id: number, account: Partial<InsertWebAccount>): Promise<WebAccount | undefined>;
   deleteWebAccount(id: number): Promise<boolean>;
@@ -708,6 +709,11 @@ export class MemStorage implements IStorage {
   
   async getWebAccount(id: number): Promise<WebAccount | undefined> {
     return this.webAccounts.get(id);
+  }
+  
+  async getWebAccounts(projectId: number): Promise<WebAccount[]> {
+    // This is an alias for getWebAccountsByProject for API compatibility
+    return this.getWebAccountsByProject(projectId);
   }
   
   async createWebAccount(account: InsertWebAccount): Promise<WebAccount> {

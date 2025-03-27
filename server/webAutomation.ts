@@ -1,23 +1,27 @@
 /**
- * Web Automation Service for Autonomous Web Browsing
+ * Web Automation Service for FINDOM
  * 
- * This module provides capabilities for:
- * 1. Automated web browsing
- * 2. Platform login and session management
- * 3. Content interaction and publishing
- * 4. Message management and response
- * 5. Integrated with the project's autonomous improvement cycle
+ * This module provides autonomous web browsing capabilities to interact
+ * with financial domination platforms, content creation sites, and 
+ * other web services that FINDOM needs to operate autonomously 24/7.
+ * 
+ * Features:
+ * - Automated browser sessions
+ * - Login and session management
+ * - Content publishing
+ * - Message management
+ * - Platform-specific interaction patterns
  */
 
-import { WebAccount, InsertWebAccount } from "@shared/schema";
-import { storage } from "./storage";
-import { broadcastThinking } from "./chatHandler";
-import OpenAI from "openai";
+import { WebAccount } from '@shared/schema';
+import { BrowserClient, getBrowserClient } from './browserClient';
+import { PlatformHandler, createPlatformHandler, Content, PlatformMessage } from './platformHandlers';
+import { broadcastThinking } from './chatHandler';
+import { storage } from './storage';
 
-// Set up OpenAI client
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// Supported platform types for FinDom
+/**
+ * Types of web platform interactions
+ */
 export enum PlatformType {
   MESSAGING = "messaging",
   CONTENT = "content",
@@ -26,170 +30,192 @@ export enum PlatformType {
 }
 
 /**
- * Browser session data interface
+ * Interface for web interaction results
  */
-interface SessionData {
-  cookies: Record<string, string>;
-  headers: Record<string, string>;
-  lastActivity: Date;
+interface WebInteractionResult {
+  success: boolean;
+  message: string;
+  timestamp: Date;
+  details?: any;
 }
 
 /**
- * Interface for platform-specific operations
- */
-interface PlatformHandler {
-  login: (account: WebAccount) => Promise<SessionData>;
-  checkMessages: (account: WebAccount, session: SessionData) => Promise<any[]>;
-  sendMessage: (account: WebAccount, session: SessionData, to: string, message: string) => Promise<boolean>;
-  postContent: (account: WebAccount, session: SessionData, content: any) => Promise<string>;
-  checkStatus: (account: WebAccount) => Promise<boolean>;
-}
-
-/**
- * Web automation service for managing web interactions
+ * Web automation service for the FINDOM project
+ * This service handles all web interactions across multiple platforms
  */
 export class WebAutomationService {
-  private platformHandlers: Record<string, PlatformHandler> = {};
-  private sessions: Map<number, SessionData> = new Map();
+  private platformHandlers: Map<string, PlatformHandler> = new Map();
+  private browserClient: BrowserClient;
   private projectId: number;
+  private activeAutomation: boolean = false;
+  private sessions: Map<number, any> = new Map(); // Store active sessions by account ID
   
   constructor(projectId: number) {
     this.projectId = projectId;
-    this.registerDefaultHandlers();
-  }
-  
-  /**
-   * Register platform-specific handlers
-   */
-  private registerDefaultHandlers() {
-    // These would be implementations for specific platforms
-    // For now, these are placeholder implementations
-  }
-  
-  /**
-   * Create a new web account for the specified service
-   */
-  async createAccount(service: string, accountName: string, accountType: PlatformType): Promise<WebAccount> {
-    broadcastThinking(this.projectId, `Creating new web account for ${service}...`);
-    
-    return await storage.createWebAccount({
-      projectId: this.projectId,
-      service,
-      accountName,
-      accountType: accountType,
-      status: 'active',
-      createdAt: new Date()
-    });
-  }
-  
-  /**
-   * Retrieve all web accounts for this project
-   */
-  async getAccounts(): Promise<WebAccount[]> {
-    return await storage.getWebAccountsByProject(this.projectId);
+    this.browserClient = getBrowserClient(projectId);
+    this.logThinking('Initializing web automation service');
   }
   
   /**
    * Log in to all accounts and maintain sessions
    */
   async loginToAllAccounts(): Promise<number> {
-    const accounts = await this.getAccounts();
-    let successCount = 0;
+    this.logThinking('Starting login process for all web accounts...');
     
-    broadcastThinking(this.projectId, `Logging into ${accounts.length} web accounts...`);
-    
-    for (const account of accounts) {
-      try {
-        const handler = this.platformHandlers[account.service];
-        if (handler) {
-          const session = await handler.login(account);
-          this.sessions.set(account.id, session);
-          
-          // Update account with last activity
-          await storage.updateWebAccount(account.id, {
-            lastActivity: new Date(),
-            status: 'active'
-          });
-          
-          successCount++;
-        }
-      } catch (error) {
-        console.error(`Failed to log in to ${account.service} account ${account.accountName}:`, error);
-        
-        // Update account status to reflect login failure
-        await storage.updateWebAccount(account.id, {
-          status: 'login_failed',
-        });
+    try {
+      // Get all web accounts for this project
+      const accounts = await storage.getWebAccounts(this.projectId);
+      
+      if (!accounts || accounts.length === 0) {
+        this.logThinking('No web accounts found for this project.');
+        return 0;
       }
-    }
-    
-    return successCount;
-  }
-  
-  /**
-   * Check for new messages across all platforms
-   */
-  async checkAllMessages(): Promise<{
-    accountId: number,
-    service: string,
-    messages: any[]
-  }[]> {
-    const accounts = await this.getAccounts();
-    const results = [];
-    
-    for (const account of accounts) {
-      try {
-        const session = this.sessions.get(account.id);
-        const handler = this.platformHandlers[account.service];
-        
-        if (session && handler) {
-          const messages = await handler.checkMessages(account, session);
+      
+      this.logThinking(`Found ${accounts.length} web accounts to process.`);
+      let successCount = 0;
+      
+      // Login to each account
+      for (const account of accounts) {
+        try {
+          // Get the appropriate platform handler
+          const handler = this.getPlatformHandler(account.service);
           
-          if (messages && messages.length > 0) {
-            results.push({
-              accountId: account.id,
-              service: account.service,
-              messages
-            });
-          }
+          // Attempt login
+          this.logThinking(`Logging in to ${account.service} as ${account.accountName}...`);
+          const sessionData = await handler.login(account);
           
-          // Update account with last activity
+          // Store session data
+          this.sessions.set(account.id, sessionData);
+          
+          // Update account's last activity timestamp
           await storage.updateWebAccount(account.id, {
             lastActivity: new Date()
           });
+          
+          this.logThinking(`Successfully logged in to ${account.service} as ${account.accountName}`);
+          successCount++;
+        } catch (error) {
+          this.logThinking(`Error logging in to ${account.service} as ${account.accountName}: ${error instanceof Error ? error.message : String(error)}`);
         }
-      } catch (error) {
-        console.error(`Error checking messages for ${account.service}:`, error);
       }
+      
+      this.logThinking(`Login process completed. ${successCount} of ${accounts.length} accounts logged in successfully.`);
+      return successCount;
+    } catch (error) {
+      this.logThinking(`Error in loginToAllAccounts: ${error instanceof Error ? error.message : String(error)}`);
+      return 0;
     }
-    
-    return results;
   }
   
   /**
-   * Generate an AI response to a message
+   * Check for messages across all platforms
    */
-  async generateResponse(message: string, platform: string): Promise<string> {
+  async checkAllMessages(): Promise<{
+    total: number;
+    needResponse: number;
+    messages: PlatformMessage[];
+  }> {
+    this.logThinking('Checking messages across all platforms...');
+    
+    const result = {
+      total: 0,
+      needResponse: 0,
+      messages: [] as PlatformMessage[]
+    };
+    
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are a professional and engaging financial dominatrix persona. Craft responses that are confident, assertive, and maintain boundaries. Keep responses brief, direct, and engaging. Avoid explicit sexual content but maintain the financial dominance theme. You are responding on the ${platform} platform.`
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ],
-        max_tokens: 150
-      });
+      // Get all web accounts for this project
+      const accounts = await storage.getWebAccounts(this.projectId);
       
-      return response.choices[0].message.content || "I'll consider your message.";
+      if (!accounts || accounts.length === 0) {
+        this.logThinking('No web accounts found for this project.');
+        return result;
+      }
+      
+      this.logThinking(`Found ${accounts.length} web accounts to check for messages.`);
+      
+      // Check messages for each account
+      for (const account of accounts) {
+        try {
+          // Get session data, or login if not available
+          let sessionData = this.sessions.get(account.id);
+          if (!sessionData) {
+            const handler = this.getPlatformHandler(account.service);
+            sessionData = await handler.login(account);
+            this.sessions.set(account.id, sessionData);
+          }
+          
+          // Get the appropriate platform handler
+          const handler = this.getPlatformHandler(account.service);
+          
+          // Check messages
+          this.logThinking(`Checking messages on ${account.service} as ${account.accountName}...`);
+          const messages = await handler.checkMessages(account, sessionData);
+          
+          // Add messages to result
+          if (messages.length > 0) {
+            result.total += messages.length;
+            result.needResponse += messages.filter(m => m.requiresResponse).length;
+            result.messages.push(...messages);
+            
+            this.logThinking(`Found ${messages.length} messages on ${account.service}, ${messages.filter(m => m.requiresResponse).length} require response.`);
+          } else {
+            this.logThinking(`No new messages found on ${account.service}.`);
+          }
+          
+          // Update account's last activity timestamp
+          await storage.updateWebAccount(account.id, {
+            lastActivity: new Date()
+          });
+        } catch (error) {
+          this.logThinking(`Error checking messages on ${account.service} as ${account.accountName}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      }
+      
+      this.logThinking(`Message check completed. Found ${result.total} total messages, ${result.needResponse} require response.`);
+      return result;
     } catch (error) {
-      console.error("Error generating response:", error);
-      return "I'll consider your message.";
+      this.logThinking(`Error in checkAllMessages: ${error instanceof Error ? error.message : String(error)}`);
+      return result;
+    }
+  }
+  
+  /**
+   * Send a message to a user on a specific platform
+   */
+  async sendMessage(account: WebAccount, recipient: string, message: string): Promise<boolean> {
+    this.logThinking(`Sending message to ${recipient} on ${account.service}...`);
+    
+    try {
+      // Get session data, or login if not available
+      let sessionData = this.sessions.get(account.id);
+      if (!sessionData) {
+        const handler = this.getPlatformHandler(account.service);
+        sessionData = await handler.login(account);
+        this.sessions.set(account.id, sessionData);
+      }
+      
+      // Get the appropriate platform handler
+      const handler = this.getPlatformHandler(account.service);
+      
+      // Send message
+      const success = await handler.sendMessage(account, sessionData, recipient, message);
+      
+      if (success) {
+        this.logThinking(`Successfully sent message to ${recipient} on ${account.service}.`);
+        
+        // Update account's last activity timestamp
+        await storage.updateWebAccount(account.id, {
+          lastActivity: new Date()
+        });
+      } else {
+        this.logThinking(`Failed to send message to ${recipient} on ${account.service}.`);
+      }
+      
+      return success;
+    } catch (error) {
+      this.logThinking(`Error sending message on ${account.service}: ${error instanceof Error ? error.message : String(error)}`);
+      return false;
     }
   }
   
@@ -197,122 +223,150 @@ export class WebAutomationService {
    * Generate and publish content to platforms
    */
   async generateAndPublishContent(): Promise<boolean> {
+    this.logThinking('Generating and publishing content...');
+    
     try {
-      broadcastThinking(this.projectId, "Generating new content for publishing...");
+      // Get all web accounts for this project
+      const accounts = await storage.getWebAccounts(this.projectId);
       
-      // Generate content via OpenAI
-      const contentPrompt = "Create a short, engaging financial dominatrix post that is suitable for social media. Focus on financial power dynamics without explicit content. Include appropriate hashtags.";
+      if (!accounts || accounts.length === 0) {
+        this.logThinking('No web accounts found for this project.');
+        return false;
+      }
       
-      const contentResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a professional content creator specializing in financial dominance content. You create engaging, non-explicit content that attracts interest while maintaining platform guidelines. Include 3-5 relevant hashtags."
-          },
-          {
-            role: "user",
-            content: contentPrompt
+      // In the future, implement content generation logic here
+      // For now, use a placeholder content
+      const content: Content = {
+        text: 'Simulated content for demo purposes (would be AI-generated in production)',
+        tags: ['demo', 'test', 'simulation'],
+        visibility: 'public'
+      };
+      
+      let anySuccess = false;
+      
+      // Publish content to each account
+      for (const account of accounts) {
+        try {
+          // Get session data, or login if not available
+          let sessionData = this.sessions.get(account.id);
+          if (!sessionData) {
+            const handler = this.getPlatformHandler(account.service);
+            sessionData = await handler.login(account);
+            this.sessions.set(account.id, sessionData);
           }
-        ]
-      });
-      
-      const content = contentResponse.choices[0].message.content;
-      
-      if (!content) {
-        throw new Error("Failed to generate content");
-      }
-      
-      // Post to appropriate platforms
-      const socialAccounts = await storage.getWebAccountsByProject(this.projectId) || [];
-      const contentAccounts = socialAccounts.filter(a => a.accountType === PlatformType.CONTENT || a.accountType === PlatformType.SOCIAL);
-      
-      if (contentAccounts.length === 0) {
-        throw new Error("No content publishing accounts available");
-      }
-      
-      // Publish to each content platform
-      for (const account of contentAccounts) {
-        const session = this.sessions.get(account.id);
-        const handler = this.platformHandlers[account.service];
-        
-        if (session && handler) {
-          await handler.postContent(account, session, { text: content });
           
-          // Log the activity
-          await storage.createActivityLog({
-            projectId: this.projectId,
-            message: `Published new content to ${account.service}`,
-            timestamp: new Date(),
-            agentId: `findom-agent`,
-            codeSnippet: content,
-            activityType: 'content_publishing'
-          });
+          // Get the appropriate platform handler
+          const handler = this.getPlatformHandler(account.service);
+          
+          // Post content
+          this.logThinking(`Publishing content to ${account.service} as ${account.accountName}...`);
+          const contentId = await handler.postContent(account, sessionData, content);
+          
+          if (contentId) {
+            this.logThinking(`Successfully published content to ${account.service}, content ID: ${contentId}`);
+            anySuccess = true;
+            
+            // Update account's last activity timestamp
+            await storage.updateWebAccount(account.id, {
+              lastActivity: new Date()
+            });
+          } else {
+            this.logThinking(`Failed to publish content to ${account.service}.`);
+          }
+        } catch (error) {
+          this.logThinking(`Error publishing content to ${account.service}: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
       
-      return true;
+      this.logThinking(`Content publishing process completed.`);
+      return anySuccess;
     } catch (error) {
-      console.error("Error generating and publishing content:", error);
+      this.logThinking(`Error in generateAndPublishContent: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }
   
   /**
-   * Schedule web automation tasks
+   * Schedule automated tasks
+   * This sets up recurring tasks for the automation system
    */
   setupAutomationSchedule(checkIntervalMinutes: number = 15): void {
-    // Initial login
-    setTimeout(async () => {
-      await this.loginToAllAccounts();
-    }, 10000); // 10 seconds after initialization
+    this.logThinking(`Setting up automation schedule with ${checkIntervalMinutes} minute interval...`);
     
-    // Regular check interval
-    setInterval(async () => {
-      try {
-        // Check messages
-        const messageResults = await this.checkAllMessages();
+    // Convert minutes to milliseconds
+    const intervalMs = checkIntervalMinutes * 60 * 1000;
+    
+    // Only set up if not already active
+    if (!this.activeAutomation) {
+      this.activeAutomation = true;
+      
+      // Set up interval for login check
+      setInterval(async () => {
+        this.logThinking('Executing scheduled login check for web accounts...');
+        await this.loginToAllAccounts();
         
-        // Process and respond to messages
-        for (const result of messageResults) {
-          for (const message of result.messages) {
-            if (message.requiresResponse) {
-              const response = await this.generateResponse(message.content, result.service);
-              
-              // Send response
-              const account = await storage.getWebAccount(result.accountId);
-              const session = this.sessions.get(result.accountId);
-              const handler = this.platformHandlers[account?.service || ""];
-              
-              if (account && session && handler) {
-                await handler.sendMessage(account, session, message.sender, response);
-                
-                // Log the activity
-                await storage.createActivityLog({
-                  projectId: this.projectId,
-                  message: `Responded to message from ${message.sender} on ${result.service}`,
-                  timestamp: new Date(),
-                  agentId: `findom-agent`,
-                  activityType: 'message_response'
-                });
-              }
-            }
-          }
-        }
+        // Update the project's last automation run timestamp
+        await storage.updateProject(this.projectId, {
+          lastAutomationRun: new Date()
+        });
+      }, intervalMs);
+      
+      // Set up interval for message check (slightly offset to prevent concurrent runs)
+      setInterval(async () => {
+        this.logThinking('Executing scheduled message check...');
+        const messageResult = await this.checkAllMessages();
+        this.logThinking(`Scheduled message check found ${messageResult.total} messages.`);
         
-        // Generate and publish new content periodically (every 4 check intervals)
-        if (Math.random() < 0.25) { // 25% chance each check interval
-          await this.generateAndPublishContent();
-        }
+        // Here you'd respond to messages that need responses
+        // For those that need response, you'd call the AI agent to generate responses
         
-      } catch (error) {
-        console.error("Error in web automation schedule:", error);
-      }
-    }, checkIntervalMinutes * 60 * 1000);
+        // Update the project's last automation run timestamp
+        await storage.updateProject(this.projectId, {
+          lastAutomationRun: new Date()
+        });
+      }, intervalMs + 30000); // 30 seconds offset
+      
+      // Set up interval for content generation and publishing
+      setInterval(async () => {
+        this.logThinking('Executing scheduled content publishing...');
+        await this.generateAndPublishContent();
+        
+        // Update the project's last automation run timestamp
+        await storage.updateProject(this.projectId, {
+          lastAutomationRun: new Date()
+        });
+      }, intervalMs * 4); // Less frequent than other tasks
+      
+      this.logThinking('Automation schedule has been set up successfully.');
+    } else {
+      this.logThinking('Automation schedule is already active.');
+    }
+  }
+  
+  /**
+   * Get a platform handler for a specific service
+   */
+  private getPlatformHandler(service: string): PlatformHandler {
+    if (!this.platformHandlers.has(service)) {
+      this.platformHandlers.set(service, createPlatformHandler(service, this.projectId));
+    }
+    
+    return this.platformHandlers.get(service)!;
+  }
+  
+  /**
+   * Log thinking process for full transparency
+   */
+  private logThinking(message: string): void {
+    // Display in real-time via WebSocket for the Performance tab
+    broadcastThinking(this.projectId, `[WebAutomation] ${message}`);
+    
+    // Also log to console
+    console.log(`[WebAutomation:${this.projectId}] ${message}`);
   }
 }
 
-// Map to track active automation services by project ID
+// Map of web automation service instances by project ID
 const automationServices: Map<number, WebAutomationService> = new Map();
 
 /**
@@ -322,37 +376,44 @@ export function getWebAutomationService(projectId: number): WebAutomationService
   if (!automationServices.has(projectId)) {
     automationServices.set(projectId, new WebAutomationService(projectId));
   }
+  
   return automationServices.get(projectId)!;
 }
 
 /**
  * Initialize web automation for all FINDOM projects
+ * Called at server startup
  */
 export async function initializeWebAutomation(): Promise<void> {
+  console.log('Initializing web automation for all FINDOM projects...');
+  
   try {
+    // Find all projects of type 'findom'
     const projects = await storage.getAllProjects();
+    const findomProjects = projects.filter(p => p.projectType === 'findom');
     
-    for (const project of projects) {
-      if (project.projectType === 'findom' && project.autoMode) {
-        console.log(`Initializing web automation for FINDOM project: ${project.name} (ID: ${project.id})`);
-        
-        const service = getWebAutomationService(project.id);
-        service.setupAutomationSchedule();
-        
-        // Log initialization
-        await storage.createActivityLog({
-          projectId: project.id,
-          message: `Initialized 24/7 autonomous web automation for FINDOM`,
-          timestamp: new Date(),
-          agentId: `system`,
-          activityType: 'system_initialization',
-          isCheckpoint: true
-        });
-      }
+    console.log(`Found ${findomProjects.length} FINDOM projects.`);
+    
+    // Initialize web automation for each FINDOM project
+    for (const project of findomProjects) {
+      const service = getWebAutomationService(project.id);
+      
+      // Set up automation schedule
+      service.setupAutomationSchedule(15); // 15 minutes
+      
+      // Initial login
+      await service.loginToAllAccounts();
+      
+      // Update the project's last automation run timestamp
+      await storage.updateProject(project.id, {
+        lastAutomationRun: new Date()
+      });
+      
+      console.log(`Web automation initialized for project ${project.name} (ID: ${project.id}).`);
     }
     
-    console.log("Web automation initialization complete");
+    console.log('Web automation initialization completed.');
   } catch (error) {
-    console.error("Error initializing web automation:", error);
+    console.error('Error initializing web automation:', error instanceof Error ? error.message : String(error));
   }
 }

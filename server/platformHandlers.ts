@@ -1,15 +1,20 @@
 /**
- * Platform-specific automation handlers
+ * Platform-specific handlers for web automation
  * 
- * This module provides implementations for interacting with
- * various platforms used by the FINDOM project.
+ * This module provides implementations for interacting with various platforms
+ * needed by the FINDOM system, enabling autonomous operation with full transparency.
+ * 
+ * Each platform handler encapsulates the logic for authenticating, messaging,
+ * and content management for a specific web platform.
  */
 
-import { WebAccount } from "@shared/schema";
-import axios from "axios";
-import { broadcastThinking } from "./chatHandler";
+import axios from 'axios';
+import { WebAccount } from '@shared/schema';
+import { broadcastThinking } from './chatHandler';
 
-// Session data interface
+/**
+ * Session data interface for managing platform sessions
+ */
 export interface SessionData {
   cookies: Record<string, string>;
   headers: Record<string, string>;
@@ -17,7 +22,9 @@ export interface SessionData {
   token?: string;
 }
 
-// Message interface
+/**
+ * Platform message interface
+ */
 export interface PlatformMessage {
   id: string;
   sender: string;
@@ -27,7 +34,9 @@ export interface PlatformMessage {
   metadata?: Record<string, any>;
 }
 
-// Content interface
+/**
+ * Content structure for publishing
+ */
 export interface Content {
   text: string;
   media?: string[];
@@ -36,7 +45,9 @@ export interface Content {
   metadata?: Record<string, any>;
 }
 
-// Platform Handler interface
+/**
+ * Interface for platform-specific handlers
+ */
 export interface PlatformHandler {
   login: (account: WebAccount) => Promise<SessionData>;
   checkMessages: (account: WebAccount, session: SessionData) => Promise<PlatformMessage[]>;
@@ -46,7 +57,7 @@ export interface PlatformHandler {
 }
 
 /**
- * Abstract base class for platform handlers with common functionality
+ * Base platform handler with common functionality and logging
  */
 abstract class BasePlatformHandler implements PlatformHandler {
   protected projectId: number;
@@ -55,180 +66,193 @@ abstract class BasePlatformHandler implements PlatformHandler {
     this.projectId = projectId;
   }
   
-  // Platform-specific implementations
+  /**
+   * Platform-specific implementations
+   */
   abstract login(account: WebAccount): Promise<SessionData>;
   abstract checkMessages(account: WebAccount, session: SessionData): Promise<PlatformMessage[]>;
   abstract sendMessage(account: WebAccount, session: SessionData, to: string, message: string): Promise<boolean>;
   abstract postContent(account: WebAccount, session: SessionData, content: Content): Promise<string>;
   
-  // Common implementation for status checking
+  /**
+   * Check platform status
+   */
   async checkStatus(account: WebAccount): Promise<boolean> {
     try {
-      // Basic check - can be overridden by platform-specific implementations
+      // This is a basic check that can be overridden by specific platforms
+      this.logThinking(`Checking status for ${account.service} account ${account.accountName}...`);
       return account.status === 'active' && !!account.lastActivity;
     } catch (error) {
-      console.error(`Error checking status for ${account.service}:`, error);
+      this.logThinking(`Error checking status for ${account.service}: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }
   
-  // Helper to log platform activity
+  /**
+   * Log platform activity for transparency
+   */
   protected logActivity(account: WebAccount, action: string, details?: any) {
-    console.log(`[${account.service}] ${action} for ${account.accountName}`);
+    this.logThinking(`${action} for ${account.service} account: ${account.accountName}`);
     if (details) {
-      console.log(JSON.stringify(details, null, 2));
+      this.logThinking(`Details: ${JSON.stringify(details, null, 2)}`);
     }
   }
-}
-
-/**
- * Twitter platform handler implementation
- */
-export class TwitterHandler extends BasePlatformHandler {
-  async login(account: WebAccount): Promise<SessionData> {
-    broadcastThinking(this.projectId, `Logging into Twitter as ${account.accountName}...`);
-    
-    // This would be a real implementation using axios or another HTTP client
-    // For demonstration, return a mock session
-    return {
-      cookies: { 'auth_token': 'mock_token' },
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Authorization': 'Bearer mock_token'
-      },
-      lastActivity: new Date(),
-      token: 'mock_twitter_token'
-    };
-  }
   
-  async checkMessages(account: WebAccount, session: SessionData): Promise<PlatformMessage[]> {
-    broadcastThinking(this.projectId, `Checking Twitter DMs for ${account.accountName}...`);
+  /**
+   * Log thinking processes for transparency in the Performance tab
+   */
+  protected logThinking(message: string): void {
+    // Display in real-time via WebSocket for the Performance tab
+    broadcastThinking(this.projectId, `[${this.constructor.name}] ${message}`);
     
-    // In a real implementation, this would fetch messages from Twitter's API
-    // For demonstration, return empty array
-    return [];
-  }
-  
-  async sendMessage(account: WebAccount, session: SessionData, to: string, message: string): Promise<boolean> {
-    broadcastThinking(this.projectId, `Sending Twitter DM to ${to}...`);
-    
-    // In a real implementation, this would send a message via Twitter's API
-    this.logActivity(account, `Sent DM to ${to}`, { message });
-    return true;
-  }
-  
-  async postContent(account: WebAccount, session: SessionData, content: Content): Promise<string> {
-    broadcastThinking(this.projectId, `Posting new tweet as ${account.accountName}...`);
-    
-    // In a real implementation, this would post a tweet via Twitter's API
-    this.logActivity(account, `Posted new tweet`, { content: content.text });
-    return 'mock_tweet_id';
-  }
-}
-
-/**
- * Instagram platform handler implementation
- */
-export class InstagramHandler extends BasePlatformHandler {
-  async login(account: WebAccount): Promise<SessionData> {
-    broadcastThinking(this.projectId, `Logging into Instagram as ${account.accountName}...`);
-    
-    // This would be a real implementation using axios or another HTTP client
-    return {
-      cookies: { 'sessionid': 'mock_session' },
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram',
-        'X-IG-App-ID': '936619743392459'
-      },
-      lastActivity: new Date()
-    };
-  }
-  
-  async checkMessages(account: WebAccount, session: SessionData): Promise<PlatformMessage[]> {
-    broadcastThinking(this.projectId, `Checking Instagram DMs for ${account.accountName}...`);
-    
-    // In a real implementation, this would fetch messages from Instagram's API
-    return [];
-  }
-  
-  async sendMessage(account: WebAccount, session: SessionData, to: string, message: string): Promise<boolean> {
-    broadcastThinking(this.projectId, `Sending Instagram DM to ${to}...`);
-    
-    // In a real implementation, this would send a message via Instagram's API
-    this.logActivity(account, `Sent DM to ${to}`, { message });
-    return true;
-  }
-  
-  async postContent(account: WebAccount, session: SessionData, content: Content): Promise<string> {
-    broadcastThinking(this.projectId, `Posting new Instagram content as ${account.accountName}...`);
-    
-    // In a real implementation, this would post content via Instagram's API
-    this.logActivity(account, `Posted new content`, { 
-      text: content.text,
-      hasMedia: !!content.media?.length
-    });
-    return 'mock_post_id';
+    // Also log to console
+    console.log(`[PlatformHandler:${this.projectId}] ${message}`);
   }
 }
 
 /**
  * OnlyFans platform handler implementation
+ * This handles interactions with the OnlyFans platform
  */
 export class OnlyFansHandler extends BasePlatformHandler {
   async login(account: WebAccount): Promise<SessionData> {
-    broadcastThinking(this.projectId, `Logging into OnlyFans as ${account.accountName}...`);
+    this.logThinking(`Logging in to OnlyFans as ${account.accountName}...`);
     
-    // This would be a real implementation
-    return {
-      cookies: { 'auth_id': 'mock_auth_id' },
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'app-token': 'mock_app_token'
-      },
-      lastActivity: new Date(),
-      token: 'mock_of_token'
-    };
+    try {
+      // In a real implementation, this would perform an actual login
+      // using stored credentials and browser automation
+      
+      // For development/demo, we simulate a login with mock session data
+      this.logThinking('OnlyFans login simulated (would use real credentials in production)');
+      
+      const sessionData: SessionData = {
+        cookies: { 
+          'authToken': 'simulated-auth-token',
+          'sessionId': `session-${Date.now()}`
+        },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+          'Accept-Language': 'en-US,en;q=0.9'
+        },
+        lastActivity: new Date(),
+        token: 'simulated-bearer-token'
+      };
+      
+      this.logActivity(account, 'Logged in', { timestamp: new Date() });
+      return sessionData;
+    } catch (error) {
+      this.logThinking(`OnlyFans login error: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
   }
   
   async checkMessages(account: WebAccount, session: SessionData): Promise<PlatformMessage[]> {
-    broadcastThinking(this.projectId, `Checking OnlyFans messages for ${account.accountName}...`);
+    this.logThinking(`Checking OnlyFans messages for ${account.accountName}...`);
     
-    // In a real implementation, this would fetch messages from OnlyFans
-    return [];
+    try {
+      // In a real implementation, this would fetch actual messages
+      // using the stored session and API calls or web scraping
+      
+      // For development/demo, we simulate message checking
+      this.logThinking('OnlyFans message checking simulated (would use API in production)');
+      
+      // Simulate finding 0-2 messages (in production this would be real)
+      const messageCount = Math.floor(Math.random() * 3);
+      const messages: PlatformMessage[] = [];
+      
+      for (let i = 0; i < messageCount; i++) {
+        const requiresResponse = Math.random() > 0.3; // 70% chance message needs response
+        messages.push({
+          id: `msg-${Date.now()}-${i}`,
+          sender: `simulatedUser${i + 1}`,
+          content: 'Simulated message content (would be real in production)',
+          timestamp: new Date(),
+          requiresResponse
+        });
+      }
+      
+      this.logActivity(account, 'Checked messages', { 
+        messageCount,
+        requireResponseCount: messages.filter(m => m.requiresResponse).length
+      });
+      
+      return messages;
+    } catch (error) {
+      this.logThinking(`OnlyFans message check error: ${error instanceof Error ? error.message : String(error)}`);
+      return [];
+    }
   }
   
   async sendMessage(account: WebAccount, session: SessionData, to: string, message: string): Promise<boolean> {
-    broadcastThinking(this.projectId, `Sending OnlyFans message to ${to}...`);
+    this.logThinking(`Sending OnlyFans message to ${to} from ${account.accountName}...`);
     
-    // In a real implementation, this would send a message via OnlyFans
-    this.logActivity(account, `Sent message to ${to}`, { message });
-    return true;
+    try {
+      // In a real implementation, this would send actual messages
+      // using the stored session and API calls or web automation
+      
+      // For development/demo, we simulate message sending
+      this.logThinking(`OnlyFans message sending simulated (would use API in production)`);
+      this.logThinking(`Message would be sent to: ${to}`);
+      this.logThinking(`Message content: "${message.substring(0, 30)}..."`);
+      
+      // Log the activity for transparency
+      this.logActivity(account, 'Sent message', { 
+        recipient: to,
+        messagePreview: message.substring(0, 30) + '...',
+        timestamp: new Date()
+      });
+      
+      return true;
+    } catch (error) {
+      this.logThinking(`OnlyFans message send error: ${error instanceof Error ? error.message : String(error)}`);
+      return false;
+    }
   }
   
   async postContent(account: WebAccount, session: SessionData, content: Content): Promise<string> {
-    broadcastThinking(this.projectId, `Posting new OnlyFans content as ${account.accountName}...`);
+    this.logThinking(`Posting content to OnlyFans as ${account.accountName}...`);
     
-    // In a real implementation, this would post content to OnlyFans
-    this.logActivity(account, `Posted new content`, { 
-      text: content.text,
-      hasMedia: !!content.media?.length
-    });
-    return 'mock_post_id';
+    try {
+      // In a real implementation, this would post actual content
+      // using the stored session and API calls or web automation
+      
+      // For development/demo, we simulate content posting
+      this.logThinking('OnlyFans content posting simulated (would use API in production)');
+      
+      const contentId = `content-${Date.now()}`;
+      
+      // Log the activity for transparency
+      this.logActivity(account, 'Posted content', { 
+        contentId,
+        contentPreview: content.text.substring(0, 30) + '...',
+        visibility: content.visibility || 'public',
+        timestamp: new Date()
+      });
+      
+      return contentId;
+    } catch (error) {
+      this.logThinking(`OnlyFans content posting error: ${error instanceof Error ? error.message : String(error)}`);
+      return '';
+    }
   }
 }
 
 /**
- * Factory function to create platform handlers
+ * Factory function to create appropriate platform handlers
  */
 export function createPlatformHandler(platform: string, projectId: number): PlatformHandler {
-  switch (platform.toLowerCase()) {
-    case 'twitter':
-      return new TwitterHandler(projectId);
-    case 'instagram':
-      return new InstagramHandler(projectId);
+  const lowerPlatform = platform.toLowerCase();
+  
+  // Create the appropriate handler based on the platform
+  switch (lowerPlatform) {
     case 'onlyfans':
       return new OnlyFansHandler(projectId);
+    
+    // Add more platform handlers as needed
+    
     default:
-      throw new Error(`Unsupported platform: ${platform}`);
+      // Default to OnlyFans handler for now
+      console.log(`No specific handler for ${platform}, using OnlyFans handler as default`);
+      return new OnlyFansHandler(projectId);
   }
 }
