@@ -1,0 +1,47 @@
+I’m preparing to export this full-stack TypeScript/Node.js project from Replit to run persistently on a Google Cloud VM. The end goal is for it to execute autonomously using headless browser automation and GPT-based agents.
+
+	Please prepare the project for flawless export by doing the following:
+
+	1. Clean and Flatten Project Data
+		•	Serialize all active project states into db.json (inside /data/dumps/)
+	•	Include: project metadata, percent_complete, features, milestones, goals, output_logs, inputs, timestamps, and assigned agent
+	•	Confirm the structure matches what Firestore expects, or JSON-based imports can use
+
+2. Remove UI-Only or Mock Features
+
+		•	Remove fake UI scaffolding (like the Automation tab logs or fake sessions)
+	•	Remove “Autonomous Mode” toggle—this project should be always-on and AI-driven
+	•	Ensure the project dashboard is per-project (not general tabs)
+
+3. Append Execution Hooks
+
+		•	In /server/index.ts, append a hook that:
+	•	Starts Agent for each project from db.json
+	•	Uses openai.ts to generate milestones + features
+	•	Auto-triggers webAutomation.ts and platformHandlers.ts when features match keywords like “post content” or “login”
+	•	Uses chatHandler.ts to allow feedback and confirmation from user before posts
+
+4. Enable Realtime Logging + GPT Callout
+
+		•	Add logic to stream output logs into output_logs[] per project
+	•	Connect to GPT-4 (or GPT-4-turbo) using the openai.ts file and verify the system prompt, temperature, and prompt chaining supports long-form planning and execution
+
+5. Prepare for VM Launch
+
+		•	Create start.sh that:
+	•	Installs dependencies (npm install)
+	•	Boots the server (node server/index.ts)
+	•	Watches for file changes if hot reload is needed
+	•	Include .env.example updated to reflect expected Firebase, OpenAI, and storage config
+	•	Verify firebase.ts and lowdb.ts can both fallback to local storage if Firebase credentials are absent
+	•	Ensure no Replit-specific dependencies (like replit.nix) block the app from launching outside of Replit
+
+6. Confirm Browser Automation
+
+		•	Make sure browserClient.ts and webAutomation.ts use a working headless browser library (like Puppeteer or Playwright)
+	•	Include a testSession() function that will run after export to validate automation logic on VM
+
+7. Final QA
+
+		•	Confirm all TypeScript compiles cleanly (tsconfig.json is valid)
+	•	Confirm vite.config.ts is correct for dev and production

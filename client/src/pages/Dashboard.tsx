@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Project } from "@shared/schema";
 import { AddProjectModal } from "@/components/AddProjectModal";
 import { ProjectTile } from "@/components/ProjectTile";
 import { Logo } from "@/components/ui/Logo";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectContext } from "@/context/ProjectContext";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Database, Download } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Dashboard() {
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
   const { projects } = useProjectContext();
 
@@ -16,6 +21,33 @@ export default function Dashboard() {
     queryKey: ['/api/projects'],
     retry: 1,
   });
+
+  // Function to handle database export for VM deployment
+  const handleExportDatabase = async () => {
+    try {
+      setIsExporting(true);
+      const response = await axios.get('/api/database/export');
+      
+      if (response.data.success) {
+        toast({
+          title: "Database Exported",
+          description: `Successfully exported database to ${response.data.exportPath}`,
+          duration: 5000,
+        });
+      } else {
+        throw new Error(response.data.error || 'Export failed');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to export database';
+      toast({
+        variant: "destructive",
+        title: "Export Error",
+        description: message,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   useEffect(() => {
     if (error) {
@@ -34,15 +66,41 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">Dashboard</h1>
 
-          <button 
-            onClick={() => setIsAddProjectModalOpen(true)}
-            className="bg-accent hover:bg-accent/90 text-black font-medium py-2 px-4 rounded-md transition-colors duration-150 flex items-center"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add Project
-          </button>
+          <div className="flex items-center space-x-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleExportDatabase}
+                    disabled={isExporting}
+                    className="flex items-center border-gray-600"
+                  >
+                    {isExporting ? (
+                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-gray-300 border-t-white rounded-full"></div>
+                    ) : (
+                      <Database className="h-4 w-4 mr-2" />
+                    )}
+                    Export Database
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export database for VM deployment</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <button 
+              onClick={() => setIsAddProjectModalOpen(true)}
+              className="bg-accent hover:bg-accent/90 text-black font-medium py-2 px-4 rounded-md transition-colors duration-150 flex items-center"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Add Project
+            </button>
+          </div>
         </div>
       </header>
 

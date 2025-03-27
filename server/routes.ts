@@ -24,6 +24,7 @@ import { handleChatMessage, setWebSocketServer } from "./chatHandler";
 import { initializeWebAutomation, getWebAutomationService } from "./webAutomation";
 import { initializeFindomAgents, getFindomAgent } from "./findomAgent";
 import { getBrowserClient } from "./browserClient";
+import { exportDatabase } from "./export-db";
 
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
@@ -1361,6 +1362,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting project:', error);
       res.status(500).json({ error: 'Failed to export project' });
+    }
+  });
+  
+  // Database Export - Export the full database for VM deployment
+  app.get('/api/database/export', async (req, res) => {
+    try {
+      console.log("Starting database export operation...");
+      const result = await exportDatabase();
+      
+      if (!result || !result.success) {
+        const errorMessage = result?.error || 'Unknown error during database export';
+        console.error(`Database export failed: ${errorMessage}`);
+        return res.status(500).json({ 
+          success: false, 
+          error: errorMessage 
+        });
+      }
+      
+      console.log(`Database successfully exported to ${result.path}`);
+      res.json({ 
+        success: true, 
+        message: 'Database exported successfully',
+        exportPath: result.path
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error during database export:', errorMessage);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to export database', 
+        details: errorMessage
+      });
     }
   });
 
