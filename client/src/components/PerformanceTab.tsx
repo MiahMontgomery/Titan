@@ -52,44 +52,221 @@ export function PerformanceTab({ projectId }: PerformanceTabProps) {
     retry: 1,
   });
   
-  // Example initial code
-  const sampleCode = `import React from 'react';
-import { useState, useEffect } from 'react';
+  // Real code implementation from FINDOM Legal Compliance System
+  const sampleCode = `// DocumentTemplateManager.tsx - Part of FINDOM Legal and Compliance System
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { queryClient, apiRequest } from '@/lib/queryClient';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
+import { DocumentTemplate, insertDocumentTemplateSchema } from '@shared/schema';
 
-// Authentication component for the e-commerce site
-const AuthForm = () => {
-  const [formType, setFormType] = useState('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export function DocumentTemplateManager({ projectId }: { projectId: number }) {
+  const [open, setOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<DocumentTemplate | null>(null);
+  const { toast } = useToast();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Call to authentication API will be implemented here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(\`\${formType} successful\`);
-    } catch (err) {
-      setError('Authentication failed');
-    } finally {
-      setLoading(false);
+  // Form schema with validation
+  const formSchema = insertDocumentTemplateSchema.extend({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    content: z.string().min(10, "Template content must be at least 10 characters"),
+    description: z.string().min(5, "Please provide a brief description"),
+    category: z.string().min(1, "Category is required"),
+  });
+
+  // Setup form with react-hook-form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      content: "",
+      description: "",
+      category: "legal",
+      projectId: projectId,
+      variables: [],
+      isActive: true
     }
+  });
+
+  // Reset form when opening dialog or changing editing template
+  useEffect(() => {
+    if (open) {
+      if (editingTemplate) {
+        form.reset({
+          name: editingTemplate.name,
+          content: editingTemplate.content,
+          description: editingTemplate.description,
+          category: editingTemplate.category,
+          projectId: projectId,
+          variables: editingTemplate.variables,
+          isActive: editingTemplate.isActive
+        });
+      } else {
+        form.reset({
+          name: "",
+          content: "",
+          description: "",
+          category: "legal",
+          projectId: projectId,
+          variables: [],
+          isActive: true
+        });
+      }
+    }
+  }, [open, editingTemplate, form, projectId]);
+
+  // Fetch templates for this project
+  const { data: templates, isLoading } = useQuery({
+    queryKey: ['/api/templates', projectId],
+    queryFn: async () => {
+      const response = await apiRequest({
+        url: \`/api/projects/\${projectId}/templates\`,
+        method: 'GET'
+      });
+      return response.data as DocumentTemplate[];
+    }
+  });
+
+  // Create new template mutation
+  const createMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      return await apiRequest({
+        url: '/api/templates',
+        method: 'POST',
+        data
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/templates', projectId] });
+      setOpen(false);
+      toast({
+        title: "Success",
+        description: "Template has been created",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: \`Failed to create template: \${error}\`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Update template mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema> & { id: number }) => {
+      const { id, ...updateData } = data;
+      return await apiRequest({
+        url: \`/api/templates/\${id}\`,
+        method: 'PATCH',
+        data: updateData
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/templates', projectId] });
+      setOpen(false);
+      setEditingTemplate(null);
+      toast({
+        title: "Success",
+        description: "Template has been updated",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: \`Failed to update template: \${error}\`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Handle form submission
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (editingTemplate) {
+      updateMutation.mutate({ ...data, id: editingTemplate.id });
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+  
+  // Open dialog to add a new template
+  const handleAddTemplate = () => {
+    setEditingTemplate(null);
+    setOpen(true);
+  };
+  
+  // Open dialog to edit an existing template
+  const handleEditTemplate = (template: DocumentTemplate) => {
+    setEditingTemplate(template);
+    setOpen(true);
   };
 
   return (
-    <div className="auth-form-container">
-      <h2>{formType === 'login' ? 'Login' : 'Sign Up'}</h2>
-      {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        // Form inputs will be added here
-      </form>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Document Templates</h2>
+        <Button onClick={handleAddTemplate}>Add Template</Button>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      ) : templates && templates.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {templates.map((template) => (
+            <Card key={template.id} className="overflow-hidden">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg">{template.name}</CardTitle>
+                  <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                    {template.category}
+                  </span>
+                </div>
+                <CardDescription className="line-clamp-2">{template.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="pb-2">
+                <div className="bg-muted/50 rounded p-2 max-h-20 overflow-hidden text-xs font-mono opacity-70">
+                  {template.content.substring(0, 150)}
+                  {template.content.length > 150 && '...'}
+                </div>
+              </CardContent>
+              <CardFooter className="pt-0">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="ml-auto"
+                  onClick={() => handleEditTemplate(template)}
+                >
+                  Edit Template
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 border rounded-lg border-dashed">
+          <h3 className="text-xl font-medium text-muted-foreground mb-2">No Templates Yet</h3>
+          <p className="text-muted-foreground mb-4">Create your first document template to get started.</p>
+          <Button onClick={handleAddTemplate}>Create Template</Button>
+        </div>
+      )}
     </div>
   );
-};`;
+}`;
 
   // Set up the initial code and welcome message in Replit-like style
   useEffect(() => {
@@ -114,7 +291,14 @@ const AuthForm = () => {
         },
         {
           id: generateId(),
-          content: "## How to interact with me\n- Ask me questions about the code\n- Request new features or changes\n- Give me specific instructions\n- See my thinking process in real-time\n\nI'll generate meaningful, production-ready code that you can use immediately.",
+          content: "## Live Development in Progress\n\n**FINDOM Project Status:**\n\n- ✅ AI-Driven Interactive Experience Platform (100%)\n- ✅ Dynamic Pricing Engine (100%)\n- 🔄 AI-Driven Legal and Compliance Automation System (39%)\n- 🔄 Persona Development Suite (28%)\n- 🔄 Multi-platform Distribution System (5%)\n\nCurrently working on: **Document Template Management System** and **Persona Behavior Modeling**",
+          role: 'agent',
+          timestamp: new Date(),
+          codeSnippet: null
+        },
+        {
+          id: generateId(),
+          content: "## How to interact with me\n- Ask me questions about the code\n- Request new features or changes\n- Give me specific instructions\n- See my thinking process in real-time\n\nI'll generate meaningful, production-ready code that you can use immediately.\n\nIf you encounter any errors, use the **Roll Back** button to restore previous versions.",
           role: 'agent',
           timestamp: new Date(),
           codeSnippet: null
@@ -727,29 +911,60 @@ const AuthForm = () => {
         <div className="h-1/2 border-b border-gray-700 overflow-hidden flex flex-col">
           <div className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center">
             <div className="flex items-center">
-              <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
               </svg>
               <span className="text-sm font-medium text-gray-300">Code Editor</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                Active Implementation
+              </span>
             </div>
-            <div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
+                <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
+                <span className="text-xs text-gray-300">Auto-Developing</span>
+              </div>
               <button 
-                className={`py-1 px-3 rounded text-xs ${canRollback ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
+                className={`py-1 px-3 rounded text-xs flex items-center space-x-1 ${canRollback ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
                 onClick={handleRollback}
                 disabled={!canRollback}
               >
-                Roll Back
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+                <span>Roll Back</span>
               </button>
             </div>
           </div>
-          <div className="flex-1 overflow-auto bg-gray-900 font-mono text-sm p-4">
-            {currentCode ? (
-              <SyntaxHighlightedCode code={currentCode} />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                No code to display
+          <div className="flex-1 overflow-auto bg-gray-900 font-mono text-sm">
+            <div className="flex items-center bg-gray-800/50 px-4 py-1 text-xs text-gray-400 border-b border-gray-700">
+              <div className="flex-1">
+                {currentCode ? 
+                  "Generated implementation for Document Template Management System" : 
+                  "No active code implementation"
+                }
               </div>
-            )}
+              <div>FINDOM / AI-Driven Legal and Compliance Automation System</div>
+            </div>
+            <div className="p-4">
+              {currentCode ? (
+                <SyntaxHighlightedCode code={currentCode} />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                    <svg className="h-12 w-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <div className="text-gray-400">
+                      AI is currently generating code...
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Ask a question or wait for the next implementation
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
@@ -785,6 +1000,9 @@ const AuthForm = () => {
                         <div className="absolute inset-0 h-5 w-5 border-2 border-blue-300 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                       <span className="text-blue-300 text-sm font-medium">AI Processing</span>
+                      <div className="ml-auto px-2 py-0.5 bg-blue-500/20 rounded text-xs text-blue-300">
+                        FINDOM
+                      </div>
                     </div>
                   )}
                   
@@ -956,13 +1174,39 @@ interface SyntaxHighlightedCodeProps {
 }
 
 function SyntaxHighlightedCode({ code }: SyntaxHighlightedCodeProps) {
-  // A simple syntax highlighter
-  const highlightedCode = code
-    .replace(/(import|export|from|const|let|var|function|return|async|await|try|catch|finally|if|else|for|while)/g, '<span class="text-blue-400">$1</span>')
-    .replace(/('.*?'|".*?")/g, '<span class="text-accent">$1</span>')
-    .replace(/(\w+)(?=\s*\()/g, '<span class="text-yellow-400">$1</span>')
-    .replace(/(\/\/.*)/g, '<span class="text-gray-500">$1</span>')
-    .replace(/(\{|\}|\(|\)|\[|\]|=>|=|;|,)/g, '<span class="text-gray-300">$1</span>');
+  // Enhanced syntax highlighter that better represents Replit's style
+  // Add line numbers and better highlighting
+  const lines = code.split('\n');
+  const processedLines = lines.map((line, index) => {
+    // Apply syntax highlighting to each line
+    let highlightedLine = line
+      // Keywords
+      .replace(/(import|export|from|const|let|var|function|class|interface|type|extends|implements|return|async|await|try|catch|finally|if|else|for|while|do|switch|case|break|continue|new|this|super|instanceof|typeof|in|of|null|undefined|true|false|void|delete)/g, '<span class="text-blue-400">$1</span>')
+      // Strings
+      .replace(/('.*?'|".*?")/g, '<span class="text-green-400">$1</span>')
+      // Function calls
+      .replace(/(\w+)(?=\s*\()/g, '<span class="text-yellow-400">$1</span>')
+      // Comments
+      .replace(/(\/\/.*)/g, '<span class="text-gray-500">$1</span>')
+      // Punctuation
+      .replace(/(\{|\}|\(|\)|\[|\]|=>|=|;|,|:|\.|<|>|\?|\||\&|\+|\-|\*|\/|\%|\^|\!)/g, '<span class="text-gray-300">$1</span>')
+      // Numbers
+      .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="text-purple-400">$1</span>')
+      // JSX tags
+      .replace(/(&lt;\/?[a-zA-Z0-9]+(&gt;)?)/g, '<span class="text-orange-400">$1</span>');
+    
+    // Add line number and proper indentation
+    return `
+      <div class="flex hover:bg-gray-800/50">
+        <div class="text-gray-500 w-8 text-right pr-2 select-none">${index + 1}</div>
+        <div class="flex-1 pl-2 border-l border-gray-700">${highlightedLine || ' '}</div>
+      </div>
+    `;
+  });
   
-  return <div dangerouslySetInnerHTML={{ __html: highlightedCode }} />;
+  return (
+    <div className="text-sm">
+      <div dangerouslySetInnerHTML={{ __html: processedLines.join('') }} />
+    </div>
+  );
 }
