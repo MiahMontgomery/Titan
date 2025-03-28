@@ -1,6 +1,8 @@
-import { pgTable, text, serial, integer, boolean, json, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, json, timestamp, jsonb, varchar, real, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+// Import Persona from personaSchema
+import { Persona } from "./persona/personaSchema";
 
 // Project Table
 export const projects = pgTable("projects", {
@@ -190,3 +192,93 @@ export const webAccounts = pgTable("web_accounts", {
 export const insertWebAccountSchema = createInsertSchema(webAccounts).omit({ id: true });
 export type WebAccount = typeof webAccounts.$inferSelect;
 export type InsertWebAccount = z.infer<typeof insertWebAccountSchema>;
+
+// Persona System
+export const personas = pgTable("personas", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").notNull(),
+  name: varchar("name", { length: 50 }).notNull(),
+  displayName: varchar("display_name", { length: 100 }).notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  
+  // Behavior settings stored as JSON
+  behavior: jsonb("behavior").notNull(),
+  
+  // Performance stats stored as JSON
+  stats: jsonb("stats").notNull(),
+  
+  // Autonomy settings stored as JSON
+  autonomy: jsonb("autonomy").notNull(),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  personaId: integer("persona_id").notNull(),
+  sender: varchar("sender", { length: 100 }).notNull(),
+  content: text("content").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  isFromPersona: boolean("is_from_persona").notNull(),
+  platform: varchar("platform", { length: 50 }).notNull(),
+  clientId: varchar("client_id", { length: 100 }),
+  metrics: jsonb("metrics"),
+});
+
+export const contentItems = pgTable("content_items", {
+  id: serial("id").primaryKey(),
+  personaId: integer("persona_id").notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  content: text("content").notNull(),
+  contentType: varchar("content_type", { length: 50 }).notNull(),
+  platform: varchar("platform", { length: 50 }).notNull(),
+  status: varchar("status", { length: 20 }).default("draft").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  publishedAt: timestamp("published_at"),
+  metrics: jsonb("metrics").notNull(),
+});
+
+export const behaviorUpdates = pgTable("behavior_updates", {
+  id: serial("id").primaryKey(),
+  personaId: integer("persona_id").notNull(),
+  previousInstructions: text("previous_instructions").notNull(),
+  newInstructions: text("new_instructions").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  appliedBy: varchar("applied_by", { length: 100 }).notNull(),
+  status: varchar("status", { length: 20 }).default("pending").notNull(),
+});
+
+// Persona-related insert schemas
+export const insertPersonaSchema = createInsertSchema(personas).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true });
+export const insertContentItemSchema = createInsertSchema(contentItems).omit({ id: true, createdAt: true });
+export const insertBehaviorUpdateSchema = createInsertSchema(behaviorUpdates).omit({ id: true, timestamp: true });
+
+// Persona-related types
+export type DBPersona = typeof personas.$inferSelect;
+export type InsertDBPersona = z.infer<typeof insertPersonaSchema>;
+
+export type DBChatMessage = typeof chatMessages.$inferSelect;
+export type InsertDBChatMessage = z.infer<typeof insertChatMessageSchema>;
+
+export type DBContentItem = typeof contentItems.$inferSelect;
+export type InsertDBContentItem = z.infer<typeof insertContentItemSchema>;
+
+export type DBBehaviorUpdate = typeof behaviorUpdates.$inferSelect;
+export type InsertDBBehaviorUpdate = z.infer<typeof insertBehaviorUpdateSchema>;
+
+// Export persona types from persona schema module
+export { Persona, ChatMessage, ContentItem };
+
+// BehaviorUpdate type for backward compatibility
+export type BehaviorUpdate = {
+  id: string;
+  personaId: string;
+  previousInstructions: string;
+  newInstructions: string;
+  timestamp: Date;
+  appliedBy: string;
+  status: "pending" | "applied" | "rejected";
+};

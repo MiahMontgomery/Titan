@@ -1,63 +1,120 @@
-// Generic response type for API calls
-export interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-// For stubbed external integrations
-export interface TelegramIntegration {
-  token: string;
-}
-
-export interface OpenAIIntegration {
-  apiKey: string;
-}
-
-export interface FirebaseIntegration {
-  config: {
-    apiKey: string;
-    authDomain: string;
-    projectId: string;
-    storageBucket: string;
-    messagingSenderId: string;
-    appId: string;
-    clientEmail?: string;
-    privateKey?: string;
+// Types from persona schema
+export interface Persona {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  imageUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+  
+  // Customizable behavior settings
+  behavior: {
+    tone: string;
+    style: string;
+    vocabulary: string;
+    responsiveness: number;
+    instructions: string;
+    lastUpdated: Date;
+  };
+  
+  // Performance metrics
+  stats: {
+    totalIncome: number;
+    messageCount: number;
+    responseRate: number;
+    averageResponseTime: number;
+    contentCreated: number;
+    contentPublished: number;
+    conversionRate: number;
+    lastActivity?: Date;
+  };
+  
+  // Autonomy settings
+  autonomy: {
+    level: number;
+    lastDecision?: string;
+    decisionHistory: string[];
+    canInitiateConversation: boolean;
+    canCreateContent: boolean;
   };
 }
 
-// WebSocket message types
-export type WebSocketMessageType = 
-  | 'ping'
-  | 'pong'
-  | 'projects'
-  | 'new-project'
-  | 'update-project'
-  | 'delete-project'
-  | 'new-feature'
-  | 'update-feature'
-  | 'new-milestone'
-  | 'update-milestone'
-  | 'new-goal'
-  | 'update-goal'
-  | 'activity'
-  | 'new-activity'
-  | 'chat-message'
-  | 'chat-response'
-  | 'thinking';
-
-export interface WebSocketMessage<T = any> {
-  type: WebSocketMessageType;
-  data?: T;
-  projectId?: number;
-  featureId?: number;
-  milestoneId?: number;
-  id?: number;
-  message?: string;
-  codeSnippet?: string | null;
-  debugSteps?: string[];
-  isDebugging?: boolean;
-  isStepByStep?: boolean;
-  currentDebugStep?: number;
+export interface ChatMessage {
+  id: string;
+  personaId: string;
+  sender: string;
+  content: string;
+  timestamp: Date;
+  isFromPersona: boolean;
+  platform: string;
+  clientId?: string;
+  metrics?: {
+    sentiment?: number;
+    engagementScore?: number;
+    conversionIntent?: number;
+  };
 }
+
+export interface ContentItem {
+  id: string;
+  personaId: string;
+  title: string;
+  content: string;
+  contentType: "post" | "story" | "message" | "promotion";
+  platform: string;
+  status: "draft" | "pending" | "published" | "rejected";
+  createdAt: Date;
+  publishedAt?: Date;
+  metrics: {
+    views: number;
+    likes: number;
+    comments: number;
+    conversions: number;
+    revenue: number;
+  };
+}
+
+export interface BehaviorUpdate {
+  id: string;
+  personaId: string;
+  previousInstructions: string;
+  newInstructions: string;
+  timestamp: Date;
+  appliedBy: string;
+  status: "pending" | "applied" | "rejected";
+}
+
+// Create schema (for form validation)
+export const createPersonaSchema = {
+  name: '',
+  displayName: '',
+  description: '',
+  imageUrl: '',
+  isActive: true,
+  behavior: {
+    tone: '',
+    style: '',
+    vocabulary: '',
+    responsiveness: 7,
+    instructions: '',
+    lastUpdated: new Date(),
+  },
+  autonomy: {
+    level: 5,
+    lastDecision: '',
+    decisionHistory: [],
+    canInitiateConversation: true,
+    canCreateContent: true,
+  },
+  stats: {
+    totalIncome: 0,
+    messageCount: 0,
+    responseRate: 0,
+    averageResponseTime: 0,
+    contentCreated: 0,
+    contentPublished: 0,
+    conversionRate: 0,
+  }
+};

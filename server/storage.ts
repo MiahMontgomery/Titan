@@ -7,7 +7,12 @@ import {
   User, InsertUser,
   ExternalApi, InsertExternalApi,
   AgentTask, InsertAgentTask,
-  WebAccount, InsertWebAccount
+  WebAccount, InsertWebAccount,
+  DBPersona, InsertDBPersona, 
+  DBChatMessage, InsertDBChatMessage,
+  DBContentItem, InsertDBContentItem,
+  DBBehaviorUpdate, InsertDBBehaviorUpdate,
+  Persona, ChatMessage, ContentItem, BehaviorUpdate
 } from "@shared/schema";
 
 export interface IStorage {
@@ -74,6 +79,33 @@ export interface IStorage {
   createWebAccount(account: InsertWebAccount): Promise<WebAccount>;
   updateWebAccount(id: number, account: Partial<InsertWebAccount>): Promise<WebAccount | undefined>;
   deleteWebAccount(id: number): Promise<boolean>;
+  
+  // Personas
+  getPersonasByProject(projectId: number): Promise<Persona[]>;
+  getPersona(id: string): Promise<Persona | undefined>;
+  createPersona(persona: Omit<Persona, "id" | "createdAt" | "updatedAt">): Promise<Persona>;
+  updatePersona(id: string, data: Partial<Persona>): Promise<Persona | undefined>;
+  deletePersona(id: string): Promise<boolean>;
+  togglePersonaActive(id: string, isActive: boolean): Promise<Persona | undefined>;
+  
+  // Chat Messages
+  getChatMessagesByPersona(personaId: string): Promise<ChatMessage[]>;
+  getChatMessage(id: string): Promise<ChatMessage | undefined>;
+  createChatMessage(message: Omit<ChatMessage, "id" | "timestamp">): Promise<ChatMessage>;
+  deleteChatMessage(id: string): Promise<boolean>;
+  
+  // Content Items
+  getContentItemsByPersona(personaId: string): Promise<ContentItem[]>;
+  getContentItem(id: string): Promise<ContentItem | undefined>;
+  createContentItem(item: Omit<ContentItem, "id" | "createdAt">): Promise<ContentItem>;
+  updateContentItem(id: string, data: Partial<ContentItem>): Promise<ContentItem | undefined>;
+  deleteContentItem(id: string): Promise<boolean>;
+  
+  // Behavior Updates
+  getBehaviorUpdatesByPersona(personaId: string): Promise<BehaviorUpdate[]>;
+  getBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined>;
+  createBehaviorUpdate(update: Omit<BehaviorUpdate, "id" | "timestamp">): Promise<BehaviorUpdate>;
+  applyBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -86,6 +118,12 @@ export class MemStorage implements IStorage {
   private externalApis: Map<number, ExternalApi>;
   private agentTasks: Map<number, AgentTask>;
   private webAccounts: Map<number, WebAccount>;
+  
+  // Persona system storage
+  private personas: Map<string, Persona>;
+  private chatMessages: Map<string, ChatMessage>;
+  private contentItems: Map<string, ContentItem>;
+  private behaviorUpdates: Map<string, BehaviorUpdate>;
   
   private userId: number;
   private projectId: number;
@@ -104,6 +142,12 @@ export class MemStorage implements IStorage {
     this.externalApis = new Map();
     this.agentTasks = new Map();
     this.webAccounts = new Map();
+    
+    // Initialize persona system storage
+    this.personas = new Map();
+    this.chatMessages = new Map();
+    this.contentItems = new Map();
+    this.behaviorUpdates = new Map();
     
     this.userId = 0;
     this.projectId = 0;
@@ -745,6 +789,282 @@ export class MemStorage implements IStorage {
   
   async deleteWebAccount(id: number): Promise<boolean> {
     return this.webAccounts.delete(id);
+  }
+  
+  // Persona management
+  async getPersonasByProject(projectId: number): Promise<Persona[]> {
+    return Array.from(this.personas.values())
+      .filter(persona => persona.projectId === projectId)
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+  }
+  
+  async getPersona(id: string): Promise<Persona | undefined> {
+    return this.personas.get(id);
+  }
+  
+  async createPersona(personaData: Omit<Persona, "id" | "createdAt" | "updatedAt">): Promise<Persona> {
+    const id = `persona-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const timestamp = new Date();
+    
+    const persona: Persona = {
+      ...personaData,
+      id,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    };
+    
+    this.personas.set(id, persona);
+    return persona;
+  }
+  
+  async updatePersona(id: string, updateData: Partial<Persona>): Promise<Persona | undefined> {
+    const persona = this.personas.get(id);
+    if (!persona) return undefined;
+    
+    const updatedPersona: Persona = {
+      ...persona,
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.personas.set(id, updatedPersona);
+    return updatedPersona;
+  }
+  
+  async deletePersona(id: string): Promise<boolean> {
+    // When deleting a persona, we also delete related messages, content, and behavior updates
+    if (this.personas.has(id)) {
+      // Delete chat messages
+      Array.from(this.chatMessages.keys())
+        .filter(messageId => this.chatMessages.get(messageId)?.personaId === id)
+        .forEach(messageId => this.chatMessages.delete(messageId));
+      
+      // Delete content items
+      Array.from(this.contentItems.keys())
+        .filter(itemId => this.contentItems.get(itemId)?.personaId === id)
+        .forEach(itemId => this.contentItems.delete(itemId));
+      
+      // Delete behavior updates
+      Array.from(this.behaviorUpdates.keys())
+        .filter(updateId => this.behaviorUpdates.get(updateId)?.personaId === id)
+        .forEach(updateId => this.behaviorUpdates.delete(updateId));
+      
+      // Delete the persona
+      return this.personas.delete(id);
+    }
+    
+    return false;
+  }
+  
+  async togglePersonaActive(id: string, isActive: boolean): Promise<Persona | undefined> {
+    const persona = this.personas.get(id);
+    if (!persona) return undefined;
+    
+    const updatedPersona: Persona = {
+      ...persona,
+      isActive,
+      updatedAt: new Date()
+    };
+    
+    this.personas.set(id, updatedPersona);
+    return updatedPersona;
+  }
+  
+  // Chat messages management
+  async getChatMessagesByPersona(personaId: string): Promise<ChatMessage[]> {
+    return Array.from(this.chatMessages.values())
+      .filter(message => message.personaId === personaId)
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()); // Sort chronologically
+  }
+  
+  async getChatMessage(id: string): Promise<ChatMessage | undefined> {
+    return this.chatMessages.get(id);
+  }
+  
+  async createChatMessage(messageData: Omit<ChatMessage, "id" | "timestamp">): Promise<ChatMessage> {
+    const id = `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    const message: ChatMessage = {
+      ...messageData,
+      id,
+      timestamp: new Date()
+    };
+    
+    this.chatMessages.set(id, message);
+    
+    // Update the persona's stats
+    const persona = this.personas.get(messageData.personaId);
+    if (persona) {
+      const updatedStats = { ...persona.stats };
+      updatedStats.messageCount++;
+      
+      // If the message is from the persona, calculate response time
+      if (messageData.isFromPersona) {
+        // Find the most recent client message to calculate response time
+        const recentClientMessages = Array.from(this.chatMessages.values())
+          .filter(msg => 
+            msg.personaId === messageData.personaId && 
+            !msg.isFromPersona && 
+            msg.timestamp < new Date() // Message is older than current
+          )
+          .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+        
+        if (recentClientMessages.length > 0) {
+          const latestClientMessage = recentClientMessages[0];
+          const responseTimeMs = new Date().getTime() - latestClientMessage.timestamp.getTime();
+          const responseTimeMinutes = responseTimeMs / (1000 * 60);
+          
+          // Update average response time
+          if (updatedStats.averageResponseTime === 0) {
+            updatedStats.averageResponseTime = responseTimeMinutes;
+          } else {
+            updatedStats.averageResponseTime = 
+              (updatedStats.averageResponseTime * (updatedStats.messageCount - 1) + responseTimeMinutes) / 
+              updatedStats.messageCount;
+          }
+        }
+      }
+      
+      // Update persona stats
+      this.updatePersona(messageData.personaId, {
+        stats: updatedStats,
+        lastActivity: new Date()
+      });
+    }
+    
+    return message;
+  }
+  
+  async deleteChatMessage(id: string): Promise<boolean> {
+    return this.chatMessages.delete(id);
+  }
+  
+  // Content items management
+  async getContentItemsByPersona(personaId: string): Promise<ContentItem[]> {
+    return Array.from(this.contentItems.values())
+      .filter(item => item.personaId === personaId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+  
+  async getContentItem(id: string): Promise<ContentItem | undefined> {
+    return this.contentItems.get(id);
+  }
+  
+  async createContentItem(itemData: Omit<ContentItem, "id" | "createdAt">): Promise<ContentItem> {
+    const id = `content-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    const contentItem: ContentItem = {
+      ...itemData,
+      id,
+      createdAt: new Date()
+    };
+    
+    this.contentItems.set(id, contentItem);
+    
+    // Update the persona's stats
+    const persona = this.personas.get(itemData.personaId);
+    if (persona) {
+      const updatedStats = { ...persona.stats };
+      updatedStats.contentCreated++;
+      
+      // If the content is published, update that stat too
+      if (itemData.status === 'published') {
+        updatedStats.contentPublished++;
+      }
+      
+      // Update persona stats
+      this.updatePersona(itemData.personaId, {
+        stats: updatedStats,
+        lastActivity: new Date()
+      });
+    }
+    
+    return contentItem;
+  }
+  
+  async updateContentItem(id: string, updateData: Partial<ContentItem>): Promise<ContentItem | undefined> {
+    const contentItem = this.contentItems.get(id);
+    if (!contentItem) return undefined;
+    
+    // If the status is changing to published, update persona stats
+    if (updateData.status === 'published' && contentItem.status !== 'published') {
+      const persona = this.personas.get(contentItem.personaId);
+      if (persona) {
+        const updatedStats = { ...persona.stats };
+        updatedStats.contentPublished++;
+        
+        // Update persona stats
+        this.updatePersona(contentItem.personaId, {
+          stats: updatedStats,
+          lastActivity: new Date()
+        });
+      }
+    }
+    
+    const updatedContentItem: ContentItem = {
+      ...contentItem,
+      ...updateData
+    };
+    
+    this.contentItems.set(id, updatedContentItem);
+    return updatedContentItem;
+  }
+  
+  async deleteContentItem(id: string): Promise<boolean> {
+    return this.contentItems.delete(id);
+  }
+  
+  // Behavior updates management
+  async getBehaviorUpdatesByPersona(personaId: string): Promise<BehaviorUpdate[]> {
+    return Array.from(this.behaviorUpdates.values())
+      .filter(update => update.personaId === personaId)
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
+  
+  async getBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    return this.behaviorUpdates.get(id);
+  }
+  
+  async createBehaviorUpdate(updateData: Omit<BehaviorUpdate, "id" | "timestamp">): Promise<BehaviorUpdate> {
+    const id = `behavior-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    const behaviorUpdate: BehaviorUpdate = {
+      ...updateData,
+      id,
+      timestamp: new Date()
+    };
+    
+    this.behaviorUpdates.set(id, behaviorUpdate);
+    return behaviorUpdate;
+  }
+  
+  async applyBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    const behaviorUpdate = this.behaviorUpdates.get(id);
+    if (!behaviorUpdate || behaviorUpdate.status !== 'pending') return undefined;
+    
+    // Apply the behavior update to the persona
+    const persona = this.personas.get(behaviorUpdate.personaId);
+    if (!persona) return undefined;
+    
+    // Update the persona's behavior instructions
+    const updatedPersona = await this.updatePersona(behaviorUpdate.personaId, {
+      behavior: {
+        ...persona.behavior,
+        instructions: behaviorUpdate.newInstructions,
+        lastUpdated: new Date()
+      }
+    });
+    
+    if (!updatedPersona) return undefined;
+    
+    // Update the behavior update status
+    const updatedBehaviorUpdate: BehaviorUpdate = {
+      ...behaviorUpdate,
+      status: 'applied'
+    };
+    
+    this.behaviorUpdates.set(id, updatedBehaviorUpdate);
+    return updatedBehaviorUpdate;
   }
 }
 

@@ -1,0 +1,38 @@
+You are a senior full-stack developer working on an autonomous AI project management system called Titan. Your current task is to expand the FINDOM project to support fully isolated personas, each with their own logic container, UI, stats, and editable traits.
+
+Each persona will be structured like a subproject under FINDOM. It must be modular and isolated from the others. You are building scaffolding only. Do not include unnecessary features like export, VM deployment, or authentication tools. Focus on clean modular containers and shared logic separation.
+
+Instructions:
+	1.	Directory Structure:
+	•	Inside client/src/personas/, create separate folders for each persona (e.g. motherceline, emily, brattybunny, etc.).
+	•	Create a PersonaRouter.tsx file that dynamically loads the UI for the selected persona.
+	•	Inside each folder, include:
+	•	index.tsx – root UI for that persona
+	•	chatLog.tsx – chat output + approval tools
+	•	contentManager.tsx – pending content, approval tools, and previews
+	•	statsPanel.tsx – income, message metrics, content status
+	2.	Shared Logic Layer:
+	•	In shared/persona/, create a personaUtils.ts, personaDefaults.ts, and personaSchema.ts.
+	•	Each persona must use shared hooks/utilities but maintain unique data logs and behavior customization.
+	3.	Editable Behavior Settings:
+	•	Inside each persona panel, create a sidebar component EditBehaviorPanel.tsx.
+	•	Instead of sliders, allow behavior customization using a text input box like:
+	“Act less dommy mommy. Be more shy, but not insecure. Speak slower and use simpler words.”
+	•	Include a “Confirm Changes” button to lock in new tone behavior.
+	•	Log every update to the persona’s feedback loop.
+	4.	Performance Dashboard Integration:
+	•	Add a FINDOM > Personas view.
+	•	Show each persona as a tile with:
+	•	Current income
+	•	Content queued
+	•	Chat status
+	•	Autonomy toggle per feature (chat, content, marketing)
+	•	Clicking a tile opens the full persona page.
+	5.	Scaffolding Only:
+	•	Use placeholder content and mock logs.
+	•	You do NOT need to hook into GPT, Firebase, or storage yet.
+	•	Output only reusable clean code, no hardcoded persona logic.
+
+Deliverable:
+
+A complete scaffolding system with modular folders, clean UI containers, shared logic handling, behavior customization panels, and dashboard persona management. This will be passed to VS Code for logic layering and AI connection.

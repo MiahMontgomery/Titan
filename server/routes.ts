@@ -18,7 +18,11 @@ import {
   insertMilestoneSchema, 
   insertGoalSchema,
   insertActivityLogSchema,
-  insertWebAccountSchema
+  insertWebAccountSchema,
+  insertPersonaSchema,
+  insertChatMessageSchema,
+  insertContentItemSchema,
+  insertBehaviorUpdateSchema
 } from "@shared/schema";
 import { handleChatMessage, setWebSocketServer } from "./chatHandler";
 import { initializeWebAutomation, getWebAutomationService } from "./webAutomation";
@@ -1394,6 +1398,309 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: 'Failed to export database', 
         details: errorMessage
       });
+    }
+  });
+
+  // Persona Management API Routes
+  app.get('/api/personas', async (req, res) => {
+    try {
+      // If projectId is provided, get personas for that project
+      const projectId = req.query.projectId ? parseInt(req.query.projectId as string) : undefined;
+      
+      let personas: Persona[] = [];
+      if (projectId) {
+        personas = await storage.getPersonasByProject(projectId);
+      } else {
+        // Get all personas from all projects
+        const projects = await storage.getAllProjects();
+        for (const project of projects) {
+          const projectPersonas = await storage.getPersonasByProject(project.id);
+          personas.push(...projectPersonas);
+        }
+      }
+      
+      res.json(personas);
+    } catch (error) {
+      console.error('Error fetching personas:', error);
+      res.status(500).json({ error: 'Failed to fetch personas' });
+    }
+  });
+
+  app.get('/api/personas/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const persona = await storage.getPersona(id);
+      
+      if (!persona) {
+        return res.status(404).json({ error: 'Persona not found' });
+      }
+      
+      res.json(persona);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch persona' });
+    }
+  });
+
+  app.post('/api/personas', async (req, res) => {
+    try {
+      const result = insertPersonaSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      // Create the persona
+      const persona = await storage.createPersona(result.data);
+      
+      // Broadcast to all clients
+      broadcast(wss, { type: 'new-persona', data: persona });
+      
+      res.status(201).json(persona);
+    } catch (error) {
+      console.error('Error creating persona:', error);
+      res.status(500).json({ error: 'Failed to create persona' });
+    }
+  });
+
+  app.patch('/api/personas/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updateSchema = insertPersonaSchema.partial();
+      const result = updateSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      const persona = await storage.updatePersona(id, result.data);
+      
+      if (!persona) {
+        return res.status(404).json({ error: 'Persona not found' });
+      }
+      
+      // Broadcast to all clients
+      broadcast(wss, { type: 'update-persona', data: persona });
+      
+      res.json(persona);
+    } catch (error) {
+      console.error('Error updating persona:', error);
+      res.status(500).json({ error: 'Failed to update persona' });
+    }
+  });
+
+  app.delete('/api/personas/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const success = await storage.deletePersona(id);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Persona not found or could not be deleted' });
+      }
+      
+      // Broadcast to all clients
+      broadcast(wss, { type: 'delete-persona', data: { id } });
+      
+      res.json({ success: true, message: 'Persona deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting persona:', error);
+      res.status(500).json({ error: 'Failed to delete persona' });
+    }
+  });
+
+  app.post('/api/personas/:id/toggle-active', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const { isActive } = req.body;
+      
+      if (typeof isActive !== 'boolean') {
+        return res.status(400).json({ error: 'isActive must be a boolean value' });
+      }
+      
+      const persona = await storage.togglePersonaActive(id, isActive);
+      
+      if (!persona) {
+        return res.status(404).json({ error: 'Persona not found' });
+      }
+      
+      // Broadcast to all clients
+      broadcast(wss, { type: 'update-persona', data: persona });
+      
+      res.json(persona);
+    } catch (error) {
+      console.error('Error toggling persona active state:', error);
+      res.status(500).json({ error: 'Failed to toggle persona active state' });
+    }
+  });
+
+  // Chat Message API Routes
+  app.get('/api/personas/:personaId/messages', async (req, res) => {
+    try {
+      const personaId = req.params.personaId;
+      const messages = await storage.getChatMessagesByPersona(personaId);
+      res.json(messages);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+  });
+
+  app.post('/api/chat-messages', async (req, res) => {
+    try {
+      const result = insertChatMessageSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      const message = await storage.createChatMessage(result.data);
+      
+      // Broadcast to all clients
+      broadcast(wss, { 
+        type: 'new-message', 
+        personaId: message.personaId,
+        data: message 
+      });
+      
+      res.status(201).json(message);
+    } catch (error) {
+      console.error('Error creating message:', error);
+      res.status(500).json({ error: 'Failed to create message' });
+    }
+  });
+
+  // Content Item API Routes
+  app.get('/api/personas/:personaId/content', async (req, res) => {
+    try {
+      const personaId = req.params.personaId;
+      const contentItems = await storage.getContentItemsByPersona(personaId);
+      res.json(contentItems);
+    } catch (error) {
+      console.error('Error fetching content items:', error);
+      res.status(500).json({ error: 'Failed to fetch content items' });
+    }
+  });
+
+  app.post('/api/content-items', async (req, res) => {
+    try {
+      const result = insertContentItemSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      const contentItem = await storage.createContentItem(result.data);
+      
+      // Broadcast to all clients
+      broadcast(wss, { 
+        type: 'new-content', 
+        personaId: contentItem.personaId,
+        data: contentItem 
+      });
+      
+      res.status(201).json(contentItem);
+    } catch (error) {
+      console.error('Error creating content item:', error);
+      res.status(500).json({ error: 'Failed to create content item' });
+    }
+  });
+
+  app.patch('/api/content-items/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updateSchema = insertContentItemSchema.partial();
+      const result = updateSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      const contentItem = await storage.updateContentItem(id, result.data);
+      
+      if (!contentItem) {
+        return res.status(404).json({ error: 'Content item not found' });
+      }
+      
+      // Broadcast to all clients
+      broadcast(wss, { 
+        type: 'update-content', 
+        id: contentItem.id,
+        data: contentItem 
+      });
+      
+      res.json(contentItem);
+    } catch (error) {
+      console.error('Error updating content item:', error);
+      res.status(500).json({ error: 'Failed to update content item' });
+    }
+  });
+
+  // Behavior Update API Routes
+  app.get('/api/personas/:personaId/behavior-updates', async (req, res) => {
+    try {
+      const personaId = req.params.personaId;
+      const behaviorUpdates = await storage.getBehaviorUpdatesByPersona(personaId);
+      res.json(behaviorUpdates);
+    } catch (error) {
+      console.error('Error fetching behavior updates:', error);
+      res.status(500).json({ error: 'Failed to fetch behavior updates' });
+    }
+  });
+
+  app.post('/api/behavior-updates', async (req, res) => {
+    try {
+      const result = insertBehaviorUpdateSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.format() });
+      }
+      
+      const behaviorUpdate = await storage.createBehaviorUpdate(result.data);
+      
+      // Broadcast to all clients
+      broadcast(wss, { 
+        type: 'new-behavior-update', 
+        personaId: behaviorUpdate.personaId,
+        data: behaviorUpdate 
+      });
+      
+      res.status(201).json(behaviorUpdate);
+    } catch (error) {
+      console.error('Error creating behavior update:', error);
+      res.status(500).json({ error: 'Failed to create behavior update' });
+    }
+  });
+
+  app.post('/api/behavior-updates/:id/apply', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const behaviorUpdate = await storage.applyBehaviorUpdate(id);
+      
+      if (!behaviorUpdate) {
+        return res.status(404).json({ error: 'Behavior update not found or already applied' });
+      }
+      
+      // Get the updated persona
+      const persona = await storage.getPersona(behaviorUpdate.personaId);
+      
+      // Broadcast updates to all clients
+      broadcast(wss, { 
+        type: 'apply-behavior-update', 
+        id: behaviorUpdate.id,
+        data: behaviorUpdate 
+      });
+      
+      if (persona) {
+        broadcast(wss, { 
+          type: 'update-persona', 
+          id: persona.id,
+          data: persona 
+        });
+      }
+      
+      res.json(behaviorUpdate);
+    } catch (error) {
+      console.error('Error applying behavior update:', error);
+      res.status(500).json({ error: 'Failed to apply behavior update' });
     }
   });
 
