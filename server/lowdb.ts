@@ -15,6 +15,14 @@ import { join } from 'path';
 import { JSONFileSync } from 'lowdb/node';
 import { LowSync } from 'lowdb';
 
+// Import the persona-related types
+import {
+  Persona,
+  ChatMessage,
+  ContentItem,
+  BehaviorUpdate
+} from "@shared/schema";
+
 // The structure of our database
 interface DatabaseSchema {
   users: User[];
@@ -26,6 +34,10 @@ interface DatabaseSchema {
   externalApis: ExternalApi[];
   agentTasks: AgentTask[];
   webAccounts: WebAccount[];
+  personas: Persona[];
+  chatMessages: ChatMessage[];
+  contentItems: ContentItem[];
+  behaviorUpdates: BehaviorUpdate[];
   
   // Counters for IDs
   nextUserId: number;
@@ -50,6 +62,10 @@ const defaultData: DatabaseSchema = {
   externalApis: [],
   agentTasks: [],
   webAccounts: [],
+  personas: [],
+  chatMessages: [],
+  contentItems: [],
+  behaviorUpdates: [],
   
   nextUserId: 1,
   nextProjectId: 1,
@@ -787,6 +803,282 @@ export class LowDBStorage implements IStorage {
     if (index === -1) return false;
     
     this.db.data.webAccounts.splice(index, 1);
+    this.db.write();
+    
+    return true;
+  }
+  
+  // Persona Management
+  async getPersonasByProject(projectId: number): Promise<Persona[]> {
+    return this.db.data.personas.filter(persona => persona.projectId === projectId);
+  }
+  
+  async getPersona(id: string): Promise<Persona | undefined> {
+    return this.db.data.personas.find(persona => persona.id === id);
+  }
+  
+  async createPersona(persona: Omit<Persona, "id" | "createdAt" | "updatedAt">): Promise<Persona> {
+    const timestamp = new Date();
+    
+    // Set default values for required fields if not provided
+    const personaWithDefaults = {
+      ...persona,
+      isActive: persona.isActive !== undefined ? persona.isActive : true,
+    };
+    
+    const newPersona: Persona = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `persona-${Date.now()}`,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      ...personaWithDefaults,
+    };
+    
+    this.db.data.personas.push(newPersona);
+    this.db.write();
+    
+    return newPersona;
+  }
+  
+  async updatePersona(id: string, updateData: Partial<Persona>): Promise<Persona | undefined> {
+    const index = this.db.data.personas.findIndex(persona => persona.id === id);
+    if (index === -1) return undefined;
+    
+    const persona = this.db.data.personas[index];
+    const updatedPersona = { 
+      ...persona, 
+      ...updateData,
+      updatedAt: new Date()
+    };
+    
+    this.db.data.personas[index] = updatedPersona;
+    this.db.write();
+    
+    return updatedPersona;
+  }
+  
+  async togglePersonaActive(id: string, isActive: boolean): Promise<Persona | undefined> {
+    const index = this.db.data.personas.findIndex(persona => persona.id === id);
+    if (index === -1) return undefined;
+    
+    const persona = this.db.data.personas[index];
+    const updatedPersona = { 
+      ...persona, 
+      isActive,
+      updatedAt: new Date()
+    };
+    
+    this.db.data.personas[index] = updatedPersona;
+    this.db.write();
+    
+    return updatedPersona;
+  }
+  
+  async deletePersona(id: string): Promise<boolean> {
+    const index = this.db.data.personas.findIndex(persona => persona.id === id);
+    if (index === -1) return false;
+    
+    // Remove the persona
+    this.db.data.personas.splice(index, 1);
+    
+    // Convert id to number for comparison with personaId in related collections
+    const idNum = parseInt(id, 10);
+    
+    // Also remove related chat messages, content items, and behavior updates
+    // Handle both string and number ID types
+    this.db.data.chatMessages = this.db.data.chatMessages.filter(msg => {
+      if (typeof msg.personaId === 'number') {
+        return msg.personaId !== idNum;
+      }
+      return msg.personaId !== id;
+    });
+    
+    this.db.data.contentItems = this.db.data.contentItems.filter(item => {
+      if (typeof item.personaId === 'number') {
+        return item.personaId !== idNum;
+      }
+      return item.personaId !== id;
+    });
+    
+    this.db.data.behaviorUpdates = this.db.data.behaviorUpdates.filter(update => {
+      if (typeof update.personaId === 'number') {
+        return update.personaId !== idNum;
+      }
+      return update.personaId !== id;
+    });
+    
+    this.db.write();
+    return true;
+  }
+  
+  // Chat Message Management
+  async getChatMessagesByPersona(personaId: string): Promise<ChatMessage[]> {
+    // Convert string ID to number for comparison
+    const personaIdNum = parseInt(personaId, 10);
+    return this.db.data.chatMessages.filter(msg => msg.personaId === personaIdNum);
+  }
+  
+  async getChatMessage(id: string): Promise<ChatMessage | undefined> {
+    return this.db.data.chatMessages.find(msg => msg.id === id);
+  }
+  
+  async createChatMessage(message: Omit<ChatMessage, "id" | "timestamp">): Promise<ChatMessage> {
+    const newMessage: ChatMessage = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}`,
+      timestamp: new Date(),
+      ...message,
+    };
+    
+    this.db.data.chatMessages.push(newMessage);
+    this.db.write();
+    
+    return newMessage;
+  }
+  
+  async deleteChatMessage(id: string): Promise<boolean> {
+    const index = this.db.data.chatMessages.findIndex(msg => msg.id === id);
+    if (index === -1) return false;
+    
+    this.db.data.chatMessages.splice(index, 1);
+    this.db.write();
+    
+    return true;
+  }
+  
+  // Content Item Management
+  async getContentItemsByPersona(personaId: string): Promise<ContentItem[]> {
+    // Convert string ID to number for comparison
+    const personaIdNum = parseInt(personaId, 10);
+    return this.db.data.contentItems.filter(item => item.personaId === personaIdNum);
+  }
+  
+  async getContentItem(id: string): Promise<ContentItem | undefined> {
+    return this.db.data.contentItems.find(item => item.id === id);
+  }
+  
+  async createContentItem(content: Omit<ContentItem, "id" | "createdAt">): Promise<ContentItem> {
+    const timestamp = new Date();
+    const newContent: ContentItem = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `content-${Date.now()}`,
+      createdAt: timestamp,
+      ...content,
+    };
+    
+    this.db.data.contentItems.push(newContent);
+    this.db.write();
+    
+    return newContent;
+  }
+  
+  async updateContentItem(id: string, updateData: Partial<ContentItem>): Promise<ContentItem | undefined> {
+    const index = this.db.data.contentItems.findIndex(item => item.id === id);
+    if (index === -1) return undefined;
+    
+    const content = this.db.data.contentItems[index];
+    const updatedContent = { ...content, ...updateData };
+    
+    this.db.data.contentItems[index] = updatedContent;
+    this.db.write();
+    
+    return updatedContent;
+  }
+  
+  async deleteContentItem(id: string): Promise<boolean> {
+    const index = this.db.data.contentItems.findIndex(item => item.id === id);
+    if (index === -1) return false;
+    
+    this.db.data.contentItems.splice(index, 1);
+    this.db.write();
+    
+    return true;
+  }
+  
+  // Behavior Update Management
+  async getBehaviorUpdatesByPersona(personaId: string): Promise<BehaviorUpdate[]> {
+    // Convert string ID to number for comparison
+    const personaIdNum = parseInt(personaId, 10);
+    return this.db.data.behaviorUpdates.filter(update => update.personaId === personaIdNum);
+  }
+  
+  async getBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    return this.db.data.behaviorUpdates.find(update => update.id === id);
+  }
+  
+  async createBehaviorUpdate(update: Omit<BehaviorUpdate, "id" | "timestamp">): Promise<BehaviorUpdate> {
+    const newUpdate: BehaviorUpdate = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `update-${Date.now()}`,
+      timestamp: new Date(),
+      ...update,
+    };
+    
+    this.db.data.behaviorUpdates.push(newUpdate);
+    this.db.write();
+    
+    return newUpdate;
+  }
+  
+  async updateBehaviorUpdateStatus(id: string, status: "pending" | "applied" | "rejected"): Promise<BehaviorUpdate | undefined> {
+    const index = this.db.data.behaviorUpdates.findIndex(update => update.id === id);
+    if (index === -1) return undefined;
+    
+    const update = this.db.data.behaviorUpdates[index];
+    const updatedUpdate = { ...update, status };
+    
+    this.db.data.behaviorUpdates[index] = updatedUpdate;
+    this.db.write();
+    
+    return updatedUpdate;
+  }
+  
+  async applyBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    const updateIndex = this.db.data.behaviorUpdates.findIndex(update => update.id === id);
+    if (updateIndex === -1) return undefined;
+    
+    const update = this.db.data.behaviorUpdates[updateIndex];
+    
+    // Find the persona this update belongs to - convert personaId to string if needed
+    const personaIndex = this.db.data.personas.findIndex(persona => {
+      if (typeof persona.id === 'string' && typeof update.personaId === 'number') {
+        return persona.id === update.personaId.toString();
+      } else if (typeof persona.id === 'number' && typeof update.personaId === 'string') {
+        return persona.id.toString() === update.personaId;
+      }
+      return persona.id === update.personaId;
+    });
+    
+    if (personaIndex === -1) return undefined;
+    
+    const persona = this.db.data.personas[personaIndex];
+    
+    // Apply the new instructions to the persona's behavior
+    const updatedPersona = {
+      ...persona,
+      behavior: {
+        ...persona.behavior,
+        instructions: update.newInstructions,
+        lastUpdated: new Date()
+      },
+      updatedAt: new Date()
+    };
+    
+    // Mark the update as applied
+    const appliedUpdate = {
+      ...update,
+      status: "applied" as const
+    };
+    
+    // Save changes
+    this.db.data.personas[personaIndex] = updatedPersona;
+    this.db.data.behaviorUpdates[updateIndex] = appliedUpdate;
+    this.db.write();
+    
+    return appliedUpdate;
+  }
+  
+  async deleteBehaviorUpdate(id: string): Promise<boolean> {
+    const index = this.db.data.behaviorUpdates.findIndex(update => update.id === id);
+    if (index === -1) return false;
+    
+    this.db.data.behaviorUpdates.splice(index, 1);
     this.db.write();
     
     return true;

@@ -22,7 +22,11 @@ import {
   insertPersonaSchema,
   insertChatMessageSchema,
   insertContentItemSchema,
-  insertBehaviorUpdateSchema
+  insertBehaviorUpdateSchema,
+  Persona,
+  ChatMessage,
+  ContentItem,
+  BehaviorUpdate
 } from "@shared/schema";
 import { handleChatMessage, setWebSocketServer } from "./chatHandler";
 import { initializeWebAutomation, getWebAutomationService } from "./webAutomation";

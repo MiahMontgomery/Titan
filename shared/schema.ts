@@ -269,13 +269,85 @@ export type InsertDBContentItem = z.infer<typeof insertContentItemSchema>;
 export type DBBehaviorUpdate = typeof behaviorUpdates.$inferSelect;
 export type InsertDBBehaviorUpdate = z.infer<typeof insertBehaviorUpdateSchema>;
 
-// Export persona types from persona schema module
-export { Persona, ChatMessage, ContentItem };
+// Define Persona type for compatibility
+export type Persona = {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  projectId: number;  // Associated project ID
+  imageUrl?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+  behavior: {
+    tone: string;
+    style: string;
+    vocabulary: string;
+    responsiveness: number;
+    instructions: string;
+    lastUpdated: Date;
+  };
+  stats: {
+    totalIncome: number;
+    messageCount: number;
+    responseRate: number;
+    averageResponseTime: number;
+    contentCreated: number;
+    contentPublished: number;
+    conversionRate: number;
+    lastActivity?: Date;
+  };
+  autonomy: {
+    level: number;
+    lastDecision?: string;
+    decisionHistory: string[];
+    canInitiateConversation: boolean;
+    canCreateContent: boolean;
+  };
+};
+
+// ChatMessage type for backward compatibility
+export type ChatMessage = {
+  id: string;
+  personaId: number;  // Associated persona ID
+  sender: string;
+  content: string;
+  timestamp: Date;
+  isFromPersona: boolean;
+  platform: string;
+  clientId?: string | null;
+  metrics?: {
+    sentiment?: number;
+    engagementScore?: number;
+    conversionIntent?: number;
+  };
+};
+
+// ContentItem type for backward compatibility
+export type ContentItem = {
+  id: string;
+  personaId: number;  // Associated persona ID
+  title: string;
+  content: string;
+  contentType: "post" | "story" | "message" | "promotion";
+  platform: string;
+  status: "draft" | "pending" | "published" | "rejected";
+  createdAt: Date;
+  publishedAt?: Date;
+  metrics: {
+    views: number;
+    likes: number;
+    comments: number;
+    conversions: number;
+    revenue: number;
+  };
+};
 
 // BehaviorUpdate type for backward compatibility
 export type BehaviorUpdate = {
   id: string;
-  personaId: string;
+  personaId: number;  // Associated persona ID
   previousInstructions: string;
   newInstructions: string;
   timestamp: Date;
