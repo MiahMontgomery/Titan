@@ -810,10 +810,18 @@ export class LowDBStorage implements IStorage {
   
   // Persona Management
   async getPersonasByProject(projectId: number): Promise<Persona[]> {
+    if (!this.db.data.personas) {
+      this.db.data.personas = [];
+      this.db.write();
+    }
     return this.db.data.personas.filter(persona => persona.projectId === projectId);
   }
   
   async getPersona(id: string): Promise<Persona | undefined> {
+    if (!this.db.data.personas) {
+      this.db.data.personas = [];
+      this.db.write();
+    }
     return this.db.data.personas.find(persona => persona.id === id);
   }
   
@@ -832,6 +840,20 @@ export class LowDBStorage implements IStorage {
       updatedAt: timestamp,
       ...personaWithDefaults,
     };
+    
+    // Initialize arrays if they don't exist
+    if (!this.db.data.personas) {
+      this.db.data.personas = [];
+    }
+    if (!this.db.data.chatMessages) {
+      this.db.data.chatMessages = [];
+    }
+    if (!this.db.data.contentItems) {
+      this.db.data.contentItems = [];
+    }
+    if (!this.db.data.behaviorUpdates) {
+      this.db.data.behaviorUpdates = [];
+    }
     
     this.db.data.personas.push(newPersona);
     this.db.write();
@@ -912,12 +934,22 @@ export class LowDBStorage implements IStorage {
   
   // Chat Message Management
   async getChatMessagesByPersona(personaId: string): Promise<ChatMessage[]> {
+    // Initialize array if it doesn't exist
+    if (!this.db.data.chatMessages) {
+      this.db.data.chatMessages = [];
+      this.db.write();
+    }
+    
     // Convert string ID to number for comparison
     const personaIdNum = parseInt(personaId, 10);
     return this.db.data.chatMessages.filter(msg => msg.personaId === personaIdNum);
   }
   
   async getChatMessage(id: string): Promise<ChatMessage | undefined> {
+    if (!this.db.data.chatMessages) {
+      this.db.data.chatMessages = [];
+      this.db.write();
+    }
     return this.db.data.chatMessages.find(msg => msg.id === id);
   }
   
@@ -927,6 +959,11 @@ export class LowDBStorage implements IStorage {
       timestamp: new Date(),
       ...message,
     };
+    
+    // Initialize array if it doesn't exist
+    if (!this.db.data.chatMessages) {
+      this.db.data.chatMessages = [];
+    }
     
     this.db.data.chatMessages.push(newMessage);
     this.db.write();
@@ -946,12 +983,22 @@ export class LowDBStorage implements IStorage {
   
   // Content Item Management
   async getContentItemsByPersona(personaId: string): Promise<ContentItem[]> {
+    // Initialize array if it doesn't exist
+    if (!this.db.data.contentItems) {
+      this.db.data.contentItems = [];
+      this.db.write();
+    }
+    
     // Convert string ID to number for comparison
     const personaIdNum = parseInt(personaId, 10);
     return this.db.data.contentItems.filter(item => item.personaId === personaIdNum);
   }
   
   async getContentItem(id: string): Promise<ContentItem | undefined> {
+    if (!this.db.data.contentItems) {
+      this.db.data.contentItems = [];
+      this.db.write();
+    }
     return this.db.data.contentItems.find(item => item.id === id);
   }
   
@@ -962,6 +1009,11 @@ export class LowDBStorage implements IStorage {
       createdAt: timestamp,
       ...content,
     };
+    
+    // Initialize array if it doesn't exist
+    if (!this.db.data.contentItems) {
+      this.db.data.contentItems = [];
+    }
     
     this.db.data.contentItems.push(newContent);
     this.db.write();
@@ -994,12 +1046,22 @@ export class LowDBStorage implements IStorage {
   
   // Behavior Update Management
   async getBehaviorUpdatesByPersona(personaId: string): Promise<BehaviorUpdate[]> {
+    // Initialize array if it doesn't exist
+    if (!this.db.data.behaviorUpdates) {
+      this.db.data.behaviorUpdates = [];
+      this.db.write();
+    }
+    
     // Convert string ID to number for comparison
     const personaIdNum = parseInt(personaId, 10);
     return this.db.data.behaviorUpdates.filter(update => update.personaId === personaIdNum);
   }
   
   async getBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    if (!this.db.data.behaviorUpdates) {
+      this.db.data.behaviorUpdates = [];
+      this.db.write();
+    }
     return this.db.data.behaviorUpdates.find(update => update.id === id);
   }
   

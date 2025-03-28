@@ -1,0 +1,55 @@
+You are building the frontend scaffolding and UI logic for a system called Fyndham, which must support multiple fully independent personas. Each persona will operate like its own project under Fyndham and must have its own dashboard, activity logs, approval system, and content/chat generation logic.
+
+Your job is to generate and scaffold everything needed to prepare this UI before it’s handed off to VS Code for deeper backend logic and automation.
+
+Key Requirements:
+	1.	Persona System:
+	•	Build a system to add and delete personas under the Fyndham umbrella.
+	•	Each persona should be its own modular unit, displayed on the left-hand sidebar or home dashboard.
+	•	Each persona has a dedicated page that includes:
+	•	Real-time status
+	•	Active platform sessions
+	•	Sales overview
+	•	Message generation module
+	•	Content creation queue
+	•	Settings and editable behavior modifiers (see point 5)
+	2.	Chat Approval Loop:
+	•	Each persona must have its own chat module.
+	•	All chats must be manually approved (thumbs up/down) before being sent.
+	•	Clicking thumbs-down prompts the user for feedback and stores the learning log.
+	•	The system must be able to show pending, sent, and failed messages.
+	3.	Content Approval Loop:
+	•	All generated content (videos, images, audios, text) must be visible in a queue with options to approve, reject, or give feedback.
+	•	Each item must display: the platform it’s meant for, type of content, scheduled posting time.
+	•	Rejected content should trigger a re-generation flow based on feedback.
+	4.	Performance Page:
+	•	Each persona must have an analytics/performance tab that tracks:
+	•	Number of messages sent
+	•	Approval rate
+	•	Revenue generated (stub for now)
+	•	Top-performing platforms and content
+	•	Real-time browser session status
+	5.	Persona Behavior Editing Panel:
+	•	On each persona’s dashboard, there should be an editable side panel.
+	•	The panel includes:
+	•	Text input box for tone/style adjustments (e.g., “act more bratty, but never rude”)
+	•	Delay strategy configuration (e.g., “respond within 5–10 mins unless high-priority”)
+	•	Content priority configuration (e.g., “focus on audio this week”)
+	6.	Default Personas:
+	•	Set up five default persona scaffolds:
+	•	Bratty Baby Girl (highest priority)
+	•	Nurturing Mommy
+	•	Emily (wholesome content/sticker/book creator)
+	•	Jason (AI learning via personal conversation)
+	•	TikTok News Girl (cool, calm, funny news recaps)
+	7.	General UI Requirements:
+	•	Keep the structure modular and clean.
+	•	Use React (or your existing stack) for each persona view.
+	•	Use tab-based structure for each persona page: Chat, Content, Logs, Performance, Settings.
+	•	DO NOT hard-code data—use dummy placeholders that can be dynamically replaced via backend.
+
+Important Notes:
+	•	Do NOT build logic for web automation or backend AI flows here. Just the scaffolding, UI, and placeholder functions.
+	•	We will export this to VS Code after scaffolding is complete for backend agent logic and automation pipelines.
+	•	Make sure components are flexible enough to support full automation later.
+	•	Make this exportable as a clean, well-structured project ready for deep backend wiring in VS Code.
