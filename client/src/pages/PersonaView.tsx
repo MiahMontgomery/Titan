@@ -163,163 +163,350 @@ export default function PersonaView() {
                   </Button>
                 </CardTitle>
                 <CardDescription>
-                  Track progress on features, milestones, and goals assigned to this persona
+                  Track development of features, milestones, and goals for this persona
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  {/* Features */}
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-3">Features</h3>
-                    <div className="space-y-4">
-                      <div className="border border-gray-700 rounded-lg overflow-hidden">
-                        <div className="bg-gray-900 p-3 border-b border-gray-700">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">AI-Driven Personalized Interactive Experience</h4>
-                            <span className="text-xs px-2 py-1 bg-blue-800 text-blue-100 rounded-full">In Progress</span>
+                <div className="space-y-1">
+                  {/* Feature 1 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">AI Chat Response System</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
                           </div>
-                          <p className="text-sm text-gray-400 mt-1">Building an AI-driven interactive experience tailored to user preferences</p>
-                        </div>
-                        <div className="p-3">
-                          <div className="flex justify-between text-sm mb-1">
-                            <span>Overall Progress</span>
-                            <span>68%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '68%' }}></div>
-                          </div>
+                          <span className="text-xs text-gray-400">ETA: 3 hours</span>
                         </div>
                       </div>
-
-                      <div className="border border-gray-700 rounded-lg overflow-hidden">
-                        <div className="bg-gray-900 p-3 border-b border-gray-700">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">Client Messaging Automation</h4>
-                            <span className="text-xs px-2 py-1 bg-green-800 text-green-100 rounded-full">Completed</span>
-                          </div>
-                          <p className="text-sm text-gray-400 mt-1">Autonomous client communication and relationship management</p>
-                        </div>
-                        <div className="p-3">
-                          <div className="flex justify-between text-sm mb-1">
-                            <span>Overall Progress</span>
-                            <span>100%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
-                          </div>
-                        </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
                       </div>
-                      
-                      <div className="border border-gray-700 rounded-lg overflow-hidden">
-                        <div className="bg-gray-900 p-3 border-b border-gray-700">
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-medium">Content Generation and Publishing System</h4>
-                            <span className="text-xs px-2 py-1 bg-purple-800 text-purple-100 rounded-full">In Progress</span>
+                    </div>
+                    <div className="hidden">
+                      {/* Milestones dropdown content */}
+                      <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
+                        <div className="border-l border-gray-700 pl-4 space-y-2">
+                          {/* Milestone 1.1 */}
+                          <div className="group/milestone">
+                            <div className="flex items-center justify-between py-2 cursor-pointer">
+                              <div className="text-sm font-medium group-hover/milestone:text-green-400">Personalized Response Generation</div>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover/milestone:text-green-400">
+                                <path d="m6 9 6 6 6-6"/>
+                              </svg>
+                            </div>
+                            <div className="hidden">
+                              <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5">
+                                <div className="text-xs text-gray-400">• GPT-4o integration for response generation</div>
+                                <div className="text-xs text-gray-400">• Context-aware conversation memory</div>
+                                <div className="text-xs text-gray-400">• Emotion detection and appropriate tone matching</div>
+                              </div>
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-400 mt-1">Autonomous content creation and multi-platform publishing</p>
-                        </div>
-                        <div className="p-3">
-                          <div className="flex justify-between text-sm mb-1">
-                            <span>Overall Progress</span>
-                            <span>45%</span>
+                          
+                          {/* Milestone 1.2 */}
+                          <div className="group/milestone">
+                            <div className="flex items-center justify-between py-2 cursor-pointer">
+                              <div className="text-sm font-medium group-hover/milestone:text-green-400">Message Interpretation</div>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover/milestone:text-green-400">
+                                <path d="m6 9 6 6 6-6"/>
+                              </svg>
+                            </div>
                           </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div className="bg-purple-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+                          
+                          {/* Milestone 1.3 */}
+                          <div className="group/milestone">
+                            <div className="flex items-center justify-between py-2 cursor-pointer">
+                              <div className="text-sm font-medium group-hover/milestone:text-green-400">Automated Response Timing</div>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover/milestone:text-green-400">
+                                <path d="m6 9 6 6 6-6"/>
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Milestones */}
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-3">Current Milestones</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-900 rounded-full mr-3 text-xs">1</div>
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <p className="text-sm font-medium">User Interface Adaptation</p>
-                            <span className="text-xs text-gray-400">75%</span>
+                  {/* Feature 2 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Web Browser Automation (Puppeteer)</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '65%' }}></div>
                           </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '75%' }}></div>
-                          </div>
+                          <span className="text-xs text-gray-400">ETA: 7 hours</span>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center">
-                        <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-900 rounded-full mr-3 text-xs">2</div>
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <p className="text-sm font-medium">AI Algorithm Development</p>
-                            <span className="text-xs text-gray-400">60%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '60%' }}></div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="min-w-[24px] h-6 flex items-center justify-center bg-purple-900 rounded-full mr-3 text-xs">3</div>
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <p className="text-sm font-medium">Content Generation System</p>
-                            <span className="text-xs text-gray-400">45%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                            <div className="bg-purple-500 h-2 rounded-full" style={{ width: '45%' }}></div>
-                          </div>
-                        </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Goals */}
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-3">Active Goals</h3>
-                    <div className="divide-y divide-gray-700">
-                      <div className="py-3 first:pt-0 last:pb-0">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 mt-0.5">
-                            <div className="w-4 h-4 rounded-full border-2 border-blue-500 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                            </div>
+                  {/* Feature 3 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Content Creation System</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '42%' }}></div>
                           </div>
-                          <div className="ml-3">
-                            <p className="text-sm font-medium">Design adaptable UI components</p>
-                            <p className="text-xs text-gray-400 mt-1">Creating responsive and adaptive UI elements for dynamic interaction</p>
-                          </div>
+                          <span className="text-xs text-gray-400">ETA: 12 hours</span>
                         </div>
                       </div>
-                      
-                      <div className="py-3 first:pt-0 last:pb-0">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 mt-0.5">
-                            <div className="w-4 h-4 rounded-full border-2 border-green-500 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 4 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Multi-Platform Publishing</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '38%' }}></div>
                           </div>
-                          <div className="ml-3">
-                            <p className="text-sm font-medium">Implement reactive layout system</p>
-                            <p className="text-xs text-green-500 mt-1">In Progress (80%)</p>
-                          </div>
+                          <span className="text-xs text-gray-400">ETA: 14 hours</span>
                         </div>
                       </div>
-                      
-                      <div className="py-3 first:pt-0 last:pb-0">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 mt-0.5">
-                            <div className="w-4 h-4 rounded-full border-2 border-yellow-500 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                            </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 5 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">User Engagement Analytics</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '72%' }}></div>
                           </div>
-                          <div className="ml-3">
-                            <p className="text-sm font-medium">Implement real-time content adaptation</p>
-                            <p className="text-xs text-yellow-500 mt-1">In Progress (40%)</p>
-                          </div>
+                          <span className="text-xs text-gray-400">ETA: 5 hours</span>
                         </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 6 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Payment Processing Integration</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '28%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 18 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 7 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Autonomous Scheduling System</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '52%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 9 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 8 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Image & Media Generation</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 11 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 9 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">User Behavior Analysis</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '61%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 8 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 10 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Subscription Management</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '32%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 16 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 11 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Platform-Specific Content Optimization</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '48%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 10 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 12 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Automated Social Media Engagement</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '55%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 9 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 13 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Natural Language Processing Engine</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '68%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 6 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 14 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Sentiment Analysis System</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '77%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 4 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Feature 15 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Automated Security & Privacy Management</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '23%' }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">ETA: 20 hours</span>
+                        </div>
+                      </div>
+                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m9 18 6-6-6-6"/>
+                        </svg>
                       </div>
                     </div>
                   </div>
@@ -490,7 +677,7 @@ export async function generatePersonalizedResponse(
                               </div>
                               <div className="flex items-center mt-1 gap-2">
                                 <span className="text-xs text-gray-500">11:32 AM</span>
-                                <Button variant="ghost" size="xs" className="h-5 px-1.5">
+                                <Button variant="ghost" size="sm" className="h-5 px-1.5">
                                   <span className="text-xs">Rollback</span>
                                 </Button>
                               </div>
@@ -508,7 +695,7 @@ export async function generatePersonalizedResponse(
                               </div>
                               <div className="flex items-center mt-1 gap-2">
                                 <span className="text-xs text-gray-500">11:35 AM</span>
-                                <Button variant="ghost" size="xs" className="h-5 px-1.5">
+                                <Button variant="ghost" size="sm" className="h-5 px-1.5">
                                   <span className="text-xs">Rollback</span>
                                 </Button>
                               </div>
@@ -526,7 +713,7 @@ export async function generatePersonalizedResponse(
                               </div>
                               <div className="flex items-center mt-1 gap-2">
                                 <span className="text-xs text-gray-500">11:42 AM</span>
-                                <Button variant="ghost" size="xs" className="h-5 px-1.5">
+                                <Button variant="ghost" size="sm" className="h-5 px-1.5">
                                   <span className="text-xs">Rollback</span>
                                 </Button>
                               </div>
