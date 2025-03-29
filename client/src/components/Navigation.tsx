@@ -40,18 +40,6 @@ export function Navigation() {
       </nav>
       
       <div className="p-4 border-t border-gray-800">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-gray-300">
-              <User size={18} />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-300">Admin User</p>
-              <p className="text-xs text-gray-500">admin@example.com</p>
-            </div>
-          </div>
-        </div>
-        
         <div className="flex items-center justify-between">
           <StatusIndicator isWorking={true} showLabel={true} />
         </div>

@@ -62,13 +62,13 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="p-6">
-        <Tabs defaultValue="projects" value={activeTab} onValueChange={setActiveTab} className="mb-6">
+        <Tabs defaultValue="projects" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full max-w-md mx-auto grid grid-cols-2">
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="personas">Personas</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="projects" className="mt-6">
+          <TabsContent value="projects" className="mt-4">
             {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {Array(4).fill(0).map((_, i) => (
@@ -99,7 +99,7 @@ export default function Dashboard() {
             )}
           </TabsContent>
           
-          <TabsContent value="personas" className="mt-6">
+          <TabsContent value="personas" className="mt-4">
             <PersonasDashboard 
               personas={personas || []} 
               isLoading={isLoadingPersonas} 
