@@ -153,366 +153,373 @@ export default function PersonaView() {
           </TabsList>
           
           <TabsContent value="progress" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Progress Dashboard</span>
-                  <Button variant="outline" size="sm">
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Refresh
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Live Code Display */}
+              <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900 transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)]">
+                <div className="p-3 border-b border-gray-800 flex justify-between items-center">
+                  <h3 className="font-medium text-gray-200">Live Code Generation</h3>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 hover:bg-gray-800">
+                    <RefreshCw className="w-3.5 h-3.5" />
                   </Button>
-                </CardTitle>
-                <CardDescription>
-                  Track development of features, milestones, and goals for this persona
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  {/* Feature 1 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">AI Chat Response System</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 3 hours</span>
-                        </div>
+                </div>
+                <div className="p-0">
+                  <div className="bg-[#1e1e1e] overflow-hidden">
+                    <div className="bg-gray-950 text-xs border-b border-gray-800 px-3 py-1 flex justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <span>automatedScheduler.ts</span>
                       </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
+                      <span className="text-gray-500">Modifying...</span>
                     </div>
-                    <div className="hidden">
-                      {/* Milestones dropdown content */}
-                      <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
-                        <div className="border-l border-gray-700 pl-4 space-y-2">
-                          {/* Milestone 1.1 */}
-                          <div className="group/milestone">
-                            <div className="flex items-center justify-between py-2 cursor-pointer">
-                              <div className="text-sm font-medium group-hover/milestone:text-green-400">Personalized Response Generation</div>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover/milestone:text-green-400">
-                                <path d="m6 9 6 6 6-6"/>
-                              </svg>
-                            </div>
-                            <div className="hidden">
-                              <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5">
-                                <div className="text-xs text-gray-400">• GPT-4o integration for response generation</div>
-                                <div className="text-xs text-gray-400">• Context-aware conversation memory</div>
-                                <div className="text-xs text-gray-400">• Emotion detection and appropriate tone matching</div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Milestone 1.2 */}
-                          <div className="group/milestone">
-                            <div className="flex items-center justify-between py-2 cursor-pointer">
-                              <div className="text-sm font-medium group-hover/milestone:text-green-400">Message Interpretation</div>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover/milestone:text-green-400">
-                                <path d="m6 9 6 6 6-6"/>
-                              </svg>
-                            </div>
-                          </div>
-                          
-                          {/* Milestone 1.3 */}
-                          <div className="group/milestone">
-                            <div className="flex items-center justify-between py-2 cursor-pointer">
-                              <div className="text-sm font-medium group-hover/milestone:text-green-400">Automated Response Timing</div>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover/milestone:text-green-400">
-                                <path d="m6 9 6 6 6-6"/>
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <pre className="text-xs p-3 overflow-auto h-[300px] font-mono">
+                      <code className="text-gray-300">
+{`/**
+ * Automated Content Scheduling System
+ * 
+ * This module manages the autonomous scheduling of content
+ * generation, approvals, and publishing across multiple platforms.
+ */
+
+// Platform-specific content quotas and posting frequency
+const PLATFORM_QUOTAS = {
+  'onlyfans': {
+    dailyPosts: 2,
+    dailyStories: 4,
+    weeklyPromotions: 3,
+    idealTimeSpacing: 5 // hours
+  },
+  'instagram': {
+    dailyPosts: 1,
+    dailyStories: 6,
+    weeklyPromotions: 2,
+    idealTimeSpacing: 8 // hours
+  },
+  'twitter': {
+    dailyPosts: 4,
+    dailyStories: 0,
+    weeklyPromotions: 2,
+    idealTimeSpacing: 3 // hours
+  }
+}
+
+// Schedule specific content type across a date range
+function scheduleContentType(
+  platform, 
+  contentType,
+  count,
+  startDate,
+  endDate
+) {
+  // Calculate optimal posting times using engagement analytics
+  const optimalTimes = getOptimalPostingTimes(
+    platform,
+    contentType,
+    startDate,
+    endDate,
+    count
+  );
+  
+  console.log(\`Scheduling \${count} \${contentType} posts for \${platform}\`);
+  
+  // Create scheduled items
+  optimalTimes.forEach((time, index) => {
+    const id = generateUniqueId(platform, contentType, index);
+    const item = {
+      contentId: id,
+      contentType,
+      platform,
+      scheduledTime: time,
+      status: 'pending',
+      priority: calculatePriority(platform, contentType, time)
+    };
+    
+    saveScheduledItem(item);
+  });
+  
+  // Sort queue by scheduled time and priority
+  sortScheduleQueue();
+}
+
+// Calculate priority score for a content item  
+function calculatePriority(platform, contentType, time) {
+  let priority = 5; // Default mid-priority
+  
+  // Adjust by platform importance
+  if (platform === 'onlyfans') priority += 2;
+  
+  // Adjust by content type
+  if (contentType === 'promotion') priority += 1;
+  
+  // Adjust by time - higher priority for prime time hours
+  const hour = time.hour;
+  if (hour >= 18 && hour <= 22) priority += 1; // Evening prime time
+  
+  // Ensure it stays within 1-10 range
+  return Math.max(1, Math.min(10, priority));
+}
+
+// Get the next scheduled content items to publish
+function getNextScheduledItems(count = 5) {
+  // Return the next N pending items
+  return activeQueue
+    .filter(item => item.status === 'pending')
+    .slice(0, count);
+}
+
+// Update status of a scheduled item
+function updateItemStatus(itemId, status) {
+  const item = scheduledItems.get(itemId);
+  if (!item) return false;
+  
+  item.status = status;
+  scheduledItems.set(itemId, item);
+  
+  // If published or failed, recalculate queue
+  if (status === 'published' || status === 'failed') {
+    recalculateQueue();
+  }
+  
+  return true;
+}`}
+                      </code>
+                    </pre>
                   </div>
-                  
-                  {/* Feature 2 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Web Browser Automation (Puppeteer)</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '65%' }}></div>
+                </div>
+              </div>
+
+              {/* Live Updates & Rollbacks */}
+              <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900 transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)]">
+                <div className="p-3 border-b border-gray-800">
+                  <h3 className="font-medium text-gray-200">System Updates & Rollbacks</h3>
+                </div>
+                <div className="overflow-auto h-[328px] py-2 px-3">
+                  <div className="space-y-2">
+                    {/* First Update */}
+                    <div className="border border-gray-800 rounded-md p-2 cursor-pointer transition-all hover:border-green-500 hover:shadow-[0_0_6px_rgba(74,222,128,0.3)]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+                            <h4 className="text-sm font-medium">Added automated content scheduling</h4>
                           </div>
-                          <span className="text-xs text-gray-400">ETA: 7 hours</span>
+                          <p className="text-xs text-gray-400 mt-1">Implemented system for optimal time calculation, platform-specific quotas</p>
                         </div>
+                        <span className="text-xs text-gray-500">10:42 AM</span>
                       </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
+                      <div className="mt-2 flex justify-between">
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            View Changes
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            Rollback
+                          </Button>
+                        </div>
+                        <span className="text-xs text-green-400 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                            <path d="M20 6 9 17l-5-5"/>
+                          </svg>
+                          Success
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Feature 3 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Content Creation System</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '42%' }}></div>
+                    
+                    {/* Second Update */}
+                    <div className="border border-gray-800 rounded-md p-2 cursor-pointer transition-all hover:border-green-500 hover:shadow-[0_0_6px_rgba(74,222,128,0.3)]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-blue-400 mr-2"></div>
+                            <h4 className="text-sm font-medium">Enhanced AI response patterns</h4>
                           </div>
-                          <span className="text-xs text-gray-400">ETA: 12 hours</span>
+                          <p className="text-xs text-gray-400 mt-1">Improved contextual understanding with client message history</p>
                         </div>
+                        <span className="text-xs text-gray-500">10:12 AM</span>
                       </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
+                      <div className="mt-2 flex justify-between">
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            View Changes
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            Rollback
+                          </Button>
+                        </div>
+                        <span className="text-xs text-green-400 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                            <path d="M20 6 9 17l-5-5"/>
+                          </svg>
+                          Success
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Feature 4 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Multi-Platform Publishing</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '38%' }}></div>
+                    
+                    {/* Third Update */}
+                    <div className="border border-gray-800 rounded-md p-2 cursor-pointer transition-all hover:border-green-500 hover:shadow-[0_0_6px_rgba(74,222,128,0.3)]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-red-400 mr-2"></div>
+                            <h4 className="text-sm font-medium">Fixed OnlyFans authentication issue</h4>
                           </div>
-                          <span className="text-xs text-gray-400">ETA: 14 hours</span>
+                          <p className="text-xs text-gray-400 mt-1">Resolved login session timeout error with enhanced token refresh</p>
                         </div>
+                        <span className="text-xs text-gray-500">9:36 AM</span>
                       </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
+                      <div className="mt-2 flex justify-between">
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            View Changes
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            Rollback
+                          </Button>
+                        </div>
+                        <span className="text-xs text-amber-400 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z"/>
+                          </svg>
+                          Partial
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Feature 5 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">User Engagement Analytics</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '72%' }}></div>
+                    
+                    {/* Fourth Update */}
+                    <div className="border border-gray-800 rounded-md p-2 cursor-pointer transition-all hover:border-green-500 hover:shadow-[0_0_6px_rgba(74,222,128,0.3)]">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+                            <h4 className="text-sm font-medium">Optimized image processing pipeline</h4>
                           </div>
-                          <span className="text-xs text-gray-400">ETA: 5 hours</span>
+                          <p className="text-xs text-gray-400 mt-1">Reduced processing time by 40% with improved image compression</p>
                         </div>
+                        <span className="text-xs text-gray-500">Yesterday</span>
                       </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 6 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Payment Processing Integration</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '28%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 18 hours</span>
+                      <div className="mt-2 flex justify-between">
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            View Changes
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-7 text-xs py-0 px-2 bg-transparent hover:bg-gray-800">
+                            Rollback
+                          </Button>
                         </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 7 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Autonomous Scheduling System</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '52%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 9 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 8 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Image & Media Generation</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 11 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 9 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">User Behavior Analysis</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '61%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 8 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 10 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Subscription Management</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '32%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 16 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 11 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Platform-Specific Content Optimization</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '48%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 10 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 12 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Automated Social Media Engagement</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '55%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 9 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 13 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Natural Language Processing Engine</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '68%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 6 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 14 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Sentiment Analysis System</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '77%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 4 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 15 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Automated Security & Privacy Management</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-gray-500 h-1.5 rounded-full" style={{ width: '23%' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-400">ETA: 20 hours</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:translate-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m9 18 6-6-6-6"/>
-                        </svg>
+                        <span className="text-xs text-green-400 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                            <path d="M20 6 9 17l-5-5"/>
+                          </svg>
+                          Success
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              
+              {/* Real-time Process Logging */}
+              <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900 transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)]">
+                <div className="p-3 border-b border-gray-800 flex justify-between items-center">
+                  <h3 className="font-medium text-gray-200">Real-time Process Logs</h3>
+                  <div className="flex items-center">
+                    <span className="animate-pulse mr-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    </span>
+                    <span className="text-xs text-gray-400">Live</span>
+                  </div>
+                </div>
+                <div className="p-0">
+                  <div className="bg-[#1e1e1e] h-[328px] overflow-auto p-3 text-xs font-mono">
+                    <div className="space-y-1.5">
+                      <div className="text-gray-500">[11:05:32] <span className="text-blue-400">INFO</span> » Starting scheduled content creation workflow</div>
+                      <div className="text-gray-500">[11:05:33] <span className="text-blue-400">INFO</span> » Analyzing engagement metrics for optimal posting times</div>
+                      <div className="text-gray-500">[11:05:35] <span className="text-green-400">SUCCESS</span> » Scheduled 3 content items for "OnlyFans"</div>
+                      <div className="text-gray-500">[11:05:36] <span className="text-blue-400">INFO</span> » Loading browser automation for content publishing</div>
+                      <div className="text-gray-500">[11:05:38] <span className="text-yellow-400">WARN</span> » Browser automation took longer than expected (3.2s)</div>
+                      <div className="text-gray-500">[11:05:42] <span className="text-blue-400">INFO</span> » Generating Instagram post content using GPT-4o</div>
+                      <div className="text-gray-500">[11:05:48] <span className="text-green-400">SUCCESS</span> » Content generated successfully</div>
+                      <div className="text-gray-500">[11:05:49] <span className="text-blue-400">INFO</span> » Running image generation with theme: "summer beach"</div>
+                      <div className="text-gray-500">[11:06:02] <span className="text-green-400">SUCCESS</span> » Image generated successfully</div>
+                      <div className="text-gray-500">[11:06:03] <span className="text-blue-400">INFO</span> » Optimizing image for Instagram dimensions</div>
+                      <div className="text-gray-500">[11:06:05] <span className="text-green-400">SUCCESS</span> » Image optimized successfully</div>
+                      <div className="text-gray-500">[11:06:06] <span className="text-blue-400">INFO</span> » Preparing to publish Instagram content</div>
+                      <div className="text-gray-500">[11:06:08] <span className="text-blue-400">INFO</span> » Navigating to Instagram login page</div>
+                      <div className="text-gray-500">[11:06:12] <span className="text-green-400">SUCCESS</span> » Logged in successfully</div>
+                      <div className="text-gray-500">[11:06:15] <span className="text-blue-400">INFO</span> » Navigating to content creation page</div>
+                      <div className="text-gray-500">[11:06:18] <span className="text-green-400">SUCCESS</span> » Content uploaded successfully</div>
+                      <div className="text-gray-500">[11:06:19] <span className="text-blue-400">INFO</span> » Scheduling content for optimal engagement time</div>
+                      <div className="text-gray-500">[11:06:21] <span className="text-green-400">SUCCESS</span> » Content scheduled for 3:15 PM</div>
+                      <div className="text-gray-500">[11:06:22] <span className="text-blue-400">INFO</span> » Updating analytics database with new content item</div>
+                      <div className="text-gray-500">[11:06:23] <span className="text-green-400">SUCCESS</span> » Database updated successfully</div>
+                      <div className="text-gray-500">[11:06:25] <span className="text-blue-400">INFO</span> » Starting client message response workflow</div>
+                      <div className="text-gray-500">[11:06:26] <span className="text-blue-400">INFO</span> » Checking for new client messages</div>
+                      <div className="text-gray-500">[11:06:29] <span className="text-blue-400">INFO</span> » Found 3 new messages requiring responses</div>
+                      <div className="text-gray-500 font-bold">[11:06:30] <span className="text-blue-400">INFO</span> » Generating personalized responses...</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Interactive Chat */}
+              <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900 transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] flex flex-col">
+                <div className="p-3 border-b border-gray-800 flex justify-between items-center">
+                  <h3 className="font-medium text-gray-200">Project Assistant</h3>
+                  <span className="animate-pulse flex items-center text-xs text-gray-400">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></div>
+                    Online
+                  </span>
+                </div>
+                <div className="flex-grow overflow-auto p-3 h-[252px]">
+                  <div className="space-y-3">
+                    <div className="flex justify-start">
+                      <div className="max-w-[80%] bg-gray-800 rounded-lg rounded-tl-none p-2.5 text-sm">
+                        <p>Hi there! I'm your project assistant. How can I help with the {persona?.name || 'persona'} automation today?</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <div className="max-w-[80%] bg-blue-900/40 rounded-lg rounded-tr-none p-2.5 text-sm">
+                        <p>Can you optimize the OnlyFans message response time?</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-start">
+                      <div className="max-w-[80%] bg-gray-800 rounded-lg rounded-tl-none p-2.5 text-sm">
+                        <p>I can help with that! I'll adjust the response timing pattern for OnlyFans messages to prioritize faster responses.</p>
+                        <p className="mt-1.5">Would you prefer immediate responses or more natural timing with 3-5 minute delays?</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <div className="max-w-[80%] bg-blue-900/40 rounded-lg rounded-tr-none p-2.5 text-sm">
+                        <p>Let's try the natural timing approach for better engagement</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-start">
+                      <div className="max-w-[80%] bg-gray-800 rounded-lg rounded-tl-none p-2.5 text-sm">
+                        <p>Implementing natural response timing with 3-5 minute delays for OnlyFans messages. This should improve engagement rates while maintaining a realistic conversation flow.</p>
+                        <p className="mt-1.5 text-green-400">✓ Settings updated successfully</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="border-t border-gray-800 p-3">
+                  <div className="flex">
+                    <Input 
+                      placeholder="Type your message..." 
+                      className="bg-gray-800 border-gray-700 flex-grow"
+                    />
+                    <Button className="ml-2 bg-blue-600 hover:bg-blue-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m22 2-7 20-4-9-9-4Z"/>
+                        <path d="M22 2 11 13"/>
+                      </svg>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </TabsContent>
           
           <TabsContent value="performance" className="mt-4">
