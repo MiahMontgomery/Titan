@@ -13,6 +13,7 @@ import { SafeImage } from '@/components/ui/safe-image';
 import { ChatTab } from '@/components/ChatTab';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function PersonaView() {
@@ -166,226 +167,226 @@ export default function PersonaView() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Feature 1 with nested milestones and goals */}
-                  <div>
-                    <div className="bg-gray-800 rounded-lg p-4 mb-3 cursor-pointer hover:bg-gray-700 transition-colors">
-                      <div className="flex justify-between items-center">
+                <Accordion type="multiple" className="w-full">
+                  {/* Feature 1 */}
+                  <AccordionItem value="feature-1" className="border-b border-gray-700">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex-1 flex justify-between items-center pr-4">
                         <div>
-                          <h3 className="text-lg font-medium">AI-Driven Personalized Interactive Experience</h3>
-                          <p className="text-sm text-gray-400 mt-1">Building an AI-driven interactive experience tailored to user preferences</p>
+                          <h3 className="text-lg font-medium text-left">AI-Driven Personalized Interactive Experience</h3>
+                          <p className="text-sm text-gray-400 mt-1 text-left">Building an AI-driven interactive experience tailored to user preferences</p>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="text-right">
-                            <span className="text-xs text-gray-400">Progress</span>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium mr-2">68%</span>
-                              <div className="w-20 bg-gray-700 rounded-full h-2">
-                                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '68%' }}></div>
-                              </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium mr-2">68%</span>
+                            <div className="w-20 bg-gray-700 rounded-full h-2">
+                              <div className="bg-blue-500 h-2 rounded-full" style={{ width: '68%' }}></div>
                             </div>
                           </div>
                           <span className="text-xs px-2 py-1 bg-blue-800 text-blue-100 rounded-full">In Progress</span>
                         </div>
                       </div>
-                      
-                      {/* Milestones for Feature 1 */}
-                      <div className="mt-4 pl-4 border-l-2 border-gray-700">
-                        {/* Milestone 1.1 */}
-                        <div className="mb-4">
-                          <div className="flex justify-between items-start mb-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded-lg transition-colors">
-                            <div>
-                              <div className="flex items-center">
-                                <div className="w-5 h-5 rounded-full bg-blue-800 flex items-center justify-center text-xs mr-2">1</div>
-                                <h4 className="font-medium">User Interface Adaptation</h4>
-                              </div>
-                              <p className="text-sm text-gray-400 mt-1 ml-7">Developing adaptive UI components that respond to user behavior</p>
-                            </div>
-                            <div className="text-right">
-                              <div className="flex items-center">
-                                <span className="text-xs font-medium mr-2">75%</span>
-                                <div className="w-16 bg-gray-700 rounded-full h-1.5">
-                                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '75%' }}></div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="pl-4">
+                        <Accordion type="multiple" className="w-full">
+                          {/* Milestone 1.1 */}
+                          <AccordionItem value="milestone-1-1" className="border-b border-gray-700/50 mt-2">
+                            <AccordionTrigger className="hover:no-underline py-2">
+                              <div className="flex-1 flex justify-between items-center pr-4">
+                                <div className="flex items-center">
+                                  <div className="w-5 h-5 rounded-full bg-blue-800 flex items-center justify-center text-xs mr-2">1</div>
+                                  <div>
+                                    <h4 className="font-medium text-left">User Interface Adaptation</h4>
+                                    <p className="text-sm text-gray-400 text-left">Developing adaptive UI components that respond to user behavior</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-xs font-medium mr-2">75%</span>
+                                  <div className="w-16 bg-gray-700 rounded-full h-1.5">
+                                    <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '75%' }}></div>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                          
-                          {/* Goals for Milestone 1.1 */}
-                          <div className="pl-7 ml-2 border-l border-gray-700">
-                            <div className="py-2 flex items-start">
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-3 h-3 rounded-full border border-blue-500 flex items-center justify-center">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            </AccordionTrigger>
+                            <AccordionContent className="pl-8">
+                              <div className="border-l border-gray-700 pl-4 py-2 space-y-3">
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="w-3 h-3 rounded-full border border-blue-500 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                    </div>
+                                  </div>
+                                  <div className="ml-3">
+                                    <p className="text-sm">Design adaptable UI components</p>
+                                    <p className="text-xs text-gray-400">Completed</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="w-3 h-3 rounded-full border border-blue-500 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                    </div>
+                                  </div>
+                                  <div className="ml-3">
+                                    <p className="text-sm">Implement reactive layout system</p>
+                                    <p className="text-xs text-green-500">In Progress (80%)</p>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="ml-3">
-                                <p className="text-sm">Design adaptable UI components</p>
-                                <p className="text-xs text-gray-400">Completed</p>
-                              </div>
-                            </div>
-                            <div className="py-2 flex items-start">
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-3 h-3 rounded-full border border-blue-500 flex items-center justify-center">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          {/* Milestone 1.2 */}
+                          <AccordionItem value="milestone-1-2" className="border-b border-gray-700/50 mt-2">
+                            <AccordionTrigger className="hover:no-underline py-2">
+                              <div className="flex-1 flex justify-between items-center pr-4">
+                                <div className="flex items-center">
+                                  <div className="w-5 h-5 rounded-full bg-blue-800 flex items-center justify-center text-xs mr-2">2</div>
+                                  <div>
+                                    <h4 className="font-medium text-left">AI Algorithm Development</h4>
+                                    <p className="text-sm text-gray-400 text-left">Creating AI algorithms for personalized experience generation</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-xs font-medium mr-2">60%</span>
+                                  <div className="w-16 bg-gray-700 rounded-full h-1.5">
+                                    <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '60%' }}></div>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="ml-3">
-                                <p className="text-sm">Implement reactive layout system</p>
-                                <p className="text-xs text-green-500">In Progress (80%)</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Milestone 1.2 */}
-                        <div className="mb-4">
-                          <div className="flex justify-between items-start mb-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded-lg transition-colors">
-                            <div>
-                              <div className="flex items-center">
-                                <div className="w-5 h-5 rounded-full bg-blue-800 flex items-center justify-center text-xs mr-2">2</div>
-                                <h4 className="font-medium">AI Algorithm Development</h4>
-                              </div>
-                              <p className="text-sm text-gray-400 mt-1 ml-7">Creating AI algorithms for personalized experience generation</p>
-                            </div>
-                            <div className="text-right">
-                              <div className="flex items-center">
-                                <span className="text-xs font-medium mr-2">60%</span>
-                                <div className="w-16 bg-gray-700 rounded-full h-1.5">
-                                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '60%' }}></div>
+                            </AccordionTrigger>
+                            <AccordionContent className="pl-8">
+                              <div className="border-l border-gray-700 pl-4 py-2 space-y-3">
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="w-3 h-3 rounded-full border border-green-500 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                    </div>
+                                  </div>
+                                  <div className="ml-3">
+                                    <p className="text-sm">Develop preference learning algorithm</p>
+                                    <p className="text-xs text-gray-400">Completed</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="w-3 h-3 rounded-full border border-yellow-500 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
+                                    </div>
+                                  </div>
+                                  <div className="ml-3">
+                                    <p className="text-sm">Implement real-time content adaptation</p>
+                                    <p className="text-xs text-yellow-500">In Progress (40%)</p>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                          
-                          {/* Goals for Milestone 1.2 */}
-                          <div className="pl-7 ml-2 border-l border-gray-700">
-                            <div className="py-2 flex items-start">
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-3 h-3 rounded-full border border-green-500 flex items-center justify-center">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                </div>
-                              </div>
-                              <div className="ml-3">
-                                <p className="text-sm">Develop preference learning algorithm</p>
-                                <p className="text-xs text-gray-400">Completed</p>
-                              </div>
-                            </div>
-                            <div className="py-2 flex items-start">
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-3 h-3 rounded-full border border-yellow-500 flex items-center justify-center">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                                </div>
-                              </div>
-                              <div className="ml-3">
-                                <p className="text-sm">Implement real-time content adaptation</p>
-                                <p className="text-xs text-yellow-500">In Progress (40%)</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 2 with nested milestones and goals */}
-                  <div>
-                    <div className="bg-gray-800 rounded-lg p-4 mb-3 cursor-pointer hover:bg-gray-700 transition-colors">
-                      <div className="flex justify-between items-center">
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Feature 2 */}
+                  <AccordionItem value="feature-2" className="border-b border-gray-700">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex-1 flex justify-between items-center pr-4">
                         <div>
-                          <h3 className="text-lg font-medium">Client Messaging Automation</h3>
-                          <p className="text-sm text-gray-400 mt-1">Autonomous client communication and relationship management</p>
+                          <h3 className="text-lg font-medium text-left">Client Messaging Automation</h3>
+                          <p className="text-sm text-gray-400 mt-1 text-left">Autonomous client communication and relationship management</p>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="text-right">
-                            <span className="text-xs text-gray-400">Progress</span>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium mr-2">100%</span>
-                              <div className="w-20 bg-gray-700 rounded-full h-2">
-                                <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
-                              </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium mr-2">100%</span>
+                            <div className="w-20 bg-gray-700 rounded-full h-2">
+                              <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
                             </div>
                           </div>
                           <span className="text-xs px-2 py-1 bg-green-800 text-green-100 rounded-full">Completed</span>
                         </div>
                       </div>
-                      
-                      {/* Milestones for Feature 2 */}
-                      <div className="mt-4 pl-4 border-l-2 border-gray-700">
-                        {/* Milestone 2.1 */}
-                        <div className="mb-4">
-                          <div className="flex justify-between items-start mb-2 cursor-pointer hover:bg-gray-700/50 p-2 rounded-lg transition-colors">
-                            <div>
-                              <div className="flex items-center">
-                                <div className="w-5 h-5 rounded-full bg-green-800 flex items-center justify-center text-xs mr-2">1</div>
-                                <h4 className="font-medium">Message Response System</h4>
-                              </div>
-                              <p className="text-sm text-gray-400 mt-1 ml-7">AI-driven automated messaging response capabilities</p>
-                            </div>
-                            <div className="text-right">
-                              <div className="flex items-center">
-                                <span className="text-xs font-medium mr-2">100%</span>
-                                <div className="w-16 bg-gray-700 rounded-full h-1.5">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '100%' }}></div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="pl-4">
+                        <Accordion type="multiple" className="w-full">
+                          {/* Milestone 2.1 */}
+                          <AccordionItem value="milestone-2-1" className="border-b border-gray-700/50 mt-2">
+                            <AccordionTrigger className="hover:no-underline py-2">
+                              <div className="flex-1 flex justify-between items-center pr-4">
+                                <div className="flex items-center">
+                                  <div className="w-5 h-5 rounded-full bg-green-800 flex items-center justify-center text-xs mr-2">1</div>
+                                  <div>
+                                    <h4 className="font-medium text-left">Message Response System</h4>
+                                    <p className="text-sm text-gray-400 text-left">AI-driven automated messaging response capabilities</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-xs font-medium mr-2">100%</span>
+                                  <div className="w-16 bg-gray-700 rounded-full h-1.5">
+                                    <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '100%' }}></div>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                          
-                          {/* Goals for Milestone 2.1 */}
-                          <div className="pl-7 ml-2 border-l border-gray-700">
-                            <div className="py-2 flex items-start">
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-3 h-3 rounded-full border border-green-500 flex items-center justify-center">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                            </AccordionTrigger>
+                            <AccordionContent className="pl-8">
+                              <div className="border-l border-gray-700 pl-4 py-2 space-y-3">
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="w-3 h-3 rounded-full border border-green-500 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                    </div>
+                                  </div>
+                                  <div className="ml-3">
+                                    <p className="text-sm">Develop natural language processing system</p>
+                                    <p className="text-xs text-gray-400">Completed</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="w-3 h-3 rounded-full border border-green-500 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                    </div>
+                                  </div>
+                                  <div className="ml-3">
+                                    <p className="text-sm">Implement sentiment analysis</p>
+                                    <p className="text-xs text-gray-400">Completed</p>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="ml-3">
-                                <p className="text-sm">Develop natural language processing system</p>
-                                <p className="text-xs text-gray-400">Completed</p>
-                              </div>
-                            </div>
-                            <div className="py-2 flex items-start">
-                              <div className="flex-shrink-0 mt-0.5">
-                                <div className="w-3 h-3 rounded-full border border-green-500 flex items-center justify-center">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                </div>
-                              </div>
-                              <div className="ml-3">
-                                <p className="text-sm">Implement sentiment analysis</p>
-                                <p className="text-xs text-gray-400">Completed</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Feature 3 stub */}
-                  <div>
-                    <div className="bg-gray-800 rounded-lg p-4 mb-3 cursor-pointer hover:bg-gray-700 transition-colors">
-                      <div className="flex justify-between items-center">
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Feature 3 */}
+                  <AccordionItem value="feature-3" className="border-b border-gray-700">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex-1 flex justify-between items-center pr-4">
                         <div>
-                          <h3 className="text-lg font-medium">Content Generation and Publishing System</h3>
-                          <p className="text-sm text-gray-400 mt-1">Autonomous content creation and multi-platform publishing</p>
+                          <h3 className="text-lg font-medium text-left">Content Generation and Publishing System</h3>
+                          <p className="text-sm text-gray-400 mt-1 text-left">Autonomous content creation and multi-platform publishing</p>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <div className="text-right">
-                            <span className="text-xs text-gray-400">Progress</span>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium mr-2">45%</span>
-                              <div className="w-20 bg-gray-700 rounded-full h-2">
-                                <div className="bg-purple-500 h-2 rounded-full" style={{ width: '45%' }}></div>
-                              </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium mr-2">45%</span>
+                            <div className="w-20 bg-gray-700 rounded-full h-2">
+                              <div className="bg-purple-500 h-2 rounded-full" style={{ width: '45%' }}></div>
                             </div>
                           </div>
                           <span className="text-xs px-2 py-1 bg-purple-800 text-purple-100 rounded-full">In Progress</span>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="pl-4">
+                        <p className="text-sm text-gray-400 py-2">Milestones not yet defined.</p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
           </TabsContent>
