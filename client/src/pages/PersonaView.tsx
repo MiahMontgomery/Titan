@@ -11,6 +11,9 @@ import { Loader2, ArrowLeft, RefreshCw, Settings, MessageSquare } from 'lucide-r
 import { Link } from 'wouter';
 import { SafeImage } from '@/components/ui/safe-image';
 import { ChatTab } from '@/components/ChatTab';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function PersonaView() {
   const [_, params] = useRoute('/personas/:id');
@@ -88,7 +91,7 @@ export default function PersonaView() {
 
   return (
     <div className="w-full">
-      {/* Header */}
+      {/* Header - Cleaner, simpler design */}
       <header className="bg-background py-3 px-6 border-b border-gray-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -99,7 +102,7 @@ export default function PersonaView() {
               </Button>
             </Link>
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3 border border-gray-700">
                 <SafeImage
                   src={persona.imageUrl || ''}
                   alt={persona.displayName || persona.name}
@@ -110,8 +113,8 @@ export default function PersonaView() {
                 />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-white">{persona.name}</h1>
-                <p className="text-sm text-gray-400">{persona.description}</p>
+                <h1 className="text-xl font-semibold text-white">{persona.displayName || persona.name}</h1>
+                <p className="text-sm text-gray-400 max-w-lg truncate">{persona.description}</p>
               </div>
             </div>
           </div>
@@ -127,10 +130,6 @@ export default function PersonaView() {
               {toggleActive.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {persona.isActive ? 'Active' : 'Inactive'}
             </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
           </div>
         </div>
       </header>
@@ -138,13 +137,17 @@ export default function PersonaView() {
       {/* Main Content */}
       <main className="p-6">
         <Tabs defaultValue="progress" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full max-w-md mx-auto grid grid-cols-4">
+          <TabsList className="w-full max-w-md mx-auto grid grid-cols-5">
             <TabsTrigger value="progress">Progress</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="sales">Sales</TabsTrigger>
             <TabsTrigger value="chat">
               <MessageSquare className="w-4 h-4 mr-2" />
               Chat
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
             </TabsTrigger>
           </TabsList>
           
@@ -159,58 +162,143 @@ export default function PersonaView() {
                   </Button>
                 </CardTitle>
                 <CardDescription>
-                  Track the progress of tasks assigned to this persona
+                  Track progress on features, milestones, and goals assigned to this persona
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* Features */}
                   <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-2">Current Tasks</h3>
-                    <div className="space-y-3">
-                      {/* Placeholder for tasks - will be replaced with actual data */}
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Content creation for Instagram</p>
-                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                            <div className="bg-green-500 h-2 rounded-full" style={{ width: '70%' }}></div>
+                    <h3 className="text-lg font-medium mb-3">Features</h3>
+                    <div className="space-y-4">
+                      <div className="border border-gray-700 rounded-lg overflow-hidden">
+                        <div className="bg-gray-900 p-3 border-b border-gray-700">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">AI-Driven Personalized Interactive Experience</h4>
+                            <span className="text-xs px-2 py-1 bg-blue-800 text-blue-100 rounded-full">In Progress</span>
+                          </div>
+                          <p className="text-sm text-gray-400 mt-1">Building an AI-driven interactive experience tailored to user preferences</p>
+                        </div>
+                        <div className="p-3">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Overall Progress</span>
+                            <span>68%</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '68%' }}></div>
                           </div>
                         </div>
-                        <span className="text-xs text-gray-400 ml-2">70%</span>
                       </div>
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Response to client messages</p>
-                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+
+                      <div className="border border-gray-700 rounded-lg overflow-hidden">
+                        <div className="bg-gray-900 p-3 border-b border-gray-700">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">Client Messaging Automation</h4>
+                            <span className="text-xs px-2 py-1 bg-green-800 text-green-100 rounded-full">Completed</span>
+                          </div>
+                          <p className="text-sm text-gray-400 mt-1">Autonomous client communication and relationship management</p>
+                        </div>
+                        <div className="p-3">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Overall Progress</span>
+                            <span>100%</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
                           </div>
                         </div>
-                        <span className="text-xs text-gray-400 ml-2">45%</span>
                       </div>
                     </div>
                   </div>
                   
+                  {/* Milestones */}
                   <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-2">Recent Activities</h3>
+                    <h3 className="text-lg font-medium mb-3">Current Milestones</h3>
                     <div className="space-y-3">
-                      {/* Placeholder for activities - will be replaced with actual data */}
-                      <div className="flex items-start">
-                        <div className="min-w-[40px] h-10 flex items-center justify-center bg-gray-700 rounded-full mr-3">
-                          <span className="text-xs">12:30</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">Posted new content on OnlyFans</p>
-                          <p className="text-xs text-gray-400">Received 5 comments and 12 likes</p>
+                      <div className="flex items-center">
+                        <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-900 rounded-full mr-3 text-xs">1</div>
+                        <div className="flex-1">
+                          <div className="flex justify-between">
+                            <p className="text-sm font-medium">User Interface Adaptation</p>
+                            <span className="text-xs text-gray-400">75%</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
+                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '75%' }}></div>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-start">
-                        <div className="min-w-[40px] h-10 flex items-center justify-center bg-gray-700 rounded-full mr-3">
-                          <span className="text-xs">10:15</span>
+                      
+                      <div className="flex items-center">
+                        <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-900 rounded-full mr-3 text-xs">2</div>
+                        <div className="flex-1">
+                          <div className="flex justify-between">
+                            <p className="text-sm font-medium">AI Algorithm Development</p>
+                            <span className="text-xs text-gray-400">60%</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
+                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '60%' }}></div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium">Responded to 3 client messages</p>
-                          <p className="text-xs text-gray-400">Conversion rate: 33%</p>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="min-w-[24px] h-6 flex items-center justify-center bg-purple-900 rounded-full mr-3 text-xs">3</div>
+                        <div className="flex-1">
+                          <div className="flex justify-between">
+                            <p className="text-sm font-medium">Content Generation System</p>
+                            <span className="text-xs text-gray-400">45%</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
+                            <div className="bg-purple-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Goals */}
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <h3 className="text-lg font-medium mb-3">Active Goals</h3>
+                    <div className="divide-y divide-gray-700">
+                      <div className="py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-4 h-4 rounded-full border-2 border-blue-500 flex items-center justify-center">
+                              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            </div>
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium">Secure Payment Gateway Integration</p>
+                            <p className="text-xs text-gray-400 mt-1">Implement a secure payment system for premium content access</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-4 h-4 rounded-full border-2 border-green-500 flex items-center justify-center">
+                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            </div>
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium">User Authentication and Access Control</p>
+                            <p className="text-xs text-gray-400 mt-1">Develop secure authentication system with tiered access levels</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="w-4 h-4 rounded-full border-2 border-yellow-500 flex items-center justify-center">
+                              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                            </div>
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium">Content Scheduling System</p>
+                            <p className="text-xs text-gray-400 mt-1">Build an automated content calendar with optimized posting times</p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -374,6 +462,140 @@ export default function PersonaView() {
 
           <TabsContent value="chat" className="mt-4">
             {persona && <ChatTab persona={persona} />}
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Persona Settings</CardTitle>
+                <CardDescription>
+                  Advanced configuration for this persona
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Model & Brain section - moved from header */}
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <h3 className="text-lg font-medium mb-3">AI Model & Brain Configuration</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Model</Label>
+                        <div className="bg-gray-900 p-2 rounded mt-1 flex items-center">
+                          <span className="mr-2">🧠</span>
+                          <span className="text-sm">GPT-4o Turbo</span>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Behavior Settings</Label>
+                        <div className="space-y-2 mt-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Tone</span>
+                            <span className="text-sm text-gray-400">{persona.behavior.tone || 'Professional'}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Style</span>
+                            <span className="text-sm text-gray-400">{persona.behavior.style || 'Informative'}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Vocabulary</span>
+                            <span className="text-sm text-gray-400">{persona.behavior.vocabulary || 'Advanced'}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Responsiveness</span>
+                            <div className="flex items-center">
+                              <span className="mr-2 text-sm text-gray-400">{persona.behavior.responsiveness}/10</span>
+                              <div className="w-24 bg-gray-700 rounded-full h-1.5">
+                                <div 
+                                  className="bg-green-500 h-1.5 rounded-full" 
+                                  style={{ width: `${(persona.behavior.responsiveness / 10) * 100}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Personality Traits */}
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <h3 className="text-lg font-medium mb-3">Persona Information</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Display Name</Label>
+                        <Input 
+                          value={persona.displayName || persona.name} 
+                          className="mt-1 bg-gray-900 border-gray-700" 
+                          disabled
+                        />
+                      </div>
+                      <div>
+                        <Label>Internal Name</Label>
+                        <Input 
+                          value={persona.name} 
+                          className="mt-1 bg-gray-900 border-gray-700" 
+                          disabled
+                        />
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea 
+                          value={persona.description} 
+                          className="mt-1 bg-gray-900 border-gray-700" 
+                          disabled
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Autonomy Settings */}
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <h3 className="text-lg font-medium mb-3">Autonomy Settings</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-medium">Autonomy Level</p>
+                          <p className="text-xs text-gray-400">How independent this persona is in decision-making</p>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="mr-2 text-sm">{persona.autonomy.level}/10</span>
+                          <div className="w-24 bg-gray-700 rounded-full h-1.5">
+                            <div 
+                              className="bg-blue-500 h-1.5 rounded-full" 
+                              style={{ width: `${(persona.autonomy.level / 10) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-medium">Can Initiate Conversations</p>
+                          <p className="text-xs text-gray-400">Ability to start conversations without prompting</p>
+                        </div>
+                        <div>
+                          {persona.autonomy.canInitiateConversation ? 
+                            <span className="px-2 py-1 bg-green-800 text-green-100 rounded-full text-xs">Enabled</span> : 
+                            <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs">Disabled</span>
+                          }
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm font-medium">Can Create Content</p>
+                          <p className="text-xs text-gray-400">Ability to create and publish content autonomously</p>
+                        </div>
+                        <div>
+                          {persona.autonomy.canCreateContent ? 
+                            <span className="px-2 py-1 bg-green-800 text-green-100 rounded-full text-xs">Enabled</span> : 
+                            <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs">Disabled</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
