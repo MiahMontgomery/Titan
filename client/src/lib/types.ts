@@ -5,9 +5,11 @@ export interface Persona {
   displayName: string;
   description: string;
   imageUrl?: string;
+  emoji?: string;
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  projectId: number;
   
   // Customizable behavior settings
   behavior: {

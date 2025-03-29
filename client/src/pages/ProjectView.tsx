@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { Project } from "@shared/schema";
+import { Persona } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { StatusIndicator } from "@/components/StatusIndicator";
 import { ProgressTab } from "@/components/ProgressTab";
@@ -11,6 +12,7 @@ import { useProjectContext } from "@/context/ProjectContext";
 import { formatDistanceToNow } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { Switch } from "@/components/ui/switch";
+import { BubblingPersonaView } from "@/components/BubblingPersonaView";
 
 type TabType = "progress" | "performance" | "sales";
 
@@ -33,14 +35,16 @@ export default function ProjectView() {
     enabled: !!projectId && projectId > 0,
   });
   
+  // Load personas for FINDOM bubbling visualization
+  const { data: personas, isLoading: loadingPersonas } = useQuery<Persona[]>({
+    queryKey: ['/api/personas'],
+    enabled: projectId === 3, // Only load for FINDOM project (ID 3)
+  });
+  
   // Mutation for updating project
   const updateProjectMutation = useMutation({
     mutationFn: async (updates: Partial<Project>) => {
-      return apiRequest({
-        url: `/api/projects/${projectId}`,
-        method: 'PATCH',
-        data: updates
-      });
+      return apiRequest(`/api/projects/${projectId}`, 'PATCH', updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}`] });
@@ -188,9 +192,18 @@ export default function ProjectView() {
           <>
             {project && (
               <>
-                {activeTab === "progress" && <ProgressTab projectId={project.id} />}
-                {activeTab === "performance" && <PerformanceTab projectId={project.id} />}
-                {activeTab === "sales" && <SalesTab />}
+                {/* Show the bubbling persona view for FINDOM project */}
+                {project.id === 3 ? (
+                  <div className="h-full" style={{ height: "calc(100vh - 120px)" }}>
+                    <BubblingPersonaView personas={personas || []} isLoading={loadingPersonas} />
+                  </div>
+                ) : (
+                  <>
+                    {activeTab === "progress" && <ProgressTab projectId={project.id} />}
+                    {activeTab === "performance" && <PerformanceTab projectId={project.id} />}
+                    {activeTab === "sales" && <SalesTab />}
+                  </>
+                )}
               </>
             )}
           </>
