@@ -33,6 +33,7 @@ import { initializeWebAutomation, getWebAutomationService } from "./webAutomatio
 import { initializeFindomAgents, getFindomAgent } from "./findomAgent";
 import { getBrowserClient } from "./browserClient";
 import { exportDatabase } from "./export-db";
+import { generatePersonaResponse } from "./personaChat";
 
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
@@ -1149,6 +1150,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // AI Chat Assistant API
   app.post('/api/chat', handleChatMessage);
+  
+  // Persona chat endpoint
+  app.post('/api/chat/persona', async (req, res) => {
+    try {
+      const { messages, personaId, model } = req.body;
+      
+      if (!messages || !personaId) {
+        return res.status(400).json({ error: 'Messages and personaId are required' });
+      }
+      
+      if (!isOpenAIConfigured()) {
+        return res.status(503).json({ 
+          error: 'OpenAI API not configured', 
+          message: 'Please configure your OpenAI API key in the settings' 
+        });
+      }
+      
+      const responseText = await generatePersonaResponse(messages, personaId);
+      
+      // Log the interaction for analytics
+      try {
+        await storage.createChatMessage({
+          personaId: personaId,
+          content: responseText,
+          isFromPersona: true,
+          sender: 'persona',
+          platform: 'web',
+          metrics: {
+            sentiment: 0,
+            engagementScore: 0,
+            conversionIntent: 0
+          }
+        });
+      } catch (logError) {
+        console.error('Error logging chat message:', logError);
+      }
+      
+      res.json({ message: responseText });
+    } catch (error) {
+      console.error('Error in persona chat:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate response', 
+        message: 'An error occurred while generating a response. Please try again.'
+      });
+    }
+  });
   
   // Project Export API
   // Web Automation API Endpoints

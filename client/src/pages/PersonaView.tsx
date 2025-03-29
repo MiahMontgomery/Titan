@@ -7,9 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ArrowLeft, RefreshCw, Settings } from 'lucide-react';
+import { Loader2, ArrowLeft, RefreshCw, Settings, MessageSquare } from 'lucide-react';
 import { Link } from 'wouter';
 import { SafeImage } from '@/components/ui/safe-image';
+import { ChatTab } from '@/components/ChatTab';
 
 export default function PersonaView() {
   const [_, params] = useRoute('/personas/:id');
@@ -137,10 +138,14 @@ export default function PersonaView() {
       {/* Main Content */}
       <main className="p-6">
         <Tabs defaultValue="progress" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full max-w-md mx-auto grid grid-cols-3">
+          <TabsList className="w-full max-w-md mx-auto grid grid-cols-4">
             <TabsTrigger value="progress">Progress</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="sales">Sales</TabsTrigger>
+            <TabsTrigger value="chat">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Chat
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="progress" className="mt-4">
@@ -365,6 +370,10 @@ export default function PersonaView() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="chat" className="mt-4">
+            {persona && <ChatTab persona={persona} />}
           </TabsContent>
         </Tabs>
       </main>

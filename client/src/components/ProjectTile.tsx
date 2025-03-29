@@ -1,12 +1,14 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Project } from "@shared/schema";
+import { Project, Persona } from "@shared/schema";
 import { StatusIndicator } from "./StatusIndicator";
 import { formatDistanceToNow } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, ExternalLink } from "lucide-react";
+import { Trash2, ExternalLink, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { BubblePersona } from "./BubblePersona";
 
 interface ProjectTileProps {
   project: Project;
@@ -15,11 +17,46 @@ interface ProjectTileProps {
 export function ProjectTile({ project }: ProjectTileProps) {
   const [, setLocation] = useLocation();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [tileHeight, setTileHeight] = useState(0);
+  const [tileWidth, setTileWidth] = useState(0);
+  const [tileRef, setTileRef] = useState<HTMLDivElement | null>(null);
   const { toast } = useToast();
+  const isFindom = project.name.toUpperCase() === 'FINDOM';
+  
+  // Fetch personas if this is the FINDOM project
+  const { data: personas } = useQuery<Persona[]>({
+    queryKey: ['/api/personas'],
+    enabled: isFindom,
+  });
+  
+  // Update tile dimensions when it's rendered
+  useEffect(() => {
+    if (tileRef) {
+      setTileHeight(tileRef.clientHeight);
+      setTileWidth(tileRef.clientWidth);
+      
+      const resizeObserver = new ResizeObserver(entries => {
+        const { width, height } = entries[0].contentRect;
+        setTileWidth(width);
+        setTileHeight(height);
+      });
+      
+      resizeObserver.observe(tileRef);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [tileRef]);
   
   const handleCardClick = useCallback(() => {
     setLocation(`/projects/${project.id}`);
   }, [project.id, setLocation]);
+  
+  const handlePersonaClick = useCallback((e: React.MouseEvent, personaId: string) => {
+    e.stopPropagation(); // Prevent card click
+    setLocation(`/personas/${personaId}`);
+  }, [setLocation]);
   
   const handleDeleteClick = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click
@@ -56,6 +93,7 @@ export function ProjectTile({ project }: ProjectTileProps) {
     <div 
       className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-accent transition-all duration-200 cursor-pointer shadow-md relative group"
       onClick={handleCardClick}
+      ref={setTileRef}
     >
       {/* Delete Button - Only visible on hover */}
       <button
@@ -89,6 +127,52 @@ export function ProjectTile({ project }: ProjectTileProps) {
             <ExternalLink size={12} className="mr-1" /> View
           </span>
         </div>
+        
+        {/* FINDOM Personas */}
+        {isFindom && personas && personas.length > 0 && (
+          <div className="mt-4 border-t border-gray-700 pt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Users size={14} className="text-gray-400" />
+              <h4 className="text-sm font-medium">Personas</h4>
+            </div>
+            <div className="relative h-[120px] w-full bg-gray-900 rounded-lg overflow-hidden">
+              {/* Central bubble */}
+              <div 
+                className="absolute rounded-full bg-gray-800 border-2 border-green-400 shadow-lg"
+                style={{
+                  width: '50px', 
+                  height: '50px',
+                  left: tileWidth / 2, 
+                  top: tileHeight / 4,
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <span className="text-lg">⚡</span>
+              </div>
+                
+              {/* Persona bubbles */}
+              {personas.map((persona, index) => (
+                <div 
+                  key={persona.id}
+                  onClick={(e) => handlePersonaClick(e, persona.id)}
+                  style={{ position: 'absolute' }}
+                >
+                  <BubblePersona
+                    persona={persona}
+                    size={45}
+                    x={(tileWidth / 2) + Math.cos(index * (2 * Math.PI / personas.length)) * 80}
+                    y={(tileHeight / 4) + Math.sin(index * (2 * Math.PI / personas.length)) * 40}
+                    mainBubbleRadius={tileWidth / 2}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
