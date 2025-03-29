@@ -139,8 +139,8 @@ export default function PersonaView() {
       <main className="p-6">
         <Tabs defaultValue="progress" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full max-w-md mx-auto grid grid-cols-5">
-            <TabsTrigger value="progress">Progress</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="progress">Progress</TabsTrigger>
             <TabsTrigger value="sales">Sales</TabsTrigger>
             <TabsTrigger value="chat">
               <MessageSquare className="w-4 h-4 mr-2" />
@@ -152,7 +152,7 @@ export default function PersonaView() {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="progress" className="mt-4">
+          <TabsContent value="performance" className="mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Live Code Display */}
               <div className="border border-gray-800 rounded-lg overflow-hidden bg-gray-900 transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)]">
@@ -522,7 +522,7 @@ function updateItemStatus(itemId, status) {
             </div>
           </TabsContent>
           
-          <TabsContent value="performance" className="mt-4">
+          <TabsContent value="progress" className="mt-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Left column - Performance Metrics */}
               <Card>
