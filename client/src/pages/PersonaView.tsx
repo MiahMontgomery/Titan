@@ -523,226 +523,63 @@ function updateItemStatus(itemId, status) {
           </TabsContent>
           
           <TabsContent value="progress" className="mt-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Left column - Performance Metrics */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Metrics</CardTitle>
-                  <CardDescription>
-                    Review engagement and performance analytics for this persona
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-gray-800 p-4 rounded-lg">
-                        <h3 className="text-sm font-medium text-gray-400 mb-1">Engagement Rate</h3>
-                        <p className="text-2xl font-bold">24.8%</p>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Project Features & Development Roadmap</span>
+                  <Button variant="outline" size="sm">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                </CardTitle>
+                <CardDescription>
+                  Track development of features, milestones, and goals
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Feature 1: Web Browser Automation */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">Web Browser Automation (Puppeteer)</h3>
                         <div className="flex items-center mt-1">
-                          <span className="text-xs text-green-500">↑ 3.2%</span>
-                          <span className="text-xs text-gray-500 ml-1">vs last week</span>
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "65%" }}></div>
+                          </div>
+                          <span className="text-xs text-gray-400">Progress: 65%</span>
                         </div>
                       </div>
-                      <div className="bg-gray-800 p-4 rounded-lg">
-                        <h3 className="text-sm font-medium text-gray-400 mb-1">Response Rate</h3>
-                        <p className="text-2xl font-bold">89.5%</p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-green-500">↑ 1.7%</span>
-                          <span className="text-xs text-gray-500 ml-1">vs last week</span>
-                        </div>
-                      </div>
-                      <div className="bg-gray-800 p-4 rounded-lg">
-                        <h3 className="text-sm font-medium text-gray-400 mb-1">Active Subscribers</h3>
-                        <p className="text-2xl font-bold">128</p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-green-500">↑ 12</span>
-                          <span className="text-xs text-gray-500 ml-1">vs last week</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-800 p-4 rounded-lg">
-                      <h3 className="text-lg font-medium mb-3">Platform Performance</h3>
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm">OnlyFans</span>
-                            <span className="text-sm font-medium">85%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div className="bg-pink-500 h-2 rounded-full" style={{ width: '85%' }}></div>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm">Instagram</span>
-                            <span className="text-sm font-medium">62%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div className="bg-purple-500 h-2 rounded-full" style={{ width: '62%' }}></div>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm">Twitter</span>
-                            <span className="text-sm font-medium">41%</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: '41%' }}></div>
-                          </div>
-                        </div>
+                      <div className="ml-4 transform transition-transform group-hover:text-green-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m6 9 6 6 6-6"/>
+                        </svg>
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              {/* Right column - Live Code & Log */}
-              <div className="space-y-4">
-                {/* Live Code Display */}
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base flex justify-between items-center">
-                      <span>Live Code Generation</span>
-                      <Button variant="outline" size="sm">
-                        <RefreshCw className="w-3 h-3 mr-1" />
-                        Refresh
-                      </Button>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <div className="bg-[#1e1e1e] border border-gray-800 rounded-md overflow-hidden">
-                      <div className="bg-gray-900 text-xs border-b border-gray-800 px-3 py-1 flex justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                          <span>personaAgent.ts</span>
-                        </div>
-                        <span className="text-gray-500">Generating code...</span>
-                      </div>
-                      <pre className="text-xs p-3 overflow-auto max-h-[240px] font-mono">
-                        <code className="text-gray-300">
-{`/**
- * Intelligent Response Generation for ${persona?.name || 'Persona'}
- * 
- * This module handles dynamic content generation based on context,
- * user interactions, and persona-specific behavioral patterns.
- */
- 
-import { OpenAI } from 'openai';
-import { analyzeUserIntent } from './intentAnalysis';
-import { PersonaContext } from '../types';
-
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY 
-});
-
-export async function generatePersonalizedResponse(
-  userMessage: string,
-  persona: PersonaContext
-): Promise<string> {
-  // Analyze user intent and emotional state
-  const userIntent = await analyzeUserIntent(userMessage);
-  
-  // Build contextualized prompt with persona-specific instructions
-  const prompt = buildPrompt(userMessage, userIntent, persona);
-  
-  // Generate response with GPT-4o
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      { role: "system", content: persona.instructions },
-      { role: "user", content: prompt }
-    ],
-    temperature: persona.creativity || 0.7,
-    max_tokens: 500
-  });
-  
-  return response.choices[0].message.content;
-}`}
-                        </code>
-                      </pre>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                {/* Replit-style Chat Box */}
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">System Messages</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="bg-[#1e1e1e] border border-gray-800 rounded-md overflow-hidden flex flex-col h-[300px]">
-                      <div className="flex-1 p-3 overflow-auto">
-                        <div className="space-y-3">
-                          <div className="flex items-start gap-2">
-                            <div className="w-6 h-6 rounded-full bg-green-800 flex items-center justify-center">
-                              <span className="text-xs">🤖</span>
-                            </div>
-                            <div>
-                              <div className="bg-gray-800 rounded-lg p-2 text-xs text-gray-300">
-                                <p>Starting performance optimization for {persona?.name || 'Persona'}</p>
-                              </div>
-                              <div className="flex items-center mt-1 gap-2">
-                                <span className="text-xs text-gray-500">11:32 AM</span>
-                                <Button variant="ghost" size="sm" className="h-5 px-1.5">
-                                  <span className="text-xs">Rollback</span>
-                                </Button>
-                              </div>
-                            </div>
+                  
+                  {/* Feature 2: AI-Powered Chat Response System */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
+                      <div className="flex-1">
+                        <h3 className="font-medium">AI-Powered Chat Response System</h3>
+                        <div className="flex items-center mt-1">
+                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                            <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "85%" }}></div>
                           </div>
-                          
-                          <div className="flex items-start gap-2">
-                            <div className="w-6 h-6 rounded-full bg-green-800 flex items-center justify-center">
-                              <span className="text-xs">🤖</span>
-                            </div>
-                            <div>
-                              <div className="bg-gray-800 rounded-lg p-2 text-xs text-gray-300">
-                                <p>Analyzing engagement metrics across platforms...</p>
-                                <p className="text-gray-500 mt-1">Found 3 active platforms with 128 total subscribers</p>
-                              </div>
-                              <div className="flex items-center mt-1 gap-2">
-                                <span className="text-xs text-gray-500">11:35 AM</span>
-                                <Button variant="ghost" size="sm" className="h-5 px-1.5">
-                                  <span className="text-xs">Rollback</span>
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-start gap-2">
-                            <div className="w-6 h-6 rounded-full bg-green-800 flex items-center justify-center">
-                              <span className="text-xs">🤖</span>
-                            </div>
-                            <div>
-                              <div className="bg-gray-800 rounded-lg p-2 text-xs text-gray-300">
-                                <p>Generating optimized content patterns based on highest performing posts</p>
-                                <p className="text-gray-500 mt-1">Identified 5 high-engagement content patterns</p>
-                              </div>
-                              <div className="flex items-center mt-1 gap-2">
-                                <span className="text-xs text-gray-500">11:42 AM</span>
-                                <Button variant="ghost" size="sm" className="h-5 px-1.5">
-                                  <span className="text-xs">Rollback</span>
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                          <span className="text-xs text-gray-400">Progress: 85%</span>
                         </div>
                       </div>
-                      
-                      <div className="border-t border-gray-800 p-2 flex">
-                        <Input 
-                          placeholder="Add system instruction..." 
-                          className="bg-gray-900 border-gray-700 text-xs h-8"
-                        />
-                        <Button size="sm" className="ml-2 h-8">
-                          Send
-                        </Button>
+                      <div className="ml-4 transform transition-transform group-hover:text-green-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
+                          <path d="m6 9 6 6 6-6"/>
+                        </svg>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="sales" className="mt-4">
