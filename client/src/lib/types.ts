@@ -1,15 +1,38 @@
 // Types from persona schema
+export interface Goal {
+  id: number;
+  name: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+}
+
+export interface Milestone {
+  id: number;
+  name: string;
+  description: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  progress: number;
+  goals: Goal[];
+}
+
+export interface Feature {
+  id: number;
+  name: string;
+  description: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  progress: number;
+  milestones: Milestone[];
+}
+
 export interface Persona {
-  id: string;
+  id: number | string;
   name: string;
   displayName: string;
   description: string;
   imageUrl?: string;
   emoji?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isActive: boolean;
-  projectId: number;
+  status: 'active' | 'inactive' | 'archived';
+  createdAt: string;
+  lastActive: string;
   
   // Customizable behavior settings
   behavior: {
@@ -17,29 +40,66 @@ export interface Persona {
     style: string;
     vocabulary: string;
     responsiveness: number;
-    instructions: string;
-    lastUpdated: Date;
+    creativity?: number;
+    customPrompt?: string;
   };
   
   // Performance metrics
-  stats: {
-    totalIncome: number;
+  performance: {
     messageCount: number;
-    responseRate: number;
     averageResponseTime: number;
-    contentCreated: number;
-    contentPublished: number;
+    engagement: number;
     conversionRate: number;
-    lastActivity?: Date;
+    revenue: number;
+    lastUpdated: string;
   };
   
   // Autonomy settings
   autonomy: {
     level: number;
-    lastDecision?: string;
-    decisionHistory: string[];
     canInitiateConversation: boolean;
     canCreateContent: boolean;
+    workingHours?: {
+      start: number;
+      end: number;
+    };
+    restrictions?: string[];
+  };
+  
+  // Progress tracking structure
+  progress: {
+    features: Feature[];
+  };
+  
+  // Sales tracking data
+  sales: {
+    monthlyRevenue: number;
+    conversionRate: number;
+    averageTransaction: number;
+    recentTransactions: Array<{
+      id?: string;
+      title: string;
+      amount: number;
+      date: string;
+      status: string;
+    }>;
+    totalClients: number;
+    returningClients: number;
+  };
+  
+  // Settings and configuration
+  settings: {
+    model: string;
+    maxTokens: number;
+    temperature: number;
+    systemPrompt: string;
+  };
+  
+  // Integration points with other systems
+  integrations?: {
+    platforms: string[];
+    apis: string[];
+    webhooks: string[];
   };
 }
 
@@ -109,30 +169,63 @@ export const createPersonaSchema = {
   displayName: '',
   description: '',
   imageUrl: '',
-  emoji: '',
-  isActive: true,
+  emoji: '🤖',
+  status: 'active',
+  createdAt: new Date().toISOString(),
+  lastActive: new Date().toISOString(),
+  
   behavior: {
-    tone: '',
-    style: '',
-    vocabulary: '',
-    responsiveness: 7,
-    instructions: '',
-    lastUpdated: new Date(),
+    tone: 'Professional',
+    style: 'Informative',
+    vocabulary: 'Advanced',
+    responsiveness: 8,
+    creativity: 7,
+    customPrompt: '',
   },
+  
+  performance: {
+    messageCount: 0,
+    averageResponseTime: 0,
+    engagement: 0,
+    conversionRate: 0,
+    revenue: 0,
+    lastUpdated: new Date().toISOString(),
+  },
+  
   autonomy: {
     level: 5,
-    lastDecision: '',
-    decisionHistory: [],
-    canInitiateConversation: true,
-    canCreateContent: true,
+    canInitiateConversation: false,
+    canCreateContent: false,
+    workingHours: {
+      start: 9,
+      end: 17,
+    },
+    restrictions: [],
   },
-  stats: {
-    totalIncome: 0,
-    messageCount: 0,
-    responseRate: 0,
-    averageResponseTime: 0,
-    contentCreated: 0,
-    contentPublished: 0,
+  
+  progress: {
+    features: [],
+  },
+  
+  sales: {
+    monthlyRevenue: 0,
     conversionRate: 0,
-  }
+    averageTransaction: 0,
+    recentTransactions: [],
+    totalClients: 0,
+    returningClients: 0,
+  },
+  
+  settings: {
+    model: 'gpt-4o',
+    maxTokens: 1000,
+    temperature: 0.7,
+    systemPrompt: 'You are a helpful assistant named {name}. You are {behavior.tone} and {behavior.style}.',
+  },
+  
+  integrations: {
+    platforms: [],
+    apis: [],
+    webhooks: [],
+  },
 };
