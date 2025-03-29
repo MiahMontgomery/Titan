@@ -5,6 +5,7 @@ import { Persona } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Logo } from "@/components/ui/Logo";
 import { 
   Home, 
   Menu, 
@@ -87,9 +88,7 @@ export function TopNavigation({ persona }: TopNavigationProps) {
           {/* Logo/Home link */}
           <Link href="/">
             <a className="flex items-center">
-              <span className="text-lg font-bold bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
-                TITAN
-              </span>
+              <Logo size="md" />
             </a>
           </Link>
           
@@ -159,7 +158,12 @@ export function TopNavigation({ persona }: TopNavigationProps) {
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent side="left" className="w-[280px] sm:w-[350px]">
           <SheetHeader>
-            <SheetTitle>Menu</SheetTitle>
+            <div className="flex items-center">
+              <div className="w-8 h-8 mr-3 bg-gradient-to-br from-accent to-blue-600 rounded-md flex items-center justify-center">
+                <span className="text-black font-bold text-sm">T</span>
+              </div>
+              <SheetTitle className="bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">TITAN</SheetTitle>
+            </div>
           </SheetHeader>
           <div className="py-4 flex flex-col gap-2">
             <Link href="/">

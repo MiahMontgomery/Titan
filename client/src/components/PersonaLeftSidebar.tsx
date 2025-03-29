@@ -49,6 +49,15 @@ export function PersonaLeftSidebar({ activePage, personaId }: PersonaLeftSidebar
   return (
     <div className="w-64 border-r border-gray-800 bg-gray-950 flex flex-col h-screen">
       <div className="p-4 border-b border-gray-800">
+        <div className="flex items-center mb-4">
+          <div className="w-7 h-7 mr-2 bg-gradient-to-br from-accent to-blue-600 rounded-md flex items-center justify-center">
+            <span className="text-black font-bold text-sm">T</span>
+          </div>
+          <span className="text-lg font-bold bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
+            TITAN
+          </span>
+        </div>
+        
         <Button 
           onClick={() => setNewPersonaDialogOpen(true)}
           className="w-full justify-start"
