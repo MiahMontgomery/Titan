@@ -9,6 +9,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ArrowLeft, RefreshCw, Settings } from 'lucide-react';
 import { Link } from 'wouter';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export default function PersonaView() {
   const [_, params] = useRoute('/personas/:id');
@@ -98,7 +99,14 @@ export default function PersonaView() {
             </Link>
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
-                <span className="text-xl">{persona.emoji || '🧠'}</span>
+                <SafeImage
+                  src={persona.imageUrl || ''}
+                  alt={persona.displayName || persona.name}
+                  className="w-full h-full object-cover rounded-full"
+                  fallback={
+                    <span className="text-xl">{persona.emoji || '🧠'}</span>
+                  }
+                />
               </div>
               <div>
                 <h1 className="text-xl font-semibold text-white">{persona.name}</h1>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Persona } from '@shared/schema';
 import { useLocation } from 'wouter';
+import { SafeImage } from '@/components/ui/safe-image';
 
 interface BubblePersonaProps {
   persona: Persona;
@@ -67,17 +68,16 @@ export const BubblePersona = ({ persona, size, x, y, mainBubbleRadius }: BubbleP
     >
       <div className="flex flex-col items-center justify-center w-full h-full p-2">
         <div className="rounded-full bg-gray-700 w-10 h-10 flex items-center justify-center mb-1">
-          {persona.imageUrl ? (
-            <img 
-              src={persona.imageUrl} 
-              alt={persona.displayName} 
-              className="w-full h-full object-cover rounded-full"
-            />
-          ) : (
-            <span className="text-lg">
-              {persona.emoji || '🧠'}
-            </span>
-          )}
+          <SafeImage
+            src={persona.imageUrl || ''}
+            alt={persona.displayName || persona.name}
+            className="w-full h-full object-cover rounded-full"
+            fallback={
+              <span className="text-lg">
+                {persona.emoji || '🧠'}
+              </span>
+            }
+          />
         </div>
         <span className="text-xs font-medium text-white truncate max-w-full">
           {persona.displayName || persona.name}
