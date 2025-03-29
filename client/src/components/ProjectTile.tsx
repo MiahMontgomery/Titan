@@ -27,10 +27,7 @@ export function ProjectTile({ project }: ProjectTileProps) {
     if (window.confirm(`Are you sure you want to delete project "${project.name}"?`)) {
       try {
         setIsDeleting(true);
-        await apiRequest({
-          url: `/api/projects/${project.id}`,
-          method: "DELETE"
-        });
+        await apiRequest(`/api/projects/${project.id}`, "DELETE");
         
         // Invalidate projects query to refresh the list
         queryClient.invalidateQueries({ queryKey: ["/api/projects"] });

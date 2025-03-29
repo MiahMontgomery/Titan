@@ -167,11 +167,7 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
   // Create new template mutation
   const createMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      return await apiRequest({
-        url: '/api/templates',
-        method: 'POST',
-        data
-      });
+      return await apiRequest('/api/templates', 'POST', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/templates', projectId] });
@@ -195,11 +191,7 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
   const updateMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema> & { id: number }) => {
       const { id, ...updateData } = data;
-      return await apiRequest({
-        url: \`/api/templates/\${id}\`,
-        method: 'PATCH',
-        data: updateData
-      });
+      return await apiRequest(`/api/templates/${id}`, 'PATCH', updateData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/templates', projectId] });
@@ -305,11 +297,7 @@ export function DocumentTemplateManager({ projectId }: { projectId: number }) {
   // Add new log message mutation
   const addLogMutation = useMutation({
     mutationFn: async (newLog: Omit<ActivityLog, 'id'>) => {
-      return await apiRequest({ 
-        method: 'POST', 
-        url: '/api/activity', 
-        data: newLog 
-      });
+      return await apiRequest('/api/activity', 'POST', newLog);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/activity`] });

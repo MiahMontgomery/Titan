@@ -86,6 +86,20 @@ export interface BehaviorUpdate {
   status: "pending" | "applied" | "rejected";
 }
 
+// WebSocket message types for real-time communication
+export interface WebSocketMessage {
+  type: string;
+  message?: string | Record<string, any>;
+  projectId?: number;
+  personaId?: string;
+  timestamp?: Date;
+  codeSnippet?: string;
+  isDebugging?: boolean;
+  isStepByStep?: boolean;
+  debugSteps?: string[];
+  currentDebugStep?: number;
+}
+
 // Create schema (for form validation)
 export const createPersonaSchema = {
   name: '',

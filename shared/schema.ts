@@ -1,8 +1,9 @@
 import { pgTable, text, serial, integer, boolean, json, timestamp, jsonb, varchar, real, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-// Import Persona from personaSchema
-import { Persona } from "./persona/personaSchema";
+// Import Persona from personaSchema if needed for other purposes
+// Using a renamed import to avoid conflict with our own Persona type
+import { Persona as PersonaFromSchema } from "./persona/personaSchema";
 
 // Project Table
 export const projects = pgTable("projects", {
@@ -201,6 +202,7 @@ export const personas = pgTable("personas", {
   displayName: varchar("display_name", { length: 100 }).notNull(),
   description: text("description").notNull(),
   imageUrl: text("image_url"),
+  emoji: text("emoji"),  // Emoji representation for the persona
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isActive: boolean("is_active").default(true).notNull(),
@@ -277,6 +279,7 @@ export type Persona = {
   description: string;
   projectId: number;  // Associated project ID
   imageUrl?: string | null;
+  emoji?: string;     // Emoji representation for the persona
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;

@@ -20,11 +20,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
   // AI-powered project generation
   const generateProjectMutation = useMutation({
     mutationFn: async (data: { prompt: string, name?: string }) => {
-      const res = await apiRequest({
-        url: "/api/ai/generate-project",
-        method: "POST",
-        data
-      });
+      const res = await apiRequest("/api/ai/generate-project", "POST", data);
       return res;
     },
     onSuccess: (data) => {

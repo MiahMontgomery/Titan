@@ -13,7 +13,7 @@ interface ApiRequestOptions {
   data?: unknown | undefined;
 }
 
-export async function apiRequest<T = any>({ url, method, data }: ApiRequestOptions): Promise<T> {
+export async function apiRequest<T = any>(url: string, method: string = 'GET', data?: unknown): Promise<T> {
   const res = await fetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
