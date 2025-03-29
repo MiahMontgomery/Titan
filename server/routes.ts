@@ -33,7 +33,6 @@ import { initializeWebAutomation, getWebAutomationService } from "./webAutomatio
 import { initializeFindomAgents, getFindomAgent } from "./findomAgent";
 import { getBrowserClient } from "./browserClient";
 import { exportDatabase } from "./export-db";
-import { generatePersonaResponse } from "./personaChat";
 
 // Helper to broadcast to all clients
 function broadcast(wss: WebSocketServer, data: any) {
@@ -1167,7 +1166,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const responseText = await generatePersonaResponse(messages, personaId);
+      // Import the personaChat module dynamically
+      const { generatePersonaResponse } = await import('./personaChat');
+      const responseText = await generatePersonaResponse(personaId, messages[messages.length - 1].content);
       
       // Log the interaction for analytics
       try {
@@ -1616,6 +1617,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error creating message:', error);
       res.status(500).json({ error: 'Failed to create message' });
+    }
+  });
+  
+  // Chat with a persona (for training and testing)
+  app.post('/api/personas/:personaId/chat', async (req, res) => {
+    try {
+      const { personaId } = req.params;
+      const { message } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+      
+      // Check if OpenAI API key is configured
+      if (!isOpenAIConfigured()) {
+        return res.status(500).json({ 
+          error: 'OpenAI API key not configured',
+          message: 'Please set the OPENAI_API_KEY environment variable'
+        });
+      }
+      
+      // Import the personaChat module
+      const { generatePersonaResponse } = await import('./personaChat');
+      
+      // Generate a response from the persona
+      const reply = await generatePersonaResponse(personaId, message);
+      
+      res.json({ reply });
+    } catch (error) {
+      console.error('Error generating chat response:', error);
+      res.status(500).json({ error: 'Failed to generate chat response' });
     }
   });
 

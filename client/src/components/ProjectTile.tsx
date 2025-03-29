@@ -91,7 +91,10 @@ export function ProjectTile({ project }: ProjectTileProps) {
   
   return (
     <div 
-      className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-accent transition-all duration-200 cursor-pointer shadow-md relative group"
+      className={`bg-gray-800 overflow-hidden border transition-all duration-200 cursor-pointer shadow-md relative group 
+        ${isFindom 
+          ? 'rounded-md border-green-400 shadow-[0_0_15px_rgba(0,255,0,0.3)] aspect-square' 
+          : 'rounded-lg border-gray-700 hover:border-accent'}`}
       onClick={handleCardClick}
       ref={setTileRef}
     >
