@@ -1,0 +1,187 @@
+Objective: Create a fully modular frontend system to manage multiple independent personas under the Fyndham umbrella. Each persona functions as a mini business with its own autonomous features, but must also support human-in-the-loop feedback and learning.
+
+This scaffolding will later be exported to VS Code for full backend development, autonomous AI integrations, and real web automation.
+
+🗂️ 1. Global Structure
+Scaffold a Fyndham root project page with:
+
+Left-hand Persona Navigation Sidebar
+
+Central display panel based on selected persona
+
+Persistent top-level nav with: Dashboard | Personas | Settings (no login needed)
+
+👤 2. Persona Management
+Basic Features
+Allow adding new personas (via a form prompt that includes name and type)
+
+Allow deleting existing personas (with confirm prompt)
+
+No “edit persona” option once created — editing happens inside each persona's behavior panel
+
+Store personas as modular units that live under /personas/[persona_name]
+
+Default Personas (pre-scaffolded):
+Bratty Baby Girl (chat and content heavy)
+
+Nurturing Mommy
+
+Emily (innocent Etsy-style creator)
+
+Jason (personal AI learner)
+
+TikTok News Girl (cool, calm explainer)
+
+📋 3. Persona Dashboard Tabs
+Each persona page should have tabbed navigation:
+
+Chats
+
+Content
+
+Logs
+
+Performance
+
+Settings
+
+💬 4. Chats Module (per persona)
+UI Components:
+Threaded conversation view (like a chatroom)
+
+Each outbound message includes:
+
+Generated text
+
+Approve ✅ / Reject ❌ buttons
+
+On reject:
+
+Modal opens with a required feedback text box
+
+Feedback is stored in a local training log (for future model fine-tuning)
+
+Behavior:
+Personas do not send messages unless they are approved (unless Chat Autonomy is toggled on)
+
+Display:
+
+Sent messages
+
+Rejected messages
+
+Pending approval
+
+Failed attempts (with retry button)
+
+🎥 5. Content Module (per persona)
+Content Queue:
+Table-style list of all generated content
+
+Columns: Platform | Type (Audio, Video, Text, Image) | Scheduled Time | Status
+
+Each row includes:
+
+Preview of content (image, audio play, or text)
+
+Approve ✅ / Reject ❌ / Feedback
+
+Regeneration Flow:
+Rejected content triggers a re-generation button (disabled until feedback is submitted)
+
+Show new suggestions for replacement
+
+📊 6. Performance Module
+Track stats across each persona:
+
+💬 Messages Sent
+
+📈 Approval Rate (Chat + Content)
+
+💵 Estimated Revenue (placeholder only)
+
+🌍 Platform Activity (e.g., Twitter, ManyVids, Literotica)
+
+🧠 Pending Learning Feedback Logs
+
+🧪 Realtime Browser Session (status: active/inactive)
+
+⚙️ 7. Settings & Behavior Panel (per persona)
+Structure:
+Displayed as a side panel on the right of the persona dashboard
+
+Editable fields include:
+
+🔧 AI Behavior Text Box:
+Simple input where user writes in natural language how the persona should act:
+
+E.g., "Act more bratty but stay playful, not rude."
+
+Or: "Tone down mommy voice. More direct."
+
+⏱️ Delay Configuration:
+Dropdown or range selector for response timing:
+
+e.g., “Respond within 5–15 minutes”
+
+Emily should always be <15 mins
+
+🎞️ Content Focus Selector:
+Choose weekly content priority:
+
+Options: Audio, Video, Text, Mixed
+
+🤖 Autonomy Toggles:
+Two independent toggles per persona:
+
+Chat Autonomy (If on, no approval needed to send chats)
+
+Content Autonomy (If on, content posts automatically when generated)
+
+Must display current status for both toggles
+
+📁 8. Logs Module
+Every persona needs:
+
+Action history (approved, rejected, posted)
+
+Feedback logs from thumbs-down actions
+
+Regeneration attempts and success/failure rate
+
+💡 9. Learning & Training Interface
+For training personas before letting them go autonomous:
+
+Scaffold a Training Mode Chatroom per persona
+
+This is powered by GPT-4 Turbo
+
+Display:
+
+“Chat Mode: Training” in banner
+
+Chat thread where user can send examples
+
+Persona replies and learns tone/voice
+
+Once satisfied, user manually toggles autonomy
+
+⛔ 10. Exclusions & Clarifications
+No admin accounts, no login system — this is a personal project
+
+No global “Autonomous Mode” toggle
+
+Backend logic like web automation, platform login, or AI agents is NOT handled in this step
+
+DO NOT hard-code sample data — use placeholders
+
+✅ Export Readiness
+When complete:
+
+Code should be clean and modular
+
+Easy to export to VS Code for backend logic
+
+Folder structure must separate frontend from future backend wiring
+
+All features must be dummy-wired with placeholder functions (e.g., handleApproval())
