@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Project } from '@shared/schema';
 import { queryClient } from './queryClient';
+import { WebSocketMessage } from './types';
 
 // Create a context for the WebSocket
 interface WebSocketContextType {
   connected: boolean;
   sendMessage: (message: any) => void;
-  subscribe: (callback: (data: any) => void) => () => void;
+  subscribe: (callback: (data: WebSocketMessage) => void) => () => void;
 }
 
 const defaultContextValue: WebSocketContextType = {
@@ -20,10 +21,10 @@ const WebSocketContext = createContext<WebSocketContextType>(defaultContextValue
 // Create a singleton WebSocket instance
 let socket: WebSocket | null = null;
 let connected = false;
-const listeners: ((data: any) => void)[] = [];
+const listeners: ((data: WebSocketMessage) => void)[] = [];
 
 // Function to subscribe to WebSocket messages
-function subscribe(callback: (data: any) => void) {
+function subscribe(callback: (data: WebSocketMessage) => void) {
   listeners.push(callback);
   return () => {
     const index = listeners.indexOf(callback);
@@ -131,7 +132,7 @@ function initWebSocket() {
 }
 
 // Helper to notify all data listeners
-function notifyDataListeners(data: any) {
+function notifyDataListeners(data: WebSocketMessage) {
   listeners.forEach(listener => {
     try {
       listener(data);
@@ -143,7 +144,7 @@ function notifyDataListeners(data: any) {
 
 // Helper to notify all components about connection state changes
 function notifyConnectionChange() {
-  notifyDataListeners({ type: 'connection-status', connected });
+  notifyDataListeners({ type: 'connection-status', connected } as WebSocketMessage);
 }
 
 // Provider component wrapper for React
@@ -157,7 +158,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     // Subscribe to connection changes
     const unsubscribe = subscribe((data) => {
       if (data.type === 'connection-status') {
-        setIsConnected(data.connected);
+        setIsConnected(!!data.connected); // Convert to boolean
       }
     });
     

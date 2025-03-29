@@ -15,6 +15,7 @@ export const personaSchema = z.object({
   displayName: z.string(),
   description: z.string(),
   imageUrl: z.string().optional(),
+  emoji: z.string().optional(), // Emoji for visual representation
   createdAt: z.date(),
   updatedAt: z.date(),
   isActive: z.boolean().default(true),

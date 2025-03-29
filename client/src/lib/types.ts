@@ -98,6 +98,7 @@ export interface WebSocketMessage {
   isStepByStep?: boolean;
   debugSteps?: string[];
   currentDebugStep?: number;
+  connected?: boolean; // Used for connection status updates
 }
 
 // Create schema (for form validation)
@@ -106,6 +107,7 @@ export const createPersonaSchema = {
   displayName: '',
   description: '',
   imageUrl: '',
+  emoji: '',
   isActive: true,
   behavior: {
     tone: '',

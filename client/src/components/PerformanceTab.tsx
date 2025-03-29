@@ -33,9 +33,13 @@ export function PerformanceTab({ projectId }: PerformanceTabProps) {
     // Subscribe to WebSocket messages
     const unsubscribe = subscribe((data: WebSocketMessage) => {
       if (data.type === 'thinking' || data.type === 'chat-response') {
-        if (typeof data.message === 'string') {
-          setMessages(prev => [...prev, data.message]);
-        }
+        const messageText = typeof data.message === 'string' 
+          ? data.message 
+          : data.message 
+            ? JSON.stringify(data.message) 
+            : 'Unknown message';
+            
+        setMessages(prev => [...prev, messageText]);
       }
     });
     
