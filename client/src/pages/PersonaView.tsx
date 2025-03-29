@@ -522,6 +522,7 @@ function updateItemStatus(itemId, status) {
             </div>
           </TabsContent>
           
+
           <TabsContent value="progress" className="mt-4">
             <Card>
               <CardHeader>
@@ -533,49 +534,574 @@ function updateItemStatus(itemId, status) {
                   </Button>
                 </CardTitle>
                 <CardDescription>
-                  Track development of features, milestones, and goals
+                  Track development of features, milestones, and goals for the {persona?.name || "Persona"} system
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {/* Feature 1: Web Browser Automation */}
                   <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">Web Browser Automation (Puppeteer)</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "65%" }}></div>
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="browser-automation" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Web Browser Automation (Puppeteer)</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "65%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 65%</span>
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-xs text-gray-400">Progress: 65%</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:text-green-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                      </div>
-                    </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
+                            <div className="border-l border-gray-700 pl-4 space-y-3">
+                              {/* Milestone 1.1 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="browser-milestone-1" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Headless Browser Integration</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Configure Puppeteer with stealth plugin for detection avoidance</div>
+                                        <div className="text-gray-400">• Implement proxy rotation system for IP management</div>
+                                        <div className="text-gray-400">• Create browser session management system</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              {/* Milestone 1.2 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="browser-milestone-2" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Platform Login Automation</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Implement OnlyFans authentication workflow</div>
+                                        <div className="text-gray-400">• Create Instagram login system with 2FA support</div>
+                                        <div className="text-gray-400">• Develop Twitter authentication with token management</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              {/* Milestone 1.3 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="browser-milestone-3" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Content Posting Automation</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Build text content submission flow</div>
+                                        <div className="text-gray-400">• Implement image upload capability</div>
+                                        <div className="text-gray-400">• Create video posting functionality</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              {/* Milestone 1.4 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="browser-milestone-4" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Interaction Automation</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Implement messaging capabilities</div>
+                                        <div className="text-gray-400">• Create like/comment functionality</div>
+                                        <div className="text-gray-400">• Build story view and engagement automation</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              {/* Milestone 1.5 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="browser-milestone-5" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Data Extraction & Analytics</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Build DOM scraping utilities for analytics collection</div>
+                                        <div className="text-gray-400">• Implement audience analysis tools</div>
+                                        <div className="text-gray-400">• Create performance metrics dashboard integration</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </div>
                   
                   {/* Feature 2: AI-Powered Chat Response System */}
                   <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <div className="flex items-center justify-between p-3 bg-gray-900 cursor-pointer group-hover:border-green-500">
-                      <div className="flex-1">
-                        <h3 className="font-medium">AI-Powered Chat Response System</h3>
-                        <div className="flex items-center mt-1">
-                          <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                            <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "85%" }}></div>
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="ai-chat" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">AI-Powered Chat Response System</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "85%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 85%</span>
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-xs text-gray-400">Progress: 85%</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 transform transition-transform group-hover:text-green-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400">
-                          <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                      </div>
-                    </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
+                            <div className="border-l border-gray-700 pl-4 space-y-3">
+                              {/* Milestone 2.1 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="chat-milestone-1" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>GPT-4o Integration</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Set up OpenAI API client integration</div>
+                                        <div className="text-gray-400">• Configure system prompts for persona characteristics</div>
+                                        <div className="text-gray-400">• Implement token optimization for cost management</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              {/* More milestones for feature 2 */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="chat-milestone-2" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Contextual Memory System</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Build conversation history database</div>
+                                        <div className="text-gray-400">• Implement dynamic context window management</div>
+                                        <div className="text-gray-400">• Create message summarization for long conversations</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              {/* Additional milestones */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="chat-milestone-3" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Persona Customization</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Create vocabulary customization system</div>
+                                        <div className="text-gray-400">• Implement conversational style settings</div>
+                                        <div className="text-gray-400">• Build tone and emotion adjustment settings</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 3: Content Creation System */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="content-creation" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Content Creation & Management System</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "42%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 42%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestone content for feature 3 */}
+                          <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
+                            <div className="border-l border-gray-700 pl-4 space-y-3">
+                              {/* Add milestones here */}
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="content-milestone-1" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Text Content Generation</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Create personalized post generation system</div>
+                                        <div className="text-gray-400">• Implement platform-specific content formatting</div>
+                                        <div className="text-gray-400">• Build content categorization and tagging</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              
+                              <div className="group/milestone">
+                                <Accordion type="single" collapsible className="w-full">
+                                  <AccordionItem value="content-milestone-2" className="border-0">
+                                    <AccordionTrigger className="py-2 hover:no-underline">
+                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                        <span>Image Generation Integration</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="pt-0 pb-1">
+                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                        <div className="text-gray-400">• Implement DALL-E integration for image creation</div>
+                                        <div className="text-gray-400">• Build prompting system for image styles</div>
+                                        <div className="text-gray-400">• Develop image optimization for platforms</div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 4: Multi-Platform Management */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="multi-platform" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Multi-Platform Integration & Management</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "38%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 38%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestone content for feature 4 */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 5: Payment Processing & Subscription Management */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="payment" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Payment Processing & Subscription Management</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "28%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 28%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 6: Analytics & Performance Reporting */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="analytics" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Analytics & Performance Reporting</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "68%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 68%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  {/* Feature 7 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="client-relationship" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Client Relationship Management</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "52%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 52%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 8 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="scheduling" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Autonomous Scheduling System</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "53%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 53%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 9 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="audience" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Audience Targeting & Segmentation</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "35%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 35%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 10 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="autonomous" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Autonomous Decision Making System</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "47%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 47%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 11 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="media" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Media Generation & Enhancement</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "45%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 45%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 12 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="nlp" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Natural Language Processing Engine</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "68%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 68%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 13 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="security" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Automated Security & Privacy Management</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "23%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 23%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 14 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="conversion" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Conversion Optimization System</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "59%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 59%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                  
+                  {/* Feature 15 */}
+                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="learning" className="border-0">
+                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="flex-1 text-left">
+                              <h3 className="font-medium">Continuous Learning & Adaptation System</h3>
+                              <div className="flex items-center mt-1">
+                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "31%" }}></div>
+                                </div>
+                                <span className="text-xs text-gray-400">Progress: 31%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-1 pb-0">
+                          {/* Add milestones here */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </div>
                 </div>
               </CardContent>
