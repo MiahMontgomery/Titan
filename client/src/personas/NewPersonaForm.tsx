@@ -96,14 +96,14 @@ export function NewPersonaForm({
     displayName: defaultPersona.displayName,
     description: defaultPersona.description,
     imageUrl: defaultPersona.imageUrl || '',
-    emoji: defaultPersona.emoji || '🤖',
+    emoji: defaultPersona.emoji || '',
     status: defaultPersona.status,
     behavior: {
       tone: defaultPersona.behavior.tone,
       style: defaultPersona.behavior.style,
       vocabulary: defaultPersona.behavior.vocabulary,
       responsiveness: defaultPersona.behavior.responsiveness,
-      creativity: defaultPersona.behavior.creativity || 7,
+      creativity: defaultPersona.behavior.creativity || 0,
       customPrompt: defaultPersona.behavior.customPrompt || '',
     },
     autonomy: {
@@ -133,14 +133,14 @@ export function NewPersonaForm({
         displayName: editingPersona.displayName,
         description: editingPersona.description,
         imageUrl: editingPersona.imageUrl || "",
-        emoji: editingPersona.emoji || "🤖",
+        emoji: editingPersona.emoji || "",
         status: editingPersona.status,
         behavior: {
           tone: editingPersona.behavior.tone,
           style: editingPersona.behavior.style,
           vocabulary: editingPersona.behavior.vocabulary,
           responsiveness: editingPersona.behavior.responsiveness,
-          creativity: editingPersona.behavior.creativity || 7,
+          creativity: editingPersona.behavior.creativity || 0,
           customPrompt: editingPersona.behavior.customPrompt || '',
         },
         autonomy: {
@@ -462,7 +462,7 @@ export function NewPersonaForm({
                           min={1}
                           max={10}
                           step={1}
-                          value={[field.value || 7]}
+                          value={[field.value || 0]}
                           onValueChange={(value) => field.onChange(value[0])}
                           className="py-4"
                         />
