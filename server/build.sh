@@ -1,15 +1,12 @@
 #!/bin/bash
 
 # Server build script
-echo "Building Titan server..."
+echo "Building server..."
 
-# Install dependencies if needed
-if [ ! -d "node_modules" ]; then
-  echo "Installing dependencies..."
-  npm install
-fi
+# Ensure the output directory exists
+mkdir -p dist/server
 
-# Build the server
-npm run build
+# Build server using esbuild
+npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist/server
 
-echo "Server build complete. Output is in ../dist-server"
+echo "Server build complete!"
