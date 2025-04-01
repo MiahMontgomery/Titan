@@ -34,9 +34,8 @@ export function initializeWebSocket(): void {
     let wsUrl = import.meta.env.VITE_WS_URL as string;
     
     if (!wsUrl) {
-      const apiUrl = import.meta.env.VITE_API_URL as string || window.location.origin;
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = apiUrl.replace(/^https?:\/\//, '');
+      const host = window.location.host;
       wsUrl = `${protocol}//${host}/ws`;
     }
     
