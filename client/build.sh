@@ -12,4 +12,4 @@ fi
 # Build the client
 npm run build
 
-echo "Client build complete. Output is in ../dist-client"
+echo "Client build complete. Output is in dist/"
