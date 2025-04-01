@@ -22,17 +22,37 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const { subscribe } = useWebSocketContext();
   
   // Fetch projects on initial load
-  const { data: initialProjects } = useQuery<Project[]>({
+  const { data: initialProjects, isError, error } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
     retry: 1,
+    // Validate and handle the response properly
+    select: (data) => {
+      // Make sure we're working with an array
+      if (Array.isArray(data)) {
+        return data;
+      } else if (data && typeof data === 'object' && 'projects' in data) {
+        // Handle case where API returns { projects: [] } format
+        const projectsData = (data as any).projects;
+        if (Array.isArray(projectsData)) {
+          return projectsData;
+        }
+      }
+      // Fallback to empty array if data format is unexpected
+      console.warn('Projects data format is unexpected:', data);
+      return [] as Project[];
+    },
   });
   
   // Set initial projects
   useEffect(() => {
     if (initialProjects) {
+      console.log('Setting projects from API:', initialProjects);
       setProjects(initialProjects);
+    } else if (isError) {
+      console.error('Error fetching projects:', error);
+      // Keep using existing projects instead of clearing
     }
-  }, [initialProjects]);
+  }, [initialProjects, isError, error]);
   
   // Listen for project updates from WebSocket
   useEffect(() => {

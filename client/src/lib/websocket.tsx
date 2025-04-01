@@ -49,21 +49,47 @@ function initializeWebSocket(): void {
     let wsUrl = import.meta.env.VITE_WS_URL as string;
     
     if (!wsUrl) {
+      // Use the current host but switch protocol 
+      // Instead of appending '/ws' here, we'll use the full path
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = window.location.host;
       wsUrl = `${protocol}//${host}/ws`;
+      
+      // Debug logging
+      console.log('WebSocket URL derived from host:', {
+        windowLocation: window.location.toString(),
+        protocol,
+        host,
+        wsUrl
+      });
     }
     
     console.log(`Connecting to WebSocket server at ${wsUrl}`);
     
+    // Create WebSocket connection
     socket = new WebSocket(wsUrl);
     
+    // Set up event handlers
     socket.onopen = handleOpen;
     socket.onmessage = handleMessage;
     socket.onclose = handleClose;
     socket.onerror = handleError;
     
+    // Reset connection attempts on successful connection attempt
     connectionAttempts = 0;
+    
+    // Add timeout to detect connection issues
+    const connectionTimeout = setTimeout(() => {
+      if (socket && socket.readyState !== WebSocket.OPEN) {
+        console.warn('WebSocket connection timeout');
+        if (socket) socket.close();
+      }
+    }, 10000); // 10 second timeout
+    
+    // Clear timeout when connection opens
+    socket.addEventListener('open', () => {
+      clearTimeout(connectionTimeout);
+    });
   } catch (err) {
     console.error('Failed to initialize WebSocket:', err);
     scheduleReconnect();
@@ -131,20 +157,64 @@ function getClientId(): string | null {
 
 function handleOpen(event: Event): void {
   console.log('WebSocket connection established');
+  
+  // Reset connection attempts
   connectionAttempts = 0;
+  
+  // Notify subscribers that connection is established
+  subscribers.forEach(handler => {
+    try {
+      handler({
+        type: 'connection_status',
+        data: { 
+          status: 'connected',
+          timestamp: new Date().toISOString()
+        }
+      });
+    } catch (err) {
+      console.error('Error in open handler:', err);
+    }
+  });
 }
 
 function handleMessage(event: MessageEvent): void {
   try {
     const message = JSON.parse(event.data) as WebSocketMessage;
     
-    // Store client ID if provided
+    // Process system messages
     if (message.type === 'connection' && message.clientId) {
       clientId = message.clientId;
       console.log(`Assigned client ID: ${clientId}`);
+      
+      // Also notify subscribers about successful connection
+      subscribers.forEach(handler => {
+        try {
+          handler({
+            type: 'connection_status',
+            clientId: message.clientId,
+            data: { 
+              status: 'registered',
+              clientId: message.clientId,
+              message: 'WebSocket client registered with server'
+            }
+          });
+        } catch (err) {
+          console.error('Error in connection handler:', err);
+        }
+      });
+    } else if (message.type === 'heartbeat') {
+      // Handle heartbeat response - no need to forward to subscribers
+      console.debug('Received heartbeat from server');
+      return;
+    } else if (message.type === 'error') {
+      // Log server-side errors
+      console.error('Server error:', message.data?.message || 'Unknown server error');
+    } else if (message.type === 'thinking') {
+      // Process thinking updates for active projects
+      console.debug('Thinking update for project:', message.projectId);
     }
     
-    // Notify all subscribers
+    // Notify all subscribers about the message
     subscribers.forEach(handler => {
       try {
         handler(message);
@@ -154,11 +224,46 @@ function handleMessage(event: MessageEvent): void {
     });
   } catch (err) {
     console.error('Error parsing WebSocket message:', err);
+    
+    // Notify subscribers of the parsing error
+    subscribers.forEach(handler => {
+      try {
+        handler({
+          type: 'error',
+          data: { 
+            message: 'Error parsing WebSocket message',
+            error: String(err)
+          }
+        });
+      } catch (handlerErr) {
+        console.error('Error in error handler:', handlerErr);
+      }
+    });
   }
 }
 
 function handleClose(event: CloseEvent): void {
   console.log(`WebSocket connection closed: ${event.code} ${event.reason}`);
+  
+  // Get a readable message for the close code
+  const closeMessage = getCloseEventMessage(event);
+  
+  // Notify subscribers of the close event
+  subscribers.forEach(handler => {
+    try {
+      handler({
+        type: 'connection_status',
+        data: { 
+          status: 'disconnected',
+          code: event.code,
+          reason: event.reason || closeMessage
+        }
+      });
+    } catch (err) {
+      console.error('Error in close handler:', err);
+    }
+  });
+  
   socket = null;
   
   // Only reconnect if not closed cleanly or by user
@@ -167,9 +272,50 @@ function handleClose(event: CloseEvent): void {
   }
 }
 
+// Helper to get a readable message for WebSocket close codes
+function getCloseEventMessage(event: CloseEvent): string {
+  const codeMessages: Record<number, string> = {
+    1000: 'Normal closure',
+    1001: 'Server shutdown or browser navigation',
+    1002: 'Protocol error',
+    1003: 'Data format error',
+    1004: 'Reserved',
+    1005: 'No status received',
+    1006: 'Connection closed abnormally',
+    1007: 'Invalid frame payload data',
+    1008: 'Policy violation',
+    1009: 'Message too big',
+    1010: 'Extension negotiation failed',
+    1011: 'Unexpected server error',
+    1012: 'Server restarting',
+    1013: 'Try again later',
+    1014: 'Bad gateway',
+    1015: 'TLS handshake failed'
+  };
+  
+  return codeMessages[event.code] || `Unknown close code: ${event.code}`;
+}
+
 function handleError(event: Event): void {
   console.error('WebSocket error:', event);
-  // The socket will be closed by the server after this
+  
+  // Notify subscribers of the error
+  subscribers.forEach(handler => {
+    try {
+      handler({
+        type: 'error',
+        data: { message: 'WebSocket connection error', event }
+      });
+    } catch (err) {
+      console.error('Error in error handler:', err);
+    }
+  });
+  
+  // The socket will typically be closed by the server after an error,
+  // but we can force it to ensure cleanup happens properly
+  if (socket && socket.readyState !== WebSocket.CLOSED) {
+    socket.close();
+  }
 }
 
 function scheduleReconnect(): void {
@@ -186,6 +332,13 @@ function scheduleReconnect(): void {
   }, delay);
 }
 
+// Helper function to send a ping/heartbeat
+function sendHeartbeat(): void {
+  if (isConnected()) {
+    sendMessage('heartbeat', { timestamp: new Date().toISOString() });
+  }
+}
+
 // WebSocket Provider Component
 export function WebSocketProvider({ children }: { children: ReactNode }) {
   const [connected, setConnected] = useState<boolean>(false);
@@ -200,9 +353,15 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       setConnected(isConnected());
     }, 1000);
     
+    // Set up heartbeat interval to prevent connection timeouts
+    const heartbeatInterval = setInterval(() => {
+      sendHeartbeat();
+    }, 30000); // Send heartbeat every 30 seconds
+    
     // Clean up on unmount
     return () => {
       clearInterval(statusInterval);
+      clearInterval(heartbeatInterval);
       closeWebSocket();
     };
   }, []);

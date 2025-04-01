@@ -1,3 +1,6 @@
+// Import crypto polyfill first
+import "./polyfills/crypto.js";
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
