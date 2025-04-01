@@ -4,3 +4,13 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+.env
+.env.local
+data/*.json
+data/dumps/
+data/backups/
+*secret*
+*SECRET*
+.DS_Store
+Thumbs.db
+.replit
