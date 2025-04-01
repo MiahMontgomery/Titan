@@ -1,0 +1,23 @@
+services:
+  # Titan API Server
+  - type: web
+    name: titan-api
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGINS
+        value: https://your-client-domain.com
+      - key: OPENAI_API_KEY
+        sync: false # This should be set manually in the Render dashboard
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_API_KEY
+        sync: false
+      - key: FIREBASE_APP_ID
+        sync: false

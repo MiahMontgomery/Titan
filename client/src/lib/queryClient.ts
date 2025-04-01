@@ -1,59 +1,118 @@
-import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { QueryClient } from '@tanstack/react-query';
 
-async function throwIfResNotOk(res: Response) {
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+// Get API base URL from environment or default to window origin
+const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
+
+interface ApiRequestOptions {
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  body?: any;
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+}
+
+/**
+ * Make an API request
+ * @param endpoint API endpoint path
+ * @param options Request options
+ * @returns Promise with response data
+ */
+export async function apiRequest<T = any>(
+  endpoint: string,
+  options: ApiRequestOptions = {}
+): Promise<T> {
+  const { method = 'GET', body, headers = {}, signal } = options;
+  
+  const url = endpoint.startsWith('http')
+    ? endpoint
+    : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  
+  const requestOptions: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    credentials: 'include',
+    signal,
+  };
+  
+  if (body !== undefined) {
+    requestOptions.body = JSON.stringify(body);
+  }
+  
+  try {
+    const response = await fetch(url, requestOptions);
+    
+    // Handle non-JSON responses
+    const contentType = response.headers.get('content-type');
+    if (contentType && !contentType.includes('application/json')) {
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+      
+      if (contentType.includes('text/')) {
+        return await response.text() as unknown as T;
+      }
+      
+      return undefined as unknown as T;
+    }
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(
+        data.error?.message || `API request failed: ${response.status} ${response.statusText}`
+      );
+    }
+    
+    return data as T;
+  } catch (error: any) {
+    // Handle AbortError separately
+    if (error.name === 'AbortError') {
+      throw error;
+    }
+    
+    console.error(`API request error for ${url}:`, error);
+    throw error;
   }
 }
 
-interface ApiRequestOptions {
-  url: string;
-  method: string;
-  data?: unknown | undefined;
-}
-
-export async function apiRequest<T = any>(url: string, method: string = 'GET', data?: unknown): Promise<T> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
-  await throwIfResNotOk(res);
-  return res.json();
-}
-
-type UnauthorizedBehavior = "returnNull" | "throw";
-export const getQueryFn: <T>(options: {
-  on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
-      credentials: "include",
-    });
-
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
-    }
-
-    await throwIfResNotOk(res);
-    return await res.json();
-  };
-
+// Default query client with global configuration
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      queryFn: async ({ queryKey }) => {
+        const [endpoint, ...params] = queryKey as [string, ...any[]];
+        
+        // If the endpoint is not a string or starts with '/', assume it's not an API endpoint
+        if (typeof endpoint !== 'string' || !endpoint.startsWith('/')) {
+          throw new Error(`Invalid query key: ${endpoint}`);
+        }
+        
+        // Convert params to query string if needed
+        let url = endpoint;
+        if (params.length === 1 && typeof params[0] === 'object') {
+          const searchParams = new URLSearchParams();
+          Object.entries(params[0]).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              searchParams.append(key, String(value));
+            }
+          });
+          
+          const queryString = searchParams.toString();
+          if (queryString) {
+            url += `?${queryString}`;
+          }
+        }
+        
+        return apiRequest(url);
+      },
     },
     mutations: {
-      retry: false,
+      retry: 1,
     },
   },
 });

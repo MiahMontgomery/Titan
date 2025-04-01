@@ -1,195 +1,219 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project } from '@shared/schema';
-import { queryClient } from './queryClient';
-import { WebSocketMessage } from './types';
+/**
+ * WebSocket client for real-time communication with the server
+ */
 
-// Create a context for the WebSocket
-interface WebSocketContextType {
-  connected: boolean;
-  sendMessage: (message: any) => void;
-  subscribe: (callback: (data: WebSocketMessage) => void) => () => void;
+// Types
+interface WebSocketMessage {
+  type: string;
+  projectId?: number;
+  data?: any;
+  clientId?: string | null;
 }
 
-const defaultContextValue: WebSocketContextType = {
-  connected: false,
-  sendMessage: () => {},
-  subscribe: () => () => {},
-};
+type MessageHandler = (message: WebSocketMessage) => void;
 
-const WebSocketContext = createContext<WebSocketContextType>(defaultContextValue);
+// Message handlers by type
+const messageHandlers: Map<string, Set<MessageHandler>> = new Map();
 
-// Create a singleton WebSocket instance
+// WebSocket instance
 let socket: WebSocket | null = null;
-let connected = false;
-const listeners: ((data: WebSocketMessage) => void)[] = [];
+let clientId: string | null = null;
+let reconnectTimer: number | null = null;
+let connectionAttempts = 0;
+const MAX_RECONNECT_DELAY = 30000; // 30 seconds
+const INITIAL_RECONNECT_DELAY = 1000; // 1 second
 
-// Function to subscribe to WebSocket messages
-function subscribe(callback: (data: WebSocketMessage) => void) {
-  listeners.push(callback);
-  return () => {
-    const index = listeners.indexOf(callback);
-    if (index !== -1) {
-      listeners.splice(index, 1);
+/**
+ * Initialize WebSocket connection to server
+ */
+export function initializeWebSocket(): void {
+  if (socket) return;
+  
+  try {
+    // Determine WebSocket URL from environment or derive from API URL
+    let wsUrl = import.meta.env.VITE_WS_URL as string;
+    
+    if (!wsUrl) {
+      const apiUrl = import.meta.env.VITE_API_URL as string || window.location.origin;
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = apiUrl.replace(/^https?:\/\//, '');
+      wsUrl = `${protocol}//${host}/ws`;
     }
-  };
-}
-
-// Function to send messages through the WebSocket
-function sendMessage(message: any) {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    socket.send(JSON.stringify(message));
-  } else {
-    console.error('WebSocket is not connected');
+    
+    console.log(`Connecting to WebSocket server at ${wsUrl}`);
+    
+    socket = new WebSocket(wsUrl);
+    
+    socket.onopen = handleOpen;
+    socket.onmessage = handleMessage;
+    socket.onclose = handleClose;
+    socket.onerror = handleError;
+    
+    connectionAttempts = 0;
+  } catch (err) {
+    console.error('Failed to initialize WebSocket:', err);
+    scheduleReconnect();
   }
 }
 
-// Initialize WebSocket connection
-function initWebSocket() {
-  if (socket) return;
+/**
+ * Send a message to the server
+ * @param type Message type
+ * @param data Message data
+ * @param projectId Optional project ID
+ */
+export function sendMessage(type: string, data: any, projectId?: number): boolean {
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    console.warn('Cannot send message, WebSocket not connected');
+    return false;
+  }
   
-  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const wsUrl = `${protocol}//${window.location.host}/ws`;
-  socket = new WebSocket(wsUrl);
-  
-  socket.onopen = () => {
-    console.log('WebSocket connected');
-    connected = true;
-    
-    // Notify listeners of connection state change
-    notifyConnectionChange();
-    
-    // Send a ping to keep the connection alive
-    const pingInterval = setInterval(() => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: 'ping' }));
-      } else {
-        clearInterval(pingInterval);
-      }
-    }, 30000);
+  const message: WebSocketMessage = {
+    type,
+    data,
+    clientId: clientId || undefined,
+    projectId
   };
   
-  socket.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      console.log('WebSocket message received:', data);
-      
-      // Handle different message types
-      if (data.type === 'projects') {
-        queryClient.setQueryData(['/api/projects'], data.data);
-      }
-      else if (data.type === 'new-project') {
-        queryClient.setQueryData(['/api/projects'], (old: Project[] = []) => 
-          [...old, data.data]
-        );
-      }
-      else if (data.type === 'update-project') {
-        queryClient.setQueryData(['/api/projects'], (old: Project[] = []) => 
-          old.map(p => p.id === data.data.id ? data.data : p)
-        );
-      }
-      else if (data.type === 'delete-project') {
-        queryClient.setQueryData(['/api/projects'], (old: Project[] = []) => 
-          old.filter(p => p.id !== data.data.id)
-        );
-      }
-      else if (data.type === 'chat-response') {
-        // Chat responses are handled directly by subscribers
-        console.log('Received chat response via WebSocket:', data);
-      }
-      else if (data.type === 'thinking') {
-        // Thinking messages for real-time progress updates
-        console.log('Received thinking update via WebSocket:', data);
-      }
-      else if (data.type === 'pong') {
-        console.log('Received pong from server');
-      }
-      
-      // Notify all listeners
-      notifyDataListeners(data);
-      
-    } catch (error) {
-      console.error('Error parsing WebSocket message:', error);
-    }
-  };
+  try {
+    socket.send(JSON.stringify(message));
+    return true;
+  } catch (err) {
+    console.error('Error sending WebSocket message:', err);
+    return false;
+  }
+}
+
+/**
+ * Register a handler for a specific message type
+ * @param type Message type to handle
+ * @param handler Function to handle message
+ */
+export function registerMessageHandler(type: string, handler: MessageHandler): void {
+  if (!messageHandlers.has(type)) {
+    messageHandlers.set(type, new Set());
+  }
   
-  socket.onclose = () => {
-    console.log('WebSocket disconnected');
-    connected = false;
+  messageHandlers.get(type)?.add(handler);
+}
+
+/**
+ * Unregister a message handler
+ * @param type Message type
+ * @param handler Handler function to remove
+ */
+export function unregisterMessageHandler(type: string, handler: MessageHandler): void {
+  if (messageHandlers.has(type)) {
+    messageHandlers.get(type)?.delete(handler);
+  }
+}
+
+/**
+ * Close WebSocket connection
+ */
+export function closeWebSocket(): void {
+  if (socket) {
+    socket.close();
     socket = null;
-    
-    // Notify listeners of connection state change
-    notifyConnectionChange();
-    
-    // Try to reconnect after 3 seconds
-    setTimeout(() => {
-      initWebSocket();
-    }, 3000);
-  };
+  }
   
-  socket.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
+  if (reconnectTimer !== null) {
+    window.clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
 }
 
-// Helper to notify all data listeners
-function notifyDataListeners(data: WebSocketMessage) {
-  listeners.forEach(listener => {
-    try {
-      listener(data);
-    } catch (error) {
-      console.error('Error in WebSocket listener:', error);
+/**
+ * Check if WebSocket is connected
+ */
+export function isConnected(): boolean {
+  return socket !== null && socket.readyState === WebSocket.OPEN;
+}
+
+/**
+ * Get client ID assigned by the server
+ */
+export function getClientId(): string | null {
+  return clientId;
+}
+
+// Private helper functions
+
+function handleOpen(event: Event): void {
+  console.log('WebSocket connection established');
+  connectionAttempts = 0;
+}
+
+function handleMessage(event: MessageEvent): void {
+  try {
+    const message = JSON.parse(event.data) as WebSocketMessage;
+    
+    // Store client ID if provided
+    if (message.type === 'connection' && message.clientId) {
+      clientId = message.clientId;
+      console.log(`Assigned client ID: ${clientId}`);
     }
-  });
-}
-
-// Helper to notify all components about connection state changes
-function notifyConnectionChange() {
-  notifyDataListeners({ type: 'connection-status', connected } as WebSocketMessage);
-}
-
-// Provider component wrapper for React
-export function WebSocketProvider({ children }: { children: React.ReactNode }) {
-  const [isConnected, setIsConnected] = useState(connected);
-  
-  useEffect(() => {
-    // Initialize WebSocket if not already done
-    initWebSocket();
     
-    // Subscribe to connection changes
-    const unsubscribe = subscribe((data) => {
-      if (data.type === 'connection-status') {
-        setIsConnected(!!data.connected); // Convert to boolean
-      }
-    });
-    
-    return unsubscribe;
-  }, []);
-  
-  // Create the context value
-  const value = {
-    connected: isConnected,
-    sendMessage,
-    subscribe
-  };
-  
-  // Use JSX directly but with proper syntax
-  return (
-    React.createElement(WebSocketContext.Provider, { value }, children)
-  );
+    // Call appropriate message handlers
+    if (messageHandlers.has(message.type)) {
+      messageHandlers.get(message.type)?.forEach(handler => {
+        try {
+          handler(message);
+        } catch (err) {
+          console.error(`Error in message handler for type ${message.type}:`, err);
+        }
+      });
+    }
+  } catch (err) {
+    console.error('Error parsing WebSocket message:', err);
+  }
 }
 
-// Hook to use the WebSocket context in components
-export function useWebSocketContext() {
-  return useContext(WebSocketContext);
+function handleClose(event: CloseEvent): void {
+  console.log(`WebSocket connection closed: ${event.code} ${event.reason}`);
+  socket = null;
+  
+  // Only reconnect if not closed cleanly or by user
+  if (event.code !== 1000) {
+    scheduleReconnect();
+  }
 }
 
-// For backward compatibility
-export function useWebSocket() {
-  const context = useWebSocketContext();
+function handleError(event: Event): void {
+  console.error('WebSocket error:', event);
+  // The socket will be closed by the server after this
+}
+
+function scheduleReconnect(): void {
+  if (reconnectTimer !== null) return;
+  
+  connectionAttempts++;
+  const delay = Math.min(INITIAL_RECONNECT_DELAY * Math.pow(1.5, connectionAttempts - 1), MAX_RECONNECT_DELAY);
+  
+  console.log(`Scheduling WebSocket reconnect in ${delay}ms (attempt ${connectionAttempts})`);
+  
+  reconnectTimer = window.setTimeout(() => {
+    reconnectTimer = null;
+    initializeWebSocket();
+  }, delay);
+}
+
+// Hook for component initialization
+export function useWebSocket(): { 
+  isConnected: boolean;
+  sendMessage: typeof sendMessage;
+  registerHandler: typeof registerMessageHandler;
+  unregisterHandler: typeof unregisterMessageHandler;
+} {
+  // Initialize on first use
+  if (!socket) {
+    initializeWebSocket();
+  }
+  
   return {
-    connected: context.connected,
-    sendMessage: context.sendMessage,
-    subscribe: context.subscribe,
-    contextValue: context
+    isConnected: isConnected(),
+    sendMessage,
+    registerHandler: registerMessageHandler,
+    unregisterHandler: unregisterMessageHandler
   };
 }
