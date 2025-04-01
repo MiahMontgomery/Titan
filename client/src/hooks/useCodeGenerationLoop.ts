@@ -114,25 +114,16 @@ export function useCodeGenerationLoop({
   // Method to fetch pending tasks from the API
   const fetchPendingTasks = async () => {
     try {
-      // Hook is open for implementation
-      // This will fetch tasks from the Progress tab that need to be completed
+      // TODO: Implement actual API call to fetch pending tasks from the project's progress tab
       addProcessLog('Fetching pending tasks from project progress', 'info');
       
-      // Mock implementation to be replaced
-      // In the future, this will pull from the actual features, milestones, and goals
-      // in the Progress tab
-      const mockTask: CodeGenerationTask = {
-        id: `task-${Date.now()}`,
-        featureId: 1,
-        milestoneId: 1,
-        goalId: 1,
-        status: 'pending',
-        title: 'Sample Task',
-        description: 'This is a placeholder task',
-        createdAt: new Date()
-      };
-      
-      setPendingTasks(prev => [...prev, mockTask]);
+      // Example API implementation (commented out):
+      // const response = await fetch(`/api/projects/${projectId}/personas/${personaId}/tasks?status=pending`);
+      // if (!response.ok) {
+      //   throw new Error(`Failed to fetch tasks: ${response.status} ${response.statusText}`);
+      // }
+      // const tasks: CodeGenerationTask[] = await response.json();
+      // setPendingTasks(prev => [...prev, ...tasks]);
     } catch (error) {
       addProcessLog(`Error fetching tasks: ${error}`, 'error');
     }

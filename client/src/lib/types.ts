@@ -163,23 +163,23 @@ export interface WebSocketMessage {
   connected?: boolean; // Used for connection status updates
 }
 
-// Create schema (for form validation)
+// Create schema (for form validation) with empty values to be filled by user
 export const createPersonaSchema = {
   name: '',
   displayName: '',
   description: '',
   imageUrl: '',
-  emoji: '🤖',
+  emoji: '',
   status: 'active',
   createdAt: new Date().toISOString(),
   lastActive: new Date().toISOString(),
   
   behavior: {
-    tone: 'Professional',
-    style: 'Informative',
-    vocabulary: 'Advanced',
-    responsiveness: 8,
-    creativity: 7,
+    tone: '',
+    style: '',
+    vocabulary: '',
+    responsiveness: 0,
+    creativity: 0,
     customPrompt: '',
   },
   
@@ -193,12 +193,12 @@ export const createPersonaSchema = {
   },
   
   autonomy: {
-    level: 5,
+    level: 0,
     canInitiateConversation: false,
     canCreateContent: false,
     workingHours: {
-      start: 9,
-      end: 17,
+      start: 0,
+      end: 0,
     },
     restrictions: [],
   },
@@ -220,7 +220,7 @@ export const createPersonaSchema = {
     model: 'gpt-4o',
     maxTokens: 1000,
     temperature: 0.7,
-    systemPrompt: 'You are a helpful assistant named {name}. You are {behavior.tone} and {behavior.style}.',
+    systemPrompt: '',
   },
   
   integrations: {

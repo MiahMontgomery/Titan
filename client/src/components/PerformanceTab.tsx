@@ -27,82 +27,33 @@ export function PerformanceTab({ persona, projectId }: PerformanceTabProps) {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   
-  // Add a dummy log for demonstration purposes
+  // Initialize logs from API or websocket data source
   useEffect(() => {
-    const dummyLogs: LogEntry[] = [
-      {
-        id: '1',
-        message: 'Starting system initialization',
-        timestamp: new Date(Date.now() - 3600000),
-        type: 'info',
-        canRollback: false,
-      },
-      {
-        id: '2',
-        message: 'Connected to OpenAI API',
-        timestamp: new Date(Date.now() - 3500000),
-        type: 'success',
-        canRollback: false,
-      },
-      {
-        id: '3',
-        message: 'Loading persona configuration',
-        timestamp: new Date(Date.now() - 3400000),
-        type: 'info',
-        canRollback: false,
-      },
-      {
-        id: '4',
-        message: 'Failed to initialize browser automation',
-        timestamp: new Date(Date.now() - 3300000),
-        type: 'error',
-        canRollback: true,
-      },
-      {
-        id: '5',
-        message: 'Retrying browser automation initialization',
-        timestamp: new Date(Date.now() - 3200000),
-        type: 'warning',
-        canRollback: false,
-      },
-      {
-        id: '6',
-        message: 'Successfully initialized browser automation',
-        timestamp: new Date(Date.now() - 3100000),
-        type: 'success',
-        canRollback: false,
-      },
-      {
-        id: '7',
-        message: 'Generated content for OnlyFans platform',
-        timestamp: new Date(Date.now() - 3000000),
-        type: 'info',
-        canRollback: true,
-      },
-      {
-        id: '8',
-        message: 'Posted content to Instagram',
-        timestamp: new Date(Date.now() - 2900000),
-        type: 'success',
-        canRollback: true,
-      },
-      {
-        id: '9',
-        message: 'Updated analytics data',
-        timestamp: new Date(Date.now() - 2800000),
-        type: 'info',
-        canRollback: false,
-      },
-      {
-        id: '10',
-        message: 'System ready for operations',
-        timestamp: new Date(Date.now() - 2700000),
-        type: 'success',
-        canRollback: false,
-      },
-    ];
+    // This hook will be used to load actual log data from the backend API
+    // or subscribe to real-time log updates via WebSocket
     
-    setLogs(dummyLogs);
+    // TODO: Replace with actual API call or WebSocket subscription
+    
+    // Example implementation (commented out):
+    // const fetchLogs = async () => {
+    //   try {
+    //     const response = await fetch(`/api/personas/${persona.id}/logs`);
+    //     const data = await response.json();
+    //     setLogs(data);
+    //   } catch (error) {
+    //     console.error('Error fetching logs:', error);
+    //   }
+    // };
+    // fetchLogs();
+    
+    // Or with WebSocket:
+    // const handleLogUpdate = (data) => {
+    //   if (data.personaId === persona.id) {
+    //     setLogs(prev => [...prev, data.log]);
+    //   }
+    // };
+    // socket.on('log_update', handleLogUpdate);
+    // return () => socket.off('log_update', handleLogUpdate);
   }, []);
   
   // Format time for display
@@ -112,28 +63,51 @@ export function PerformanceTab({ persona, projectId }: PerformanceTabProps) {
   
   // Handle log rollback
   const handleRollback = (logId: string) => {
-    // This would normally call an API to perform the rollback
+    // TODO: Implement actual API call to perform rollback
     console.log('Rolling back action:', logId);
     
-    // For demo purposes, just mark the log
-    setLogs(prevLogs => 
-      prevLogs.map(log => 
-        log.id === logId 
-          ? { ...log, message: `ROLLED BACK: ${log.message}`, type: 'warning' } 
-          : log
-      )
-    );
+    // Example API call (commented out):
+    // const performRollback = async (id: string) => {
+    //   try {
+    //     const response = await fetch(`/api/logs/${id}/rollback`, {
+    //       method: 'POST',
+    //     });
+    //     const result = await response.json();
+    //     
+    //     if (result.success) {
+    //       // Update local logs or trigger refresh
+    //     }
+    //   } catch (error) {
+    //     console.error('Rollback failed:', error);
+    //   }
+    // };
+    // performRollback(logId);
   };
   
   // Refresh logs
   const refreshLogs = () => {
     setIsProcessing(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setLastUpdated(new Date());
-      setIsProcessing(false);
-    }, 1000);
+    // TODO: Implement actual API call to fetch latest logs
+    
+    // Example implementation (commented out):
+    // const fetchLatestLogs = async () => {
+    //   try {
+    //     const response = await fetch(`/api/personas/${persona.id}/logs?fresh=true`);
+    //     const data = await response.json();
+    //     setLogs(data);
+    //   } catch (error) {
+    //     console.error('Error refreshing logs:', error);
+    //   } finally {
+    //     setLastUpdated(new Date());
+    //     setIsProcessing(false);
+    //   }
+    // };
+    // fetchLatestLogs();
+    
+    // Temporary placeholder:
+    setLastUpdated(new Date());
+    setIsProcessing(false);
   };
   
   return (
@@ -265,33 +239,20 @@ export function PerformanceTab({ persona, projectId }: PerformanceTabProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[calc(50vh-200px)]">
-            {/* This is the placeholder for the real-time logs from CodeGenerationMonitor */}
+            {/* Process logs will be populated from WebSocket events */}
             <ScrollArea className="h-full bg-gray-900 rounded-md p-4">
               <div className="space-y-2">
+                {/* Process logs will be rendered here through a WebSocket connection */}
+                {/* Example structure (commented out for reference):
                 <div className="text-sm p-2 rounded bg-gray-800/50 text-gray-300">
                   <div className="flex justify-between items-start">
-                    <span className="whitespace-pre-wrap">Connected to WebSocket server</span>
+                    <span className="whitespace-pre-wrap">[Message content]</span>
                     <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
-                      {formatTime(new Date())}
+                      [Timestamp]
                     </span>
                   </div>
                 </div>
-                <div className="text-sm p-2 rounded bg-gray-800/50 text-gray-300">
-                  <div className="flex justify-between items-start">
-                    <span className="whitespace-pre-wrap">Waiting for tasks from the Progress tab</span>
-                    <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
-                      {formatTime(new Date())}
-                    </span>
-                  </div>
-                </div>
-                <div className="text-sm p-2 rounded bg-green-950/30 text-green-400">
-                  <div className="flex justify-between items-start">
-                    <span className="whitespace-pre-wrap">Ready to process development tasks</span>
-                    <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
-                      {formatTime(new Date())}
-                    </span>
-                  </div>
-                </div>
+                */}
               </div>
             </ScrollArea>
           </CardContent>
