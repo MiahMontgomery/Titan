@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ArrowLeft, RefreshCw, Settings, MessageSquare, Activity } from 'lucide-react';
+import { Loader2, ArrowLeft, RefreshCw, Settings, MessageSquare } from 'lucide-react';
 import { Link } from 'wouter';
 import { SafeImage } from '@/components/ui/safe-image';
 import { ChatTab } from '@/components/ChatTab';
@@ -162,7 +162,6 @@ export default function PersonaView() {
           <TabsContent value="performance" className="mt-4">
             <PerformanceTab persona={persona} projectId={1} />
           </TabsContent>
-          
 
           <TabsContent value="progress" className="mt-4">
             <Card>
@@ -179,7 +178,7 @@ export default function PersonaView() {
                   </Button>
                 </CardTitle>
                 <CardDescription>
-                  Track development of features, milestones, and goals for the {persona?.name || "Persona"} system
+                  Track development of features, milestones, and goals for the {persona.name} system
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -258,619 +257,148 @@ export default function PersonaView() {
               </CardContent>
             </Card>
           </TabsContent>
-                              
-                              {/* More milestones for feature 2 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="chat-milestone-2" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Contextual Memory System</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Build conversation history database</div>
-                                        <div className="text-gray-400">• Implement dynamic context window management</div>
-                                        <div className="text-gray-400">• Create message summarization for long conversations</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                              
-                              {/* Additional milestones */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="chat-milestone-3" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Persona Customization</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Create vocabulary customization system</div>
-                                        <div className="text-gray-400">• Implement conversational style settings</div>
-                                        <div className="text-gray-400">• Build tone and emotion adjustment settings</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+
+          <TabsContent value="sales" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sales Performance</CardTitle>
+                <CardDescription>
+                  Track revenue, conversions, and client metrics for {persona.name}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-gray-900 p-4 rounded-lg border border-gray-800">
+                    <div className="text-sm text-gray-400 mb-1">Monthly Revenue</div>
+                    <div className="text-2xl font-semibold">${persona.sales?.monthlyRevenue || 0}</div>
                   </div>
                   
-                  {/* Feature 3: Content Creation System */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="content-creation" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Content Creation & Management System</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "42%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 42%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestone content for feature 3 */}
-                          <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
-                            <div className="border-l border-gray-700 pl-4 space-y-3">
-                              {/* Add milestones here */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="content-milestone-1" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Text Content Generation</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Create personalized post generation system</div>
-                                        <div className="text-gray-400">• Implement platform-specific content formatting</div>
-                                        <div className="text-gray-400">• Build content categorization and tagging</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                              
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="content-milestone-2" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Image Generation Integration</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Implement DALL-E integration for image creation</div>
-                                        <div className="text-gray-400">• Build prompting system for image styles</div>
-                                        <div className="text-gray-400">• Develop image optimization for platforms</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                  <div className="bg-gray-900 p-4 rounded-lg border border-gray-800">
+                    <div className="text-sm text-gray-400 mb-1">Conversion Rate</div>
+                    <div className="text-2xl font-semibold">{persona.sales?.conversionRate || 0}%</div>
                   </div>
                   
-                  {/* Feature 4: Multi-Platform Management */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="multi-platform" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Multi-Platform Integration & Management</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "38%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 38%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestone content for feature 4 */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                  <div className="bg-gray-900 p-4 rounded-lg border border-gray-800">
+                    <div className="text-sm text-gray-400 mb-1">Total Clients</div>
+                    <div className="text-2xl font-semibold">{persona.sales?.totalClients || 0}</div>
                   </div>
                   
-                  {/* Feature 5: Payment Processing & Subscription Management */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="payment" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Payment Processing & Subscription Management</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "28%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 28%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 6: Analytics & Performance Reporting */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="analytics" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Analytics & Performance Reporting</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "68%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 68%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  {/* Feature 7 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="client-relationship" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Client Relationship Management</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "52%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 52%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 8 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="scheduling" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Autonomous Scheduling System</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "53%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 53%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 9 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="audience" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Audience Targeting & Segmentation</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "35%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 35%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 10 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="autonomous" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Autonomous Decision Making System</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "47%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 47%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 11 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="media" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Media Generation & Enhancement</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "45%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 45%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 12 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="nlp" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Natural Language Processing Engine</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "68%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 68%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 13 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="security" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Automated Security & Privacy Management</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "23%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 23%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 14 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="conversion" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Conversion Optimization System</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "59%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 59%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                  
-                  {/* Feature 15 */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="learning" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Continuous Learning & Adaptation System</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "31%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 31%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          {/* Add milestones here */}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                  <div className="bg-gray-900 p-4 rounded-lg border border-gray-800">
+                    <div className="text-sm text-gray-400 mb-1">Avg. Transaction</div>
+                    <div className="text-2xl font-semibold">${persona.sales?.averageTransaction || 0}</div>
                   </div>
                 </div>
+                
+                <h3 className="text-lg font-medium mb-4">Recent Transactions</h3>
+                {persona.sales?.recentTransactions && persona.sales.recentTransactions.length > 0 ? (
+                  <div className="border border-gray-800 rounded-lg overflow-hidden">
+                    <div className="bg-gray-900 grid grid-cols-4 gap-4 p-3 text-sm font-medium">
+                      <div>Title</div>
+                      <div>Date</div>
+                      <div>Amount</div>
+                      <div>Status</div>
+                    </div>
+                    <div className="divide-y divide-gray-800">
+                      {persona.sales.recentTransactions.map((transaction, idx) => (
+                        <div key={transaction.id || idx} className="grid grid-cols-4 gap-4 p-3 text-sm">
+                          <div className="text-gray-300">{transaction.title}</div>
+                          <div className="text-gray-400">{transaction.date}</div>
+                          <div className="text-gray-300">${transaction.amount}</div>
+                          <div>
+                            <span className={`inline-block px-2 py-1 rounded-full text-xs ${
+                              transaction.status === 'completed' ? 'bg-green-900/30 text-green-400' :
+                              transaction.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400' : 
+                              'bg-red-900/30 text-red-400'
+                            }`}>
+                              {transaction.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    No transaction data available
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="sales" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sales Dashboard</CardTitle>
-                <CardDescription>
-                  Monitor revenue and sales performance for this persona
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gray-800 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-gray-400 mb-1">Monthly Revenue</h3>
-                      <p className="text-2xl font-bold">$2,458</p>
-                      <div className="flex items-center mt-1">
-                        <span className="text-xs text-green-500">↑ $348</span>
-                        <span className="text-xs text-gray-500 ml-1">vs last month</span>
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-gray-400 mb-1">Conversion Rate</h3>
-                      <p className="text-2xl font-bold">18.3%</p>
-                      <div className="flex items-center mt-1">
-                        <span className="text-xs text-green-500">↑ 2.1%</span>
-                        <span className="text-xs text-gray-500 ml-1">vs last month</span>
-                      </div>
-                    </div>
-                    <div className="bg-gray-800 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-gray-400 mb-1">Avg. Transaction</h3>
-                      <p className="text-2xl font-bold">$42.50</p>
-                      <div className="flex items-center mt-1">
-                        <span className="text-xs text-red-500">↓ $1.20</span>
-                        <span className="text-xs text-gray-500 ml-1">vs last month</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-gray-800 p-4 rounded-lg">
-                    <h3 className="text-lg font-medium mb-3">Recent Transactions</h3>
-                    <div className="space-y-3">
-                      {/* Placeholder for transactions - will be replaced with actual data */}
-                      <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                        <div>
-                          <p className="text-sm font-medium">Custom Video Request</p>
-                          <p className="text-xs text-gray-400">Mar 28, 2025</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">$120.00</p>
-                          <p className="text-xs text-green-500">Completed</p>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                        <div>
-                          <p className="text-sm font-medium">Monthly Subscription</p>
-                          <p className="text-xs text-gray-400">Mar 25, 2025</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">$29.99</p>
-                          <p className="text-xs text-green-500">Completed</p>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                        <div>
-                          <p className="text-sm font-medium">Premium Content Access</p>
-                          <p className="text-xs text-gray-400">Mar 22, 2025</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">$15.99</p>
-                          <p className="text-xs text-green-500">Completed</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="chat" className="mt-4">
-            {persona && <ChatTab persona={persona} />}
+            <ChatTab personaId={personaId} />
           </TabsContent>
-
+          
           <TabsContent value="settings" className="mt-4">
             <Card>
               <CardHeader>
                 <CardTitle>Persona Settings</CardTitle>
                 <CardDescription>
-                  Advanced configuration for this persona
+                  Configure behavior, appearance, and system settings for {persona.name}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {/* Model & Brain section - moved from header */}
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-3">AI Model & Brain Configuration</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Model</Label>
-                        <div className="bg-gray-900 p-2 rounded mt-1 flex items-center">
-                          <span className="mr-2">🧠</span>
-                          <span className="text-sm">GPT-4o Turbo</span>
-                        </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-4">Identity</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="displayName">Display Name</Label>
+                        <Input id="displayName" defaultValue={persona.displayName} readOnly />
                       </div>
-                      <div>
-                        <Label>Behavior Settings</Label>
-                        <div className="space-y-2 mt-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Tone</span>
-                            <span className="text-sm text-gray-400">{persona.behavior.tone || 'Professional'}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Style</span>
-                            <span className="text-sm text-gray-400">{persona.behavior.style || 'Informative'}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Vocabulary</span>
-                            <span className="text-sm text-gray-400">{persona.behavior.vocabulary || 'Advanced'}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Responsiveness</span>
-                            <div className="flex items-center">
-                              <span className="mr-2 text-sm text-gray-400">{persona.behavior.responsiveness}/10</span>
-                              <div className="w-24 bg-gray-700 rounded-full h-1.5">
-                                <div 
-                                  className="bg-green-500 h-1.5 rounded-full" 
-                                  style={{ width: `${(persona.behavior.responsiveness / 10) * 100}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="emoji">Emoji</Label>
+                        <Input id="emoji" defaultValue={persona.emoji || '🧠'} readOnly />
                       </div>
                     </div>
-                  </div>
-
-                  {/* Personality Traits */}
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-3">Persona Information</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Display Name</Label>
-                        <Input 
-                          value={persona.displayName || persona.name} 
-                          className="mt-1 bg-gray-900 border-gray-700" 
-                          disabled
-                        />
-                      </div>
-                      <div>
-                        <Label>Internal Name</Label>
-                        <Input 
-                          value={persona.name} 
-                          className="mt-1 bg-gray-900 border-gray-700" 
-                          disabled
-                        />
-                      </div>
-                      <div>
-                        <Label>Description</Label>
-                        <Textarea 
-                          value={persona.description} 
-                          className="mt-1 bg-gray-900 border-gray-700" 
-                          disabled
-                        />
-                      </div>
+                    <div className="mt-4 space-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea id="description" className="h-24" defaultValue={persona.description} readOnly />
                     </div>
                   </div>
-
-                  {/* Autonomy Settings */}
-                  <div className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="text-lg font-medium mb-3">Autonomy Settings</h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-sm font-medium">Autonomy Level</p>
-                          <p className="text-xs text-gray-400">How independent this persona is in decision-making</p>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="mr-2 text-sm">{persona.autonomy.level}/10</span>
-                          <div className="w-24 bg-gray-700 rounded-full h-1.5">
-                            <div 
-                              className="bg-blue-500 h-1.5 rounded-full" 
-                              style={{ width: `${(persona.autonomy.level / 10) * 100}%` }}
-                            ></div>
-                          </div>
-                        </div>
+                  
+                  <div className="pt-4 border-t border-gray-800">
+                    <h3 className="text-lg font-medium mb-4">AI Configuration</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="model">Model</Label>
+                        <Input id="model" defaultValue={persona.settings?.model || 'gpt-4o'} readOnly />
                       </div>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-sm font-medium">Can Initiate Conversations</p>
-                          <p className="text-xs text-gray-400">Ability to start conversations without prompting</p>
-                        </div>
-                        <div>
-                          {persona.autonomy.canInitiateConversation ? 
-                            <span className="px-2 py-1 bg-green-800 text-green-100 rounded-full text-xs">Enabled</span> : 
-                            <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs">Disabled</span>
-                          }
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="temperature">Temperature</Label>
+                        <Input id="temperature" type="number" step="0.1" defaultValue={persona.settings?.temperature || 0.7} readOnly />
                       </div>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-sm font-medium">Can Create Content</p>
-                          <p className="text-xs text-gray-400">Ability to create and publish content autonomously</p>
-                        </div>
-                        <div>
-                          {persona.autonomy.canCreateContent ? 
-                            <span className="px-2 py-1 bg-green-800 text-green-100 rounded-full text-xs">Enabled</span> : 
-                            <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs">Disabled</span>
-                          }
-                        </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <Label htmlFor="systemPrompt">System Prompt</Label>
+                      <Textarea id="systemPrompt" className="h-32" defaultValue={persona.settings?.systemPrompt || ''} readOnly />
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-gray-800">
+                    <h3 className="text-lg font-medium mb-4">Behavior Configuration</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="tone">Tone</Label>
+                        <Input id="tone" defaultValue={persona.behavior?.tone || ''} readOnly />
                       </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="style">Conversational Style</Label>
+                        <Input id="style" defaultValue={persona.behavior?.style || ''} readOnly />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vocabulary">Vocabulary Level</Label>
+                        <Input id="vocabulary" defaultValue={persona.behavior?.vocabulary || ''} readOnly />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="responsiveness">Responsiveness (1-10)</Label>
+                        <Input id="responsiveness" type="number" min="1" max="10" defaultValue={persona.behavior?.responsiveness || 5} readOnly />
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <Label htmlFor="customPrompt">Custom Behavior Instructions</Label>
+                      <Textarea id="customPrompt" className="h-32" defaultValue={persona.behavior?.customPrompt || ''} readOnly />
                     </div>
                   </div>
                 </div>
