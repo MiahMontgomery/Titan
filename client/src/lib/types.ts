@@ -44,14 +44,15 @@ export interface Feature {
 
 export interface Persona {
   id: number | string;
+  projectId: number;
   name: string;
   displayName: string;
   description: string;
   imageUrl?: string;
   emoji?: string;
-  status: 'active' | 'inactive' | 'archived';
+  isActive: boolean;
   createdAt: string;
-  lastActive: string;
+  updatedAt: string;
   
   // Customizable behavior settings
   behavior: {
@@ -64,7 +65,7 @@ export interface Persona {
   };
   
   // Performance metrics
-  performance: {
+  stats: {
     messageCount: number;
     averageResponseTime: number;
     engagement: number;
@@ -184,14 +185,15 @@ export interface WebSocketMessage {
 
 // Create schema (for form validation) with empty values to be filled by user
 export const createPersonaSchema = {
+  projectId: 0,
   name: '',
   displayName: '',
   description: '',
   imageUrl: '',
   emoji: '',
-  status: 'active',
+  isActive: true,
   createdAt: new Date().toISOString(),
-  lastActive: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   
   behavior: {
     tone: '',
@@ -202,7 +204,7 @@ export const createPersonaSchema = {
     customPrompt: '',
   },
   
-  performance: {
+  stats: {
     messageCount: 0,
     averageResponseTime: 0,
     engagement: 0,

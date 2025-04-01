@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRoute } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Persona } from '@/lib/types';
+import { Persona, Feature } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,12 @@ export default function PersonaView() {
   const { data: persona, isLoading, error } = useQuery<Persona>({
     queryKey: [`/api/personas/${personaId}`],
     enabled: !!personaId,
+  });
+  
+  // Fetch features for this persona's project
+  const { data: features = [], isLoading: featuresLoading } = useQuery<Feature[]>({
+    queryKey: [`/api/personas/${personaId}/features`],
+    enabled: !!persona?.projectId,
   });
 
   const toggleActive = useMutation({
@@ -163,8 +169,12 @@ export default function PersonaView() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Project Features & Development Roadmap</span>
-                  <Button variant="outline" size="sm">
-                    <RefreshCw className="w-4 h-4 mr-2" />
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => queryClient.invalidateQueries({ queryKey: [`/api/personas/${personaId}/features`] })}
+                  >
+                    <RefreshCw className={`w-4 h-4 mr-2 ${featuresLoading ? 'animate-spin' : ''}`} />
                     Refresh
                   </Button>
                 </CardTitle>
@@ -173,172 +183,81 @@ export default function PersonaView() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Feature 1: Web Browser Automation */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="browser-automation" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">Web Browser Automation (Puppeteer)</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "65%" }}></div>
-                                </div>
-                                <span className="text-xs text-gray-400">Progress: 65%</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
-                            <div className="border-l border-gray-700 pl-4 space-y-3">
-                              {/* Milestone 1.1 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="browser-milestone-1" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Headless Browser Integration</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Configure Puppeteer with stealth plugin for detection avoidance</div>
-                                        <div className="text-gray-400">• Implement proxy rotation system for IP management</div>
-                                        <div className="text-gray-400">• Create browser session management system</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                              
-                              {/* Milestone 1.2 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="browser-milestone-2" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Platform Login Automation</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Implement OnlyFans authentication workflow</div>
-                                        <div className="text-gray-400">• Create Instagram login system with 2FA support</div>
-                                        <div className="text-gray-400">• Develop Twitter authentication with token management</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                              
-                              {/* Milestone 1.3 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="browser-milestone-3" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Content Posting Automation</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Build text content submission flow</div>
-                                        <div className="text-gray-400">• Implement image upload capability</div>
-                                        <div className="text-gray-400">• Create video posting functionality</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                              
-                              {/* Milestone 1.4 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="browser-milestone-4" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Interaction Automation</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Implement messaging capabilities</div>
-                                        <div className="text-gray-400">• Create like/comment functionality</div>
-                                        <div className="text-gray-400">• Build story view and engagement automation</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                              
-                              {/* Milestone 1.5 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="browser-milestone-5" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>Data Extraction & Analytics</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Build DOM scraping utilities for analytics collection</div>
-                                        <div className="text-gray-400">• Implement audience analysis tools</div>
-                                        <div className="text-gray-400">• Create performance metrics dashboard integration</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                {featuresLoading ? (
+                  <div className="py-8 flex justify-center items-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-accent" />
                   </div>
-                  
-                  {/* Feature 2: AI-Powered Chat Response System */}
-                  <div className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="ai-chat" className="border-0">
-                        <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
-                          <div className="flex-1 flex items-center justify-between">
-                            <div className="flex-1 text-left">
-                              <h3 className="font-medium">AI-Powered Chat Response System</h3>
-                              <div className="flex items-center mt-1">
-                                <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
-                                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: "85%" }}></div>
+                ) : features.length === 0 ? (
+                  <div className="py-8 text-center text-gray-400">
+                    <p>No features have been created for this persona's project yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {features.map((feature) => (
+                      <div key={feature.id} className="border border-gray-800 rounded-md overflow-hidden transition-shadow hover:shadow-[0_0_8px_rgba(74,222,128,0.5)] group">
+                        <Accordion type="single" collapsible>
+                          <AccordionItem value={`feature-${feature.id}`} className="border-0">
+                            <AccordionTrigger className="p-3 hover:no-underline bg-gray-900 group-hover:border-green-500 w-full">
+                              <div className="flex-1 flex items-center justify-between">
+                                <div className="flex-1 text-left">
+                                  <h3 className="font-medium">{feature.name}</h3>
+                                  <div className="flex items-center mt-1">
+                                    <div className="w-full max-w-[200px] bg-gray-800 rounded-full h-1.5 mr-3">
+                                      <div className="bg-green-500 h-1.5 rounded-full" style={{ width: `${feature.progress || 0}%` }}></div>
+                                    </div>
+                                    <span className="text-xs text-gray-400">Progress: {feature.progress || 0}%</span>
+                                  </div>
                                 </div>
-                                <span className="text-xs text-gray-400">Progress: 85%</span>
                               </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-1 pb-0">
-                          <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
-                            <div className="border-l border-gray-700 pl-4 space-y-3">
-                              {/* Milestone 2.1 */}
-                              <div className="group/milestone">
-                                <Accordion type="single" collapsible className="w-full">
-                                  <AccordionItem value="chat-milestone-1" className="border-0">
-                                    <AccordionTrigger className="py-2 hover:no-underline">
-                                      <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
-                                        <span>GPT-4o Integration</span>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="pt-0 pb-1">
-                                      <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
-                                        <div className="text-gray-400">• Set up OpenAI API client integration</div>
-                                        <div className="text-gray-400">• Configure system prompts for persona characteristics</div>
-                                        <div className="text-gray-400">• Implement token optimization for cost management</div>
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
+                            </AccordionTrigger>
+                            <AccordionContent className="pt-1 pb-0">
+                              <div className="pl-6 pr-3 py-2 bg-gray-950/50 border-t border-gray-800">
+                                <div className="border-l border-gray-700 pl-4 space-y-3">
+                                  {feature.milestones && feature.milestones.map((milestone, idx) => (
+                                    <div key={milestone.id} className="group/milestone">
+                                      <Accordion type="single" collapsible className="w-full">
+                                        <AccordionItem value={`milestone-${feature.id}-${milestone.id}`} className="border-0">
+                                          <AccordionTrigger className="py-2 hover:no-underline">
+                                            <div className="text-sm font-medium group-hover/milestone:text-green-400 flex justify-between w-full">
+                                              <span>{milestone.name}</span>
+                                              <span className="text-xs text-gray-400">{milestone.progress || 0}%</span>
+                                            </div>
+                                          </AccordionTrigger>
+                                          <AccordionContent className="pt-0 pb-1">
+                                            <div className="pl-4 border-l border-gray-800 space-y-1.5 py-1.5 text-xs">
+                                              {milestone.goals && milestone.goals.map((goal) => (
+                                                <div key={goal.id} className="text-gray-400">
+                                                  • {goal.name} {goal.status === 'completed' && '✓'}
+                                                </div>
+                                              ))}
+                                              
+                                              {(!milestone.goals || milestone.goals.length === 0) && (
+                                                <div className="text-gray-400 italic">No goals defined</div>
+                                              )}
+                                            </div>
+                                          </AccordionContent>
+                                        </AccordionItem>
+                                      </Accordion>
+                                    </div>
+                                  ))}
+                                  
+                                  {(!feature.milestones || feature.milestones.length === 0) && (
+                                    <div className="py-3 text-center text-gray-400 italic">
+                                      No milestones defined yet
+                                    </div>
+                                  )}
+                                </div>
                               </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
                               
                               {/* More milestones for feature 2 */}
                               <div className="group/milestone">

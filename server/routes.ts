@@ -1515,6 +1515,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to fetch persona' });
     }
   });
+  
+  // Get features for a persona's project
+  app.get('/api/personas/:id/features', async (req, res) => {
+    try {
+      const id = req.params.id;
+      const persona = await storage.getPersona(id);
+      
+      if (!persona) {
+        return res.status(404).json({ error: 'Persona not found' });
+      }
+      
+      // Get features for this persona's project
+      const features = await storage.getFeaturesByProject(persona.projectId);
+      res.json(features);
+    } catch (error) {
+      console.error('Error fetching features for persona:', error);
+      res.status(500).json({ error: 'Failed to fetch features' });
+    }
+  });
 
   app.post('/api/personas', async (req, res) => {
     try {
