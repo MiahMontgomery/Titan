@@ -1,3 +1,22 @@
+// Integration types for external services
+export interface FirebaseIntegration {
+  config: {
+    projectId: string;
+    apiKey: string;
+    appId: string;
+  };
+}
+
+export interface OpenAIIntegration {
+  apiKey: string;
+  model?: string;
+}
+
+export interface TelegramIntegration {
+  token: string;
+  chatId?: string;
+}
+
 // Types from persona schema
 export interface Goal {
   id: number;

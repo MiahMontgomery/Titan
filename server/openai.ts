@@ -268,11 +268,14 @@ CRITICAL: Generate REAL, SUBSTANTIVE implementations - not toy examples or simpl
 
 Your goal is to create code that can be immediately integrated into the project with minimal modification. Aim for the highest quality professional solution.`;
 /**
- * Check if OpenAI API key is configured
- * @returns True if OpenAI API key is present
+ * Check if OpenAI API key is configured properly
+ * @returns True if a valid OpenAI API key is present
  */
 export function isOpenAIConfigured(): boolean {
-  return !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.length > 0;
+  // Make sure API key exists, has valid length, and doesn't start with "sk-proj-" which is invalid
+  return !!process.env.OPENAI_API_KEY && 
+         process.env.OPENAI_API_KEY.length > 20 && 
+         !process.env.OPENAI_API_KEY.startsWith('sk-proj-');
 }
 
 /**
@@ -743,7 +746,29 @@ Generate production-ready code to implement this goal. Include detailed line-by-
     };
   } catch (error) {
     console.error('Error generating code with OpenAI:', error);
-    throw new Error('Failed to generate code: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    
+    // Send error thinking message to client
+    broadcastThinking(
+      projectId,
+      "Error generating code with OpenAI",
+      error instanceof Error ? error.message : String(error),
+      [
+        "✓ Retrieved project context",
+        "✓ Prepared AI prompt",
+        "✗ Error communicating with OpenAI",
+        "→ Verifying API key and connection"
+      ],
+      true,
+      true
+    );
+    
+    // Check if this is an authentication error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('API key') || errorMessage.includes('401') || errorMessage.includes('authentication')) {
+      throw new Error('OpenAI API key is invalid or expired. Please update your API key in Settings.');
+    }
+    
+    throw new Error('Failed to generate code: ' + errorMessage);
   }
 }
 

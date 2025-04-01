@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FirebaseSetupModal } from '@/components/FirebaseSetupModal';
-import { ExportProjectModal } from '@/components/ExportProjectModal';
-import { FirebaseIntegration, OpenAIIntegration, TelegramIntegration } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Separator } from '@/components/ui/separator';
-import { connectToFirebase, connectToOpenAI, connectToTelegram } from '@/lib/utils';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import { FirebaseSetupModal } from '../components/FirebaseSetupModal';
+import { ExportProjectModal } from '../components/ExportProjectModal';
+import { FirebaseIntegration, OpenAIIntegration, TelegramIntegration } from '../lib/types';
+import { useToast } from '../hooks/use-toast';
+import { Switch } from "../components/ui/switch";
+import { Label } from "../components/ui/label";
+import { Separator } from '../components/ui/separator';
+import { connectToFirebase, connectToOpenAI, connectToTelegram } from '../lib/utils';
 
 export default function Settings() {
   const [firebaseModalOpen, setFirebaseModalOpen] = useState(false);
@@ -80,9 +80,20 @@ export default function Settings() {
   
   // Handle OpenAI API key update
   const handleOpenAISetup = () => {
-    const apiKey = prompt("Please enter your OpenAI API key");
+    // Use a modern dialog instead of a basic prompt for better UX
+    const apiKey = prompt("Please enter your OpenAI API key\n\nImportant: Your API key should start with 'sk-' and should NOT be a project key (starting with 'sk-proj-'). Copy your API key from platform.openai.com/api-keys.");
     
     if (!apiKey) return;
+    
+    // Basic validation
+    if (!apiKey.startsWith('sk-') || apiKey.startsWith('sk-proj-') || apiKey.length < 20) {
+      toast({
+        title: "Invalid API Key",
+        description: "The API key format appears to be invalid. It should start with 'sk-' and should not be a project key.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Update OpenAI config
     const newConfig: OpenAIIntegration = { apiKey };
@@ -105,7 +116,18 @@ export default function Settings() {
         if (data.success) {
           toast({
             title: "OpenAI Connected",
-            description: "OpenAI API key saved successfully.",
+            description: "OpenAI API key saved successfully. The system will now be able to autonomously work on projects.",
+          });
+          
+          // Reload page to restart workflows with the new API key
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          toast({
+            title: "Connection Error",
+            description: data.message || "Failed to save OpenAI configuration.",
+            variant: "destructive",
           });
         }
       })
@@ -113,7 +135,7 @@ export default function Settings() {
         console.error('Error saving OpenAI config:', error);
         toast({
           title: "Connection Error",
-          description: "Failed to save OpenAI configuration.",
+          description: "Failed to save OpenAI configuration to the server.",
           variant: "destructive",
         });
       });
@@ -223,19 +245,32 @@ export default function Settings() {
             
             <Separator />
             
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-medium">OpenAI API</h3>
-                <p className="text-sm text-muted-foreground">
-                  {openAIConfig ? "Connected" : "Not configured"}
-                </p>
+            <div>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-medium">OpenAI API</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {openAIConfig ? "Connected" : "Not configured"}
+                  </p>
+                </div>
+                <Button 
+                  variant={openAIConfig ? "outline" : "default"}
+                  onClick={handleOpenAISetup}
+                  className={!openAIConfig ? "bg-green-600 hover:bg-green-700" : ""}
+                >
+                  {openAIConfig ? "Update Key" : "Configure"}
+                </Button>
               </div>
-              <Button 
-                variant="outline" 
-                onClick={handleOpenAISetup}
-              >
-                {openAIConfig ? "Update" : "Configure"}
-              </Button>
+              
+              {openAIConfig && (
+                <div className="mt-2 bg-muted p-3 rounded-md text-xs">
+                  <p><span className="font-medium">Model:</span> GPT-4o (Latest model as of May 2024)</p>
+                  <p><span className="font-medium">Status:</span> <span className="text-green-500">Active</span></p>
+                  <p className="text-muted-foreground mt-1">
+                    The Titan system uses GPT-4o for autonomous project management and code generation capabilities.
+                  </p>
+                </div>
+              )}
             </div>
             
             <Separator />

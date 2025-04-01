@@ -43,6 +43,18 @@ function broadcast(wss: WebSocketServer, data: any) {
   });
 }
 
+/**
+ * Function to check if Firebase is properly configured
+ */
+function isFirebaseConfigured(): boolean {
+  // Check for the required Firebase environment variables
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const apiKey = process.env.FIREBASE_API_KEY;
+  const appId = process.env.FIREBASE_APP_ID;
+  
+  return !!(projectId && apiKey && appId);
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server
   const httpServer = createServer(app);
@@ -1075,6 +1087,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // API routes for checking API keys
+  app.get('/api/check-keys/openai', (req, res) => {
+    const isValid = isOpenAIConfigured();
+    res.json({ valid: isValid });
+  });
+
+  app.get('/api/check-keys/firebase', (req, res) => {
+    const isValid = isFirebaseConfigured();
+    res.json({ valid: isValid });
+  });
+
   // Firebase integration
   app.post('/api/firebase/setup', async (req, res) => {
     try {
