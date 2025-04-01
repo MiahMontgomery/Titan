@@ -8,7 +8,7 @@ import ProjectView from "./pages/ProjectView";
 import PersonaView from "./pages/PersonaView";
 import Settings from "./pages/Settings";
 import { ProjectProvider } from "./context/ProjectContext";
-import { WebSocketProvider } from "./lib/websocket";
+// WebSocketProvider is imported in main.tsx
 import { Navigation } from "./components/Navigation";
 import { ApiKeyAlert } from "./components/ApiKeyAlert";
 
@@ -27,17 +27,15 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WebSocketProvider>
-        <ProjectProvider>
-          <div className="flex flex-col min-h-screen bg-gray-950">
-            <main className="flex-1 overflow-auto">
-              <Router />
-            </main>
-          </div>
-          <ApiKeyAlert />
-          <Toaster />
-        </ProjectProvider>
-      </WebSocketProvider>
+      <ProjectProvider>
+        <div className="flex flex-col min-h-screen bg-gray-950">
+          <main className="flex-1 overflow-auto">
+            <Router />
+          </main>
+        </div>
+        <ApiKeyAlert />
+        <Toaster />
+      </ProjectProvider>
     </QueryClientProvider>
   );
 }

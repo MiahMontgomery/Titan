@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useWebSocket } from '@/lib/websocket';
+import { useWebSocketContext } from '@/lib/websocket';
 
 interface CodeGenerationTask {
   id: string;
@@ -45,7 +45,7 @@ export function useCodeGenerationLoop({
   const [generatedCode, setGeneratedCode] = useState<string>('');
   const [processLogs, setProcessLogs] = useState<ProcessLog[]>([]);
   
-  const ws = useWebSocket();
+  const ws = useWebSocketContext();
   const [lastMessage, setLastMessage] = useState<string | null>(null);
   const loopIntervalRef = useRef<NodeJS.Timeout | null>(null);
   

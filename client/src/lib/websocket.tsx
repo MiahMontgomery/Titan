@@ -1,9 +1,10 @@
 /**
  * WebSocket client for real-time communication with the server
  */
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 // Types
-interface WebSocketMessage {
+export interface WebSocketMessage {
   type: string;
   projectId?: number;
   data?: any;
@@ -12,8 +13,19 @@ interface WebSocketMessage {
 
 type MessageHandler = (message: WebSocketMessage) => void;
 
-// Message handlers by type
-const messageHandlers: Map<string, Set<MessageHandler>> = new Map();
+// WebSocket Context Types
+interface WebSocketContextType {
+  isConnected: boolean;
+  sendMessage: (type: string, data: any, projectId?: number) => boolean;
+  subscribe: (handler: (message: WebSocketMessage) => void) => () => void;
+}
+
+// Create WebSocket Context
+const WebSocketContext = createContext<WebSocketContextType>({
+  isConnected: false,
+  sendMessage: () => false,
+  subscribe: () => () => {}
+});
 
 // WebSocket instance
 let socket: WebSocket | null = null;
@@ -23,10 +35,13 @@ let connectionAttempts = 0;
 const MAX_RECONNECT_DELAY = 30000; // 30 seconds
 const INITIAL_RECONNECT_DELAY = 1000; // 1 second
 
+// Message handlers for the subscription system
+const subscribers = new Set<(message: WebSocketMessage) => void>();
+
 /**
  * Initialize WebSocket connection to server
  */
-export function initializeWebSocket(): void {
+function initializeWebSocket(): void {
   if (socket) return;
   
   try {
@@ -61,7 +76,7 @@ export function initializeWebSocket(): void {
  * @param data Message data
  * @param projectId Optional project ID
  */
-export function sendMessage(type: string, data: any, projectId?: number): boolean {
+function sendMessage(type: string, data: any, projectId?: number): boolean {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     console.warn('Cannot send message, WebSocket not connected');
     return false;
@@ -84,33 +99,9 @@ export function sendMessage(type: string, data: any, projectId?: number): boolea
 }
 
 /**
- * Register a handler for a specific message type
- * @param type Message type to handle
- * @param handler Function to handle message
- */
-export function registerMessageHandler(type: string, handler: MessageHandler): void {
-  if (!messageHandlers.has(type)) {
-    messageHandlers.set(type, new Set());
-  }
-  
-  messageHandlers.get(type)?.add(handler);
-}
-
-/**
- * Unregister a message handler
- * @param type Message type
- * @param handler Handler function to remove
- */
-export function unregisterMessageHandler(type: string, handler: MessageHandler): void {
-  if (messageHandlers.has(type)) {
-    messageHandlers.get(type)?.delete(handler);
-  }
-}
-
-/**
  * Close WebSocket connection
  */
-export function closeWebSocket(): void {
+function closeWebSocket(): void {
   if (socket) {
     socket.close();
     socket = null;
@@ -125,14 +116,14 @@ export function closeWebSocket(): void {
 /**
  * Check if WebSocket is connected
  */
-export function isConnected(): boolean {
+function isConnected(): boolean {
   return socket !== null && socket.readyState === WebSocket.OPEN;
 }
 
 /**
  * Get client ID assigned by the server
  */
-export function getClientId(): string | null {
+function getClientId(): string | null {
   return clientId;
 }
 
@@ -153,16 +144,14 @@ function handleMessage(event: MessageEvent): void {
       console.log(`Assigned client ID: ${clientId}`);
     }
     
-    // Call appropriate message handlers
-    if (messageHandlers.has(message.type)) {
-      messageHandlers.get(message.type)?.forEach(handler => {
-        try {
-          handler(message);
-        } catch (err) {
-          console.error(`Error in message handler for type ${message.type}:`, err);
-        }
-      });
-    }
+    // Notify all subscribers
+    subscribers.forEach(handler => {
+      try {
+        handler(message);
+      } catch (err) {
+        console.error('Error in message handler:', err);
+      }
+    });
   } catch (err) {
     console.error('Error parsing WebSocket message:', err);
   }
@@ -197,22 +186,51 @@ function scheduleReconnect(): void {
   }, delay);
 }
 
-// Hook for component initialization
-export function useWebSocket(): { 
-  isConnected: boolean;
-  sendMessage: typeof sendMessage;
-  registerHandler: typeof registerMessageHandler;
-  unregisterHandler: typeof unregisterMessageHandler;
-} {
-  // Initialize on first use
-  if (!socket) {
-    initializeWebSocket();
-  }
+// WebSocket Provider Component
+export function WebSocketProvider({ children }: { children: ReactNode }) {
+  const [connected, setConnected] = useState<boolean>(false);
   
-  return {
-    isConnected: isConnected(),
-    sendMessage,
-    registerHandler: registerMessageHandler,
-    unregisterHandler: unregisterMessageHandler
+  // Initialize WebSocket on mount
+  useEffect(() => {
+    // Initialize the WebSocket
+    initializeWebSocket();
+    
+    // Create connection status checking interval
+    const statusInterval = setInterval(() => {
+      setConnected(isConnected());
+    }, 1000);
+    
+    // Clean up on unmount
+    return () => {
+      clearInterval(statusInterval);
+      closeWebSocket();
+    };
+  }, []);
+  
+  // Subscribe function for components to receive messages
+  const subscribe = (handler: (message: WebSocketMessage) => void) => {
+    subscribers.add(handler);
+    
+    // Return unsubscribe function
+    return () => {
+      subscribers.delete(handler);
+    };
   };
+  
+  const contextValue: WebSocketContextType = {
+    isConnected: connected,
+    sendMessage,
+    subscribe
+  };
+  
+  return (
+    <WebSocketContext.Provider value={contextValue}>
+      {children}
+    </WebSocketContext.Provider>
+  );
+}
+
+// Hook for components to use the WebSocket
+export function useWebSocketContext() {
+  return useContext(WebSocketContext);
 }
