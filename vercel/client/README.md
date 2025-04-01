@@ -1,22 +1,36 @@
-# Titan Client - Simplified Vercel Deployment
+# Titan Client for Vercel
 
-This is a simplified version of the Titan client application specifically prepared for Vercel deployment.
+This is the client-side application for the Titan AI Project Management System, specifically configured for deployment on Vercel.
 
-## Deployment Instructions
+## Deployment Configuration
 
-1. Create a new Vercel project
-2. Connect to your GitHub repository
-3. Set the root directory to `vercel/client`
-4. Add the following environment variables:
-   - `VITE_API_URL`: Your backend URL (e.g., https://titan-api.onrender.com)
-   - `VITE_FIREBASE_API_KEY`: Your Firebase API key
-   - `VITE_FIREBASE_PROJECT_ID`: Your Firebase project ID
-   - `VITE_FIREBASE_APP_ID`: Your Firebase app ID
+When deploying this client to Vercel, use the following settings:
 
-Vercel should automatically detect the Vite framework and deploy correctly.
+1. **Framework Preset**: Other (Custom)
+2. **Build Command**: `npm run build`
+3. **Output Directory**: `dist`
+4. **Install Command**: `npm install`
+5. **Development Command**: `npm run dev`
+6. **Root Directory**: Set to `vercel/client` (not the repository root)
 
-## Important Notes
+## Environment Variables
 
-- This is a simplified version of the client designed for reliable deployment
-- If you need to update the client code, update the files in the main `client` directory and then copy the updated files to this directory
-- After making changes, commit and push to GitHub to trigger a deployment
+The following environment variables should be set in your Vercel deployment:
+
+- `VITE_API_URL`: The URL to your backend API (deployed separately)
+- `VITE_APP_NAME`: The application name (defaults to "Titan")
+- `VITE_APP_VERSION`: The application version
+
+## Local Development
+
+To run this client locally:
+
+```bash
+cd vercel/client
+npm install
+npm run dev
+```
+
+## Branch Integration
+
+This client automatically integrates with the main repository through CI/CD workflows, ensuring any changes to the main client codebase are reflected in this deployment-specific client.
