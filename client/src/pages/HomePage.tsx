@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function HomePage() {
@@ -38,7 +38,12 @@ export default function HomePage() {
     <div className="w-full h-full flex flex-col">
       {/* Header with add button */}
       <header className="bg-background py-6 px-8 border-b border-gray-800 flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-white">Titan Projects</h1>
+        <div className="flex items-center space-x-6">
+          <h1 className="text-2xl font-semibold text-white">Titan Projects</h1>
+          <Link href="/byte-ui" className="text-blue-400 hover:text-blue-300 transition-colors">
+            ByteUI Examples
+          </Link>
+        </div>
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
           <Button 
             onClick={() => setIsFormOpen(true)}

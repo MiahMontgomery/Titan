@@ -11,6 +11,11 @@ import { ProjectProvider } from "./context/ProjectContext";
 // WebSocketProvider is imported in main.tsx
 import { Navigation } from "./components/Navigation";
 import { ApiKeyAlert } from "./components/ApiKeyAlert";
+// Import ByteUI ThemeProvider
+import { ThemeProvider } from "./components/ByteUI";
+
+// Import ByteUI example
+import ByteUIExample from './components/ByteUIExample';
 
 function Router() {
   return (
@@ -19,6 +24,7 @@ function Router() {
       <Route path="/projects/:id" component={ProjectView} />
       <Route path="/personas/:id" component={PersonaView} />
       <Route path="/settings" component={Settings} />
+      <Route path="/byte-ui" component={ByteUIExample} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -27,15 +33,17 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ProjectProvider>
-        <div className="flex flex-col min-h-screen bg-gray-950">
-          <main className="flex-1 overflow-auto">
-            <Router />
-          </main>
-        </div>
-        <ApiKeyAlert />
-        <Toaster />
-      </ProjectProvider>
+      <ThemeProvider>
+        <ProjectProvider>
+          <div className="flex flex-col min-h-screen bg-gray-950">
+            <main className="flex-1 overflow-auto">
+              <Router />
+            </main>
+          </div>
+          <ApiKeyAlert />
+          <Toaster />
+        </ProjectProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
