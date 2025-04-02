@@ -4,6 +4,11 @@ export interface FirebaseIntegration {
     projectId: string;
     apiKey: string;
     appId: string;
+    authDomain?: string;
+    storageBucket?: string;
+    messagingSenderId?: string;
+    clientEmail?: string;
+    privateKey?: string;
   };
 }
 

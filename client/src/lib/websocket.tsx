@@ -9,6 +9,10 @@ export interface WebSocketMessage {
   projectId?: number;
   data?: any;
   clientId?: string | null;
+  message?: string;
+  codeSnippet?: string;
+  timestamp?: number | string;
+  error?: any;
 }
 
 type MessageHandler = (message: WebSocketMessage) => void;

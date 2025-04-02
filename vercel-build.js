@@ -17,12 +17,9 @@ try {
     fs.writeFileSync(path.join(__dirname, '.env'), 'NODE_ENV=production\n');
   }
 
-  // Ensure we have dependencies installed in client directory
-  console.log('Checking client dependencies...');
-  if (!fs.existsSync(path.join(__dirname, 'client', 'node_modules', 'vite'))) {
-    console.log('Installing client dependencies...');
-    execSync('cd client && npm install', { stdio: 'inherit' });
-  }
+  // Always install client dependencies to ensure Vite is available
+  console.log('Installing client dependencies...');
+  execSync('cd client && npm install', { stdio: 'inherit' });
 
   // Build the frontend with explicit path
   console.log('Building frontend...');

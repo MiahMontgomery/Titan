@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { useWebSocket } from "@/lib/websocket";
+import { useWebSocketContext } from "@/lib/websocket";
 import { formatDistanceToNow } from "date-fns";
 import {
   Card,
@@ -77,7 +77,7 @@ interface BrowserSession {
 
 export default function AutomationDashboard() {
   const { toast } = useToast();
-  const webSocketContext = useWebSocket();
+  const webSocketContext = useWebSocketContext();
   const [automationRunning, setAutomationRunning] = useState(true);
   const [activities, setActivities] = useState<AutomationActivity[]>([]);
   const [browserSessions, setBrowserSessions] = useState<BrowserSession[]>([]);
