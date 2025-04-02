@@ -37,7 +37,7 @@ export default function PersonaView() {
 
   const toggleActive = useMutation({
     mutationFn: async ({ isActive }: { isActive: boolean }) => {
-      return apiRequest(`/api/personas/${personaId}/toggle-active`, 'POST', { isActive });
+      return apiRequest(`/api/personas/${personaId}/toggle-active`, { method: 'POST', body: { isActive } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/personas/${personaId}`] });

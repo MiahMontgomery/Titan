@@ -65,8 +65,11 @@ export function ChatTab({ persona }: ChatTabProps) {
     setIsLoading(true);
     
     try {
-      const response = await apiRequest(`/api/personas/${persona.id}/chat`, "POST", {
-        message: input
+      const response = await apiRequest(`/api/personas/${persona.id}/chat`, {
+        method: "POST",
+        body: {
+          message: input
+        }
       });
       
       setMessages(prev => [

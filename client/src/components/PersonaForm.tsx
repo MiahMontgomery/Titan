@@ -150,7 +150,7 @@ export function PersonaForm({
 
   const createPersona = useMutation({
     mutationFn: async (data: FormValues) => {
-      return apiRequest('/api/personas', 'POST', data);
+      return apiRequest('/api/personas', { method: 'POST', body: data });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/personas'] });
@@ -173,7 +173,7 @@ export function PersonaForm({
   const updatePersona = useMutation({
     mutationFn: async (data: FormValues & { id: string }) => {
       const { id, ...updateData } = data;
-      return apiRequest(`/api/personas/${id}`, 'PATCH', updateData);
+      return apiRequest(`/api/personas/${id}`, { method: 'PATCH', body: updateData });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/personas'] });

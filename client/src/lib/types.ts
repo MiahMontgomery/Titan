@@ -9,6 +9,11 @@ export interface FirebaseIntegration {
     messagingSenderId?: string;
     clientEmail?: string;
     privateKey?: string;
+    credentials?: any;
+    databaseURL?: string;
+    measurementId?: string;
+    startedAt?: string | Date;
+    status?: string;
   };
 }
 
@@ -68,6 +73,7 @@ export interface Persona {
     creativity?: number;
     customPrompt?: string;
     instructions?: string;
+    lastUpdated?: Date | string;
   };
   
   // Performance metrics
@@ -82,6 +88,7 @@ export interface Persona {
     responseRate?: number;
     contentCreated?: number;
     contentPublished?: number;
+    lastActivity?: Date | string;
   };
   
   // Autonomy settings
@@ -97,6 +104,8 @@ export interface Persona {
       end: number;
     };
     restrictions?: string[];
+    lastDecision?: string;
+    decisionHistory?: string[];
   };
   
   // Progress tracking structure
@@ -134,6 +143,9 @@ export interface Persona {
     apis: string[];
     webhooks: string[];
   };
+  
+  // Status field for backward compatibility with PersonaForm
+  status?: any; // This will allow code using persona.status to work while we migrate
 }
 
 export interface ChatMessage {
@@ -216,6 +228,8 @@ export const createPersonaSchema = {
     responsiveness: 0,
     creativity: 0,
     customPrompt: '',
+    instructions: '',
+    lastUpdated: new Date().toISOString(),
   },
   
   stats: {
@@ -225,6 +239,11 @@ export const createPersonaSchema = {
     conversionRate: 0,
     revenue: 0,
     lastUpdated: new Date().toISOString(),
+    totalIncome: 0,
+    responseRate: 0,
+    contentCreated: 0,
+    contentPublished: 0,
+    lastActivity: new Date().toISOString(),
   },
   
   autonomy: {
@@ -236,6 +255,11 @@ export const createPersonaSchema = {
       end: 0,
     },
     restrictions: [],
+    lastDecision: '',
+    decisionHistory: [],
+    chatEnabled: false,
+    contentEnabled: false,
+    marketingEnabled: false,
   },
   
   progress: {
@@ -263,4 +287,7 @@ export const createPersonaSchema = {
     apis: [],
     webhooks: [],
   },
+  
+  // Status field for backward compatibility
+  status: null,
 };

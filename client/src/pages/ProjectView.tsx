@@ -44,7 +44,7 @@ export default function ProjectView() {
   // Mutation for updating project
   const updateProjectMutation = useMutation({
     mutationFn: async (updates: Partial<Project>) => {
-      return apiRequest(`/api/projects/${projectId}`, 'PATCH', updates);
+      return apiRequest(`/api/projects/${projectId}`, { method: 'PATCH', body: updates });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}`] });

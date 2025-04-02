@@ -64,7 +64,7 @@ export default function WebAccounts() {
   // Create new account mutation
   const createAccount = useMutation({
     mutationFn: async (accountData: any) => {
-      return await apiRequest("/api/web-accounts", "POST", accountData);
+      return await apiRequest("/api/web-accounts", { method: "POST", body: accountData });
     },
     onSuccess: () => {
       toast({
@@ -95,7 +95,7 @@ export default function WebAccounts() {
   // Delete account mutation
   const deleteAccount = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/web-accounts/${id}`, "DELETE");
+      return await apiRequest(`/api/web-accounts/${id}`, { method: "DELETE" });
     },
     onSuccess: () => {
       toast({

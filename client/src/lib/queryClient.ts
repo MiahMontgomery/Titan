@@ -38,6 +38,7 @@ const API_BASE_URL = (() => {
 interface ApiRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: any;
+  data?: any; // Alternative to body, used in some APIs
   headers?: Record<string, string>;
   signal?: AbortSignal;
 }
@@ -52,7 +53,7 @@ export async function apiRequest<T = any>(
   endpoint: string,
   options: ApiRequestOptions = {}
 ): Promise<T> {
-  const { method = 'GET', body, headers = {}, signal } = options;
+  const { method = 'GET', body, data, headers = {}, signal } = options;
   
   const url = endpoint.startsWith('http')
     ? endpoint
@@ -68,8 +69,11 @@ export async function apiRequest<T = any>(
     signal,
   };
   
+  // Use body if provided, otherwise use data if provided
   if (body !== undefined) {
     requestOptions.body = JSON.stringify(body);
+  } else if (data !== undefined) {
+    requestOptions.body = JSON.stringify(data);
   }
   
   try {
