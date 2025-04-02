@@ -16,11 +16,8 @@ const __dirname = path.dirname(__filename);
  * @param httpServer HTTP server instance
  */
 export function setRoutes(app: Application, httpServer?: Server): void {
-  // Initialize WebSocket server if HTTP server is provided
-  if (httpServer) {
-    const wss = initWebSocketServer(httpServer);
-    log('🔌 WebSocket server available at ws://localhost:5000/ws');
-  }
+  // WebSocket server is already initialized in server/index.ts
+  // No need to initialize it again here
   // Check API keys endpoint
   app.get('/api/check-keys/:provider', (req: Request, res: Response) => {
     const { provider } = req.params;
