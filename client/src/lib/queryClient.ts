@@ -1,7 +1,29 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// Get API base URL from environment or default to window origin
-const API_BASE_URL = import.meta.env.VITE_API_URL || window.location.origin;
+// Get API base URL from environment or intelligently derive it based on environment
+const API_BASE_URL = (() => {
+  // If explicitly set in environment variables, use that
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In Replit environment, use port 5000 on the same hostname
+  if (window.location.hostname.includes('.replit.dev') || 
+      window.location.hostname.includes('.repl.co')) {
+    // Replace the protocol and port, but keep the hostname
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    return `${protocol}//${hostname}:5000`;
+  }
+  
+  // In local development, use localhost:5000
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:5000';
+  }
+  
+  // Default to window origin (for production deployments)
+  return window.location.origin;
+})();
 
 interface ApiRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
