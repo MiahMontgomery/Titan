@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import theme from "./theme.json";
 
 export default {
   darkMode: ["class"],
@@ -11,9 +12,9 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: theme.radius ? `${theme.radius * 0.5}rem` : "var(--radius)",
+        md: theme.radius ? `${theme.radius * 0.375}rem` : "calc(var(--radius) - 2px)",
+        sm: theme.radius ? `${theme.radius * 0.25}rem` : "calc(var(--radius) - 4px)",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -27,8 +28,18 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: theme.primary || "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6",
+          600: "#2563eb",
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

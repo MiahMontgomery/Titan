@@ -1,69 +1,81 @@
 # Vercel Deployment Guide for Titan Client
 
-This guide will help you deploy the Titan client application to Vercel, based on successful deployment configurations.
+This guide provides step-by-step instructions for deploying the Titan client application to Vercel. The Titan system uses a dual-deployment architecture with the frontend (client) deployed on Vercel and the backend deployed on Render or a similar service.
 
-## Preferred Deployment Method
+## Prerequisites
 
-We've created an optimized version of the client specifically for Vercel deployment in the `vercel/client` directory.
+- GitHub account with your Titan repository
+- Vercel account (create one at [vercel.com](https://vercel.com) if needed)
+- Node.js and npm installed locally for development
 
-### Steps:
+## Client Deployment Steps
+
+### 1. Prepare Your Repository
+
+Ensure your repository includes the `/vercel/client` directory with all the necessary files:
+- `package.json` with all required dependencies
+- `vercel.json` configuration file
+- `vercel-build.js` build script
+- All frontend source code
+
+### 2. Connect Vercel to GitHub
 
 1. Log in to your Vercel account
 2. Click "Add New..." → "Project"
-3. Connect to your GitHub repository (MiahMontgomery/Titan)
-4. Configure the project:
-   - **Framework Preset**: Select "Other" (not any specific framework)
-   - **Root Directory**: Set to `vercel/client`
-   - **Build Command**: Leave as `npm run build` (this will use our custom build script)
-   - **Output Directory**: Leave as `dist`
-   - **Node.js Version**: Set to "22.x"
-   - **Include files outside of the Root Directory**: Enable this option
+3. Connect to your GitHub account if not already connected
+4. Select your Titan repository
 
-5. Add Environment Variables:
-   - `VITE_API_URL`: Your backend URL (e.g., https://titan-api.onrender.com)
-   - `VITE_FIREBASE_API_KEY`: Your Firebase API key
-   - `VITE_FIREBASE_PROJECT_ID`: Your Firebase project ID
-   - `VITE_FIREBASE_APP_ID`: Your Firebase app ID
+### 3. Configure Project Settings
 
-6. Click "Deploy"
+Use the following configuration settings:
+- **Framework Preset**: Vite
+- **Root Directory**: `vercel/client`
+- **Build Command**: `npm run vercel-build`
+- **Output Directory**: `dist`
+- **Development Command**: `npm run dev`
 
-The `vercel/client` directory contains a simplified version of the client that's specifically formatted for Vercel deployment with proper configuration in vercel.json and all necessary build scripts.
+### 4. Configure Environment Variables
 
-## Troubleshooting Common Issues
+Add the following environment variables to your Vercel project:
 
-### Build Failures
+| Name | Value | Description |
+|------|-------|-------------|
+| `VITE_API_URL` | `https://your-backend-url.onrender.com` | URL of your backend API |
+| `VITE_FIREBASE_API_KEY` | Your Firebase API key | Required for Firebase integration |
+| `VITE_FIREBASE_PROJECT_ID` | Your Firebase project ID | Required for Firebase integration |
+| `VITE_FIREBASE_APP_ID` | Your Firebase app ID | Required for Firebase integration |
 
-If you encounter build failures:
+### 5. Deploy
 
-1. Check the Node.js version in Settings → General → Node.js Version (use 22.x as shown in the screenshots)
-2. Make sure "Include files outside of the Root Directory" is enabled if you have dependencies on shared code
-3. Ensure all required environment variables are set correctly
-4. Review deployment logs for specific error messages
+Click "Deploy" to start the deployment process. Vercel will build and deploy your client application.
 
-### Framework Detection Issues
+## Automated Deployment
 
-If Vercel incorrectly detects the framework:
+For automated deployments, you can:
 
-1. Manually set Framework Preset to "Other" in the project settings
-2. Use the explicit configuration in our `vercel.json` file to override framework-specific settings
-3. Make sure the build command uses the custom build script (`npm run build` which runs our `build.js`)
+1. Use GitHub Actions workflow `.github/workflows/vercel-client.yml`
+2. Configure Vercel for automatic deployments when you push to the main branch
 
-### Missing Dependencies
+## Manual Deployment
 
-If you see errors about missing dependencies:
+To manually deploy the client:
 
-1. Check the CI workflow logs to see if any install steps failed
-2. Make sure you're using the `vercel/client` directory which has all dependencies explicitly listed
-3. Verify the package.json file is correctly formatted and includes all required dependencies
+1. Navigate to the `/vercel/client` directory
+2. Run the deployment script:
+   ```bash
+   ./deploy.sh
+   ```
 
-## Domain Configuration
+## Troubleshooting
 
-After successful deployment:
+- **Build Failures**: Check the build logs in Vercel for specific error messages
+- **Connection Issues**: Ensure your backend API URL is correctly set in environment variables
+- **Styling Problems**: Verify that Tailwind CSS is correctly installed as a dependency
 
-1. Your app will be available at `https://titan-[generated-id].vercel.app`
-2. You can add custom domains in the Vercel project settings
-3. Update your environment variables in the server deployment to point CORS settings to your Vercel domain
+## Architecture Notes
 
-## Configuration Screenshots
+The Titan system uses a dual-deployment architecture:
+- **Client (Frontend)**: Deployed on Vercel, handles UI and user interactions
+- **Server (Backend)**: Deployed on Render or similar service, handles AI processing, data storage, and API endpoints
 
-The repository contains reference screenshots in `attached_assets` showing the correct Vercel configuration that led to successful deployment. Refer to these if you're uncertain about specific settings.
+This separation allows for independent scaling and maintenance of the frontend and backend components.

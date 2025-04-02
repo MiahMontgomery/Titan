@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const theme = require('./theme.json');
+
 module.exports = {
   content: [
     "./index.html",
@@ -6,9 +8,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+      borderRadius: {
+        lg: theme.radius ? `${theme.radius * 0.5}rem` : "0.5rem",
+        md: theme.radius ? `${theme.radius * 0.375}rem` : "0.375rem",
+        sm: theme.radius ? `${theme.radius * 0.25}rem` : "0.25rem",
+      },
       colors: {
         primary: {
-          DEFAULT: "#4a6cf7",
+          DEFAULT: theme.primary || "#4a6cf7",
           50: "#eff6ff",
           100: "#dbeafe",
           200: "#bfdbfe",
@@ -23,5 +30,7 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwindcss-animate')
+  ],
 }

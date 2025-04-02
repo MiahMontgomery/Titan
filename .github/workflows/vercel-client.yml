@@ -28,12 +28,25 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-
-    - name: Debugging - List directory contents
-      run: ls -la
+        cache: 'npm'
+        cache-dependency-path: './vercel/client/package-lock.json'
 
     - name: Install dependencies
-      run: npm install
-      
+      run: npm ci || npm install
+
+    - name: Ensure Tailwind CSS is installed
+      run: npm install tailwindcss autoprefixer postcss --save
+
     - name: Build Vercel client
       run: npm run build
+
+    # Optional: deploy to Vercel on push to main (requires additional setup)
+    # - name: Deploy to Vercel
+    #   if: github.ref == 'refs/heads/main'
+    #   uses: amondnet/vercel-action@v20
+    #   with:
+    #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+    #     github-token: ${{ secrets.GITHUB_TOKEN }}
+    #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+    #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+    #     working-directory: ./vercel/client
