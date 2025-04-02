@@ -1,0 +1,89 @@
+You’re working on a TypeScript + Node.js + Vite monorepo project using Firebase, a Byte-based UI, and a client-server architecture. The frontend fails to deploy to Vercel because:
+
+1. Vite is not installed or not recognized
+2. The build script is missing or incorrect
+3. API URLs are not dynamically switching between local dev and production
+4. The frontend UI looks broken or basic after build
+5. TypeScript is throwing interface/type mismatch errors across components
+
+Your job is to fully fix the project so it builds, runs, and deploys cleanly with the correct UI and dynamic config.
+
+---
+
+### ✅ PHASE 1: Fix Vite Build & Deployment
+
+1. Ensure `vite` is installed in the client:
+   ```bash
+   cd client && npm install --save-dev vite
+Inside client/package.json, update the scripts:
+
+json
+Copy
+Edit
+"scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview"
+}
+Ensure vercel.json (if it exists) is not overriding build settings unless needed.
+
+Push changes and redeploy to Vercel.
+
+✅ PHASE 2: Fix Environment-Sensitive API URLs
+In client/src/lib/api.ts or wherever API requests originate, define a dynamic base URL that works in both environments:
+
+ts
+Copy
+Edit
+export const API_BASE_URL =
+  typeof window !== "undefined" && window.location.hostname.includes("localhost")
+    ? "http://localhost:3000"
+    : "https://titan-steel.vercel.app";
+Update all requests like:
+
+ts
+Copy
+Edit
+fetch(`${API_BASE_URL}/api/endpoint`)
+✅ PHASE 3: Restore Pretty UI
+The UI previously used Byte and looked clean but now renders as plain/basic. Restore the polished UI by:
+
+Ensuring Byte and its dependencies are installed:
+
+bash
+Copy
+Edit
+npm install @byte/component-lib tailwindcss postcss autoprefixer
+Add Tailwind setup if missing:
+
+tailwind.config.js
+
+postcss.config.js
+
+Tailwind imports in index.css:
+
+css
+Copy
+Edit
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+Verify vite.config.ts includes PostCSS and proper aliasing if needed.
+
+✅ PHASE 4: Fix TypeScript Errors
+Fix the TypeScript issues shown in build output:
+
+Use correct interfaces for props (e.g. Persona types)
+
+Update Partial<Persona> if using missing fields
+
+Align API response types between server/ and client/
+
+Fix all "Expected 1-2 arguments but got 3" errors by checking useState, useEffect, etc.
+
+Complete all phases and push a clean build. When done, the project should:
+
+✅ Deploy without Vercel errors
+✅ Show the correct polished UI
+✅ Dynamically detect environments
+✅ Run with zero TypeScript errors

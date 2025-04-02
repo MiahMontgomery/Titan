@@ -17,9 +17,26 @@ try {
     fs.writeFileSync(path.join(__dirname, '.env'), 'NODE_ENV=production\n');
   }
 
-  // Build the frontend
+  // Ensure we have dependencies installed in client directory
+  console.log('Checking client dependencies...');
+  if (!fs.existsSync(path.join(__dirname, 'client', 'node_modules', 'vite'))) {
+    console.log('Installing client dependencies...');
+    execSync('cd client && npm install', { stdio: 'inherit' });
+  }
+
+  // Build the frontend with explicit path
   console.log('Building frontend...');
-  execSync('vite build', { stdio: 'inherit' });
+  execSync('cd client && npm run build', { stdio: 'inherit' });
+  
+  // Ensure public directory exists in dist
+  const distPublicDir = path.join(__dirname, 'dist', 'public');
+  if (!fs.existsSync(distPublicDir)) {
+    fs.mkdirSync(distPublicDir, { recursive: true });
+  }
+  
+  // Copy client build to dist/public
+  console.log('Copying client build to dist/public...');
+  execSync('cp -r client/dist/* dist/public/', { stdio: 'inherit' });
   
   // Build the server
   console.log('Building backend...');

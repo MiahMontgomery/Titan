@@ -21,7 +21,17 @@ const API_BASE_URL = (() => {
     return 'http://localhost:5000';
   }
   
-  // Default to window origin (for production deployments)
+  // Vercel deployment - if deployed to Vercel, the API is available at the same domain
+  if (window.location.hostname.includes('vercel.app')) {
+    return window.location.origin;
+  }
+  
+  // For production domain (titan-steel.vercel.app or custom domain)
+  if (window.location.hostname === 'titan-steel.vercel.app') {
+    return 'https://titan-steel.vercel.app';
+  }
+  
+  // Default to window origin for all other production deployments
   return window.location.origin;
 })();
 
