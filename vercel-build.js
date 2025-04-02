@@ -23,7 +23,11 @@ try {
 
   // Build the frontend with explicit path and ensure node_modules/.bin is in PATH
   console.log('Building frontend...');
-  execSync('cd client && PATH="$PATH:$(pwd)/node_modules/.bin" npm run build', { stdio: 'inherit' });
+  // Use npx to ensure we find vite in node_modules
+  execSync('cd client && npx vite build', { 
+    stdio: 'inherit',
+    env: { ...process.env, NODE_ENV: 'production' }
+  });
   
   // Ensure public directory exists in dist
   const distPublicDir = path.join(__dirname, 'dist', 'public');
