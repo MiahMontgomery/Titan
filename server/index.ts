@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import cors from 'cors';
 import { log, error } from './helpers';
-import { initializeWebSocketServer } from './websocket';
+import { initWebSocketServer } from './websocket';
 import { setRoutes } from './routes';
 
 // Load environment variables
@@ -59,10 +59,10 @@ const clientDistPath = path.join(__dirname, '../client/dist');
 app.use(express.static(clientDistPath));
 
 // Initialize WebSocket server
-const wss = initializeWebSocketServer(httpServer);
+const wss = initWebSocketServer(httpServer);
 
 // Set up API routes
-setRoutes(app);
+setRoutes(app, httpServer);
 
 // Error handling middleware
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

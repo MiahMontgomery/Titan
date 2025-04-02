@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI API Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 20px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2563eb;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #4b5563;
+            margin-top: 30px;
+        }
+        .api-section {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow-wrap: break-word;
+        }
+        .loading {
+            color: #6b7280;
+            font-style: italic;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: 500;
+        }
+        .image-result img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        pre {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        .dropzone {
+            border: 2px dashed #d1d5db;
+            border-radius: 4px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+            background: #f9fafb;
+        }
+        .dropzone:hover {
+            border-color: #93c5fd;
+            background: #f0f7ff;
+        }
+        .dropzone.drag-over {
+            border-color: #3b82f6;
+            background: #e0f2fe;
+        }
+        .dropzone-message {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .thumbnail {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OpenAI API Test Client</h1>
+        <p>This tool helps test your OpenAI-powered API endpoints.</p>
+        
+        <!-- Chat Endpoint -->
+        <div class="api-section">
+            <h2>Chat (Text Completion)</h2>
+            <div class="input-group">
+                <label for="chat-message">Message:</label>
+                <textarea id="chat-message" placeholder="Enter your message here..."></textarea>
+            </div>
+            <button id="send-chat" onclick="sendChat()">Send Message</button>
+            <div id="chat-result" class="result-container" style="display: none;"></div>
+        </div>
+        
+        <!-- Project Planner Endpoint -->
+        <div class="api-section">
+            <h2>Project Planner</h2>
+            <div class="input-group">
+                <label for="project-description">Project Description:</label>
+                <textarea id="project-description" placeholder="Describe your project in detail..."></textarea>
+            </div>
+            <button id="generate-plan" onclick="generateProjectPlan()">Generate Project Plan</button>
+            <div id="plan-result" class="result-container" style="display: none;"></div>
+        </div>
+        
+        <!-- Image Analysis Endpoint -->
+        <div class="api-section">
+            <h2>Image Analysis</h2>
+            <div class="input-group">
+                <label for="image-prompt">Analysis Prompt (optional):</label>
+                <input type="text" id="image-prompt" placeholder="What should we look for in this image?">
+            </div>
+            <div id="image-dropzone" class="dropzone">
+                <p class="dropzone-message">Drag and drop an image here, or click to select a file</p>
+                <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                <img id="image-preview" class="thumbnail" style="display: none;">
+            </div>
+            <button id="analyze-image" onclick="analyzeImage()" disabled>Analyze Image</button>
+            <div id="analysis-result" class="result-container" style="display: none;"></div>
+        </div>
+        
+        <!-- Image Generation Endpoint -->
+        <div class="api-section">
+            <h2>Image Generation</h2>
+            <div class="input-group">
+                <label for="image-generation-prompt">Prompt:</label>
+                <textarea id="image-generation-prompt" placeholder="Describe the image you want to generate..."></textarea>
+            </div>
+            <button id="generate-image" onclick="generateImage()">Generate Image</button>
+            <div id="image-result" class="result-container" style="display: none;">
+                <div class="image-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedImageBase64 = null;
+        
+        // Set up image dropzone
+        const dropzone = document.getElementById('image-dropzone');
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreview = document.getElementById('image-preview');
+        const analyzeButton = document.getElementById('analyze-image');
+        
+        // Dropzone event listeners
+        dropzone.addEventListener('click', () => imageUpload.click());
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-over');
+        });
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('drag-over');
+        });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) {
+                handleImageFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // File input change event
+        imageUpload.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageFile(e.target.files[0]);
+            }
+        });
+        
+        // Process the selected image file
+        function handleImageFile(file) {
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedImageBase64 = e.target.result;
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                analyzeButton.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // API request helper function
+        async function callAPI(endpoint, data) {
+            try {
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error?.message || 'Unknown error');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error(`Error calling API endpoint /${endpoint}:`, error);
+                throw error;
+            }
+        }
+        
+        // Chat endpoint
+        async function sendChat() {
+            const messageInput = document.getElementById('chat-message');
+            const resultContainer = document.getElementById('chat-result');
+            
+            if (!messageInput.value.trim()) {
+                alert('Please enter a message');
+                return;
+            }
+            
+            resultContainer.innerHTML = '<p class="loading">Processing message...</p>';
+            resultContainer.style.display = 'block';
+            
+            try {
+                const data = {
+                    message: messageInput.value.trim()
+                };
+                
+                const result = await callAPI('chat', data);
+                
+                resultContainer.innerHTML = `
+                    <h3>Response:</h3>
+                    <p>${result.response.replace(/\n/g, '<br>')}</p>
+                    <p><small>Timestamp: ${new Date(result.timestamp).toLocaleString()}</small></p>
+                `;
+            } catch (error) {
+                resultContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Project plan endpoint
+        async function generateProjectPlan() {
+            const descriptionInput = document.getElementById('project-description');
+            const resultContainer = document.getElementById('plan-result');
+            
+            if (!descriptionInput.value.trim()) {
+                alert('Please enter a project description');
+                return;
+            }
+            
+            resultContainer.innerHTML = '<p class="loading">Generating project plan...</p>';
+            resultContainer.style.display = 'block';
+            
+            try {
+                const data = {
+                    description: descriptionInput.value.trim()
+                };
+                
+                const result = await callAPI('project-plan', data);
+                
+                // Format the tasks
+                const tasksHtml = result.projectPlan.tasks.map(task => `
+                    <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 4px;">
+                        <h4>${task.title} <span style="color: ${getPriorityColor(task.priority)}; font-size: 14px;">(${task.priority} priority)</span></h4>
+                        <p>${task.description}</p>
+                        <p><strong>Status:</strong> ${formatStatus(task.status)}</p>
+                    </div>
+                `).join('');
+                
+                resultContainer.innerHTML = `
+                    <h3>${result.projectPlan.title}</h3>
+                    <p>${result.projectPlan.description}</p>
+                    <h4>Tasks:</h4>
+                    ${tasksHtml}
+                    <p><small>Generated: ${new Date(result.timestamp).toLocaleString()}</small></p>
+                `;
+            } catch (error) {
+                resultContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Helper function for priority colors
+        function getPriorityColor(priority) {
+            switch (priority) {
+                case 'high': return '#dc2626';
+                case 'medium': return '#f59e0b';
+                case 'low': return '#10b981';
+                default: return '#6b7280';
+            }
+        }
+        
+        // Helper function for task status
+        function formatStatus(status) {
+            switch (status) {
+                case 'todo': return '📋 To Do';
+                case 'in_progress': return '⚙️ In Progress';
+                case 'done': return '✅ Done';
+                default: return status;
+            }
+        }
+        
+        // Image analysis endpoint
+        async function analyzeImage() {
+            const promptInput = document.getElementById('image-prompt');
+            const resultContainer = document.getElementById('analysis-result');
+            
+            if (!selectedImageBase64) {
+                alert('Please select an image');
+                return;
+            }
+            
+            resultContainer.innerHTML = '<p class="loading">Analyzing image...</p>';
+            resultContainer.style.display = 'block';
+            
+            try {
+                const data = {
+                    image: selectedImageBase64,
+                    prompt: promptInput.value.trim() || undefined
+                };
+                
+                const result = await callAPI('analyze-image', data);
+                
+                resultContainer.innerHTML = `
+                    <h3>Analysis:</h3>
+                    <p>${result.analysis.replace(/\n/g, '<br>')}</p>
+                    <p><small>Timestamp: ${new Date(result.timestamp).toLocaleString()}</small></p>
+                `;
+            } catch (error) {
+                resultContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Image generation endpoint
+        async function generateImage() {
+            const promptInput = document.getElementById('image-generation-prompt');
+            const resultContainer = document.getElementById('image-result');
+            const imageResultDiv = resultContainer.querySelector('.image-result');
+            
+            if (!promptInput.value.trim()) {
+                alert('Please enter an image generation prompt');
+                return;
+            }
+            
+            resultContainer.style.display = 'block';
+            imageResultDiv.innerHTML = '<p class="loading">Generating image...</p>';
+            
+            try {
+                const data = {
+                    prompt: promptInput.value.trim()
+                };
+                
+                const result = await callAPI('generate-image', data);
+                
+                imageResultDiv.innerHTML = `
+                    <h3>Generated Image:</h3>
+                    <p>Prompt: "${data.prompt}"</p>
+                    <img src="${result.imageUrl}" alt="Generated image">
+                    <p><small>Generated: ${new Date(result.timestamp).toLocaleString()}</small></p>
+                `;
+            } catch (error) {
+                imageResultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

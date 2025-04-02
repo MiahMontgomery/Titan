@@ -1,310 +1,229 @@
-import { Server as HTTPServer } from 'http';
-import { WebSocketServer, WebSocket } from 'ws';
-import { log, warn, error } from './helpers';
+/**
+ * WebSocket Server
+ * 
+ * This module manages real-time communication with clients via WebSocket.
+ * It handles message routing, client connections, and provides real-time
+ * feedback and thinking updates to the frontend.
+ */
 
-interface WebSocketMessage {
-  type: string;
+import { WebSocketServer, WebSocket } from 'ws';
+import { Server } from 'http';
+import { v4 as uuidv4 } from 'uuid';
+import { log, error } from './helpers';
+
+// Track connected clients
+interface Client {
+  id: string;
+  socket: WebSocket;
+  lastPing: number;
   projectId?: number;
-  data?: any;
-  clientId?: string;
 }
 
-type MessageHandler = (message: WebSocketMessage, ws: WebSocket) => void;
+const clients = new Map<string, Client>();
+const HEARTBEAT_INTERVAL = 30000; // 30 seconds
 
-// Store all connected clients
-const clients: Map<string, WebSocket> = new Map();
-// Store message handlers by type
-const messageHandlers: Map<string, MessageHandler> = new Map();
+let wss: WebSocketServer;
 
 /**
  * Initialize WebSocket server
- * @param server HTTP server to attach WebSocket server to
+ * @param server HTTP server instance
  */
-export function initializeWebSocketServer(server: HTTPServer): WebSocketServer {
-  const wss = new WebSocketServer({ server, path: '/ws' });
+export function initWebSocketServer(server: Server): WebSocketServer {
+  // Create WebSocket server on /ws path to avoid conflict with Vite HMR
+  wss = new WebSocketServer({ server, path: '/ws' });
   
-  // Initialize connection tracking for ping/pong
-  const connectionStatus = new Map<string, { lastPong: Date, isAlive: boolean }>();
-  
-  wss.on('connection', (ws: WebSocket) => {
-    // Generate a unique client ID
-    const clientId = generateClientId();
+  wss.on('connection', (socket, request) => {
+    const clientId = `client_${Date.now()}_${uuidv4().substring(0, 8)}`;
     
-    // Store the client
-    clients.set(clientId, ws);
-    
-    // Initialize connection status
-    connectionStatus.set(clientId, { 
-      lastPong: new Date(), 
-      isAlive: true 
+    // Set up the client
+    clients.set(clientId, {
+      id: clientId,
+      socket,
+      lastPing: Date.now(),
     });
     
     log(`WebSocket client connected: ${clientId}`);
     
-    // Send welcome message with client ID
-    sendToClient(ws, {
-      type: 'connection',
+    // Send welcome message
+    socket.send(JSON.stringify({
+      type: 'welcome',
       clientId,
-      data: { 
-        message: 'Connected to Titan WebSocket Server',
-        timestamp: new Date().toISOString()
-      }
-    });
-    
-    // Set up ping handler using WebSocket protocol
-    ws.on('pong', () => {
-      const status = connectionStatus.get(clientId);
-      if (status) {
-        status.isAlive = true;
-        status.lastPong = new Date();
-      }
-    });
+      message: 'Connected to Titan WebSocket Server',
+      timestamp: Date.now()
+    }));
     
     // Handle messages from client
-    ws.on('message', (message: string) => {
+    socket.on('message', (message) => {
       try {
-        const parsedMessage = JSON.parse(message.toString()) as WebSocketMessage;
-        
-        // Add client ID to message
-        parsedMessage.clientId = clientId;
-        
-        // Update connection status on any message
-        const status = connectionStatus.get(clientId);
-        if (status) {
-          status.lastPong = new Date();
+        // Try to parse as JSON, but also handle plain text
+        let parsedMessage;
+        try {
+          parsedMessage = JSON.parse(message.toString());
+        } catch (e) {
+          // If not valid JSON, treat as plain text
+          parsedMessage = { 
+            type: 'message', 
+            content: message.toString() 
+          };
         }
         
-        handleMessage(parsedMessage, ws);
-      } catch (e: unknown) {
-        // Safe error handling
-        let errorMessage = 'Unknown error';
-        if (typeof e === 'object' && e !== null && 'message' in e) {
-          errorMessage = String(e.message);
-        } else if (e !== null) {
-          errorMessage = String(e);
+        // Set project ID if provided
+        if (parsedMessage.projectId && clients.has(clientId)) {
+          clients.get(clientId)!.projectId = parsedMessage.projectId;
         }
         
-        error(`Error parsing WebSocket message: ${errorMessage}`);
-        sendToClient(ws, {
-          type: 'error',
-          data: { 
-            message: 'Invalid message format',
-            error: errorMessage
+        // Handle different message types
+        if (parsedMessage.type === 'ping') {
+          // Respond to ping
+          socket.send(JSON.stringify({
+            type: 'pong',
+            timestamp: Date.now()
+          }));
+          
+          // Update last ping time
+          if (clients.has(clientId)) {
+            clients.get(clientId)!.lastPing = Date.now();
           }
-        });
+        } else if (parsedMessage.type === 'subscribe') {
+          // Handle subscription to project updates
+          if (parsedMessage.projectId) {
+            if (clients.has(clientId)) {
+              clients.get(clientId)!.projectId = parsedMessage.projectId;
+              log(`Client ${clientId} subscribed to project ${parsedMessage.projectId}`);
+              
+              // Confirm subscription
+              socket.send(JSON.stringify({
+                type: 'subscribed',
+                projectId: parsedMessage.projectId,
+                timestamp: Date.now()
+              }));
+            }
+          }
+        } else {
+          // Log other messages
+          log(`WebSocket message from ${clientId}: ${message.toString().substring(0, 100)}`);
+        }
+      } catch (err: any) {
+        error(`Error processing WebSocket message: ${err.message}`);
       }
     });
     
     // Handle disconnection
-    ws.on('close', () => {
-      clients.delete(clientId);
-      connectionStatus.delete(clientId);
+    socket.on('close', () => {
       log(`WebSocket client disconnected: ${clientId}`);
+      clients.delete(clientId);
     });
     
     // Handle errors
-    ws.on('error', (e: Error) => {
-      // Safe error handling for WebSocket error event (which provides Error objects)
-      const errorMessage = e?.message || 'Unknown WebSocket error';
-      error(`WebSocket error for client ${clientId}: ${errorMessage}`);
+    socket.on('error', (err) => {
+      error(`WebSocket error for client ${clientId}: ${err.message}`);
       clients.delete(clientId);
-      connectionStatus.delete(clientId);
     });
   });
   
-  // Set up interval to ping clients and clean up dead connections
-  const pingInterval = setInterval(() => {
-    let removedCount = 0;
-    
-    clients.forEach((ws, clientId) => {
-      const status = connectionStatus.get(clientId);
-      
-      if (!status) {
-        // Missing status record, create one
-        connectionStatus.set(clientId, { 
-          lastPong: new Date(), 
-          isAlive: true 
-        });
-        return;
-      }
-      
-      if (!status.isAlive) {
-        // Connection is dead - terminate and clean up
-        warn(`Terminating stale WebSocket connection: ${clientId}`);
-        ws.terminate();
-        clients.delete(clientId);
-        connectionStatus.delete(clientId);
-        removedCount++;
-        return;
-      }
-      
-      // Mark as not alive until we get a pong back
-      status.isAlive = false;
-      
-      // Send a ping
-      try {
-        ws.ping();
-      } catch (e: unknown) {
-        // Safe error handling
-        let errorMessage = 'Unknown error';
-        if (typeof e === 'object' && e !== null && 'message' in e) {
-          errorMessage = String(e.message);
-        } else if (e !== null) {
-          errorMessage = String(e);
-        }
-        
-        error(`Error sending ping to client ${clientId}: ${errorMessage}`);
-        ws.terminate();
-        clients.delete(clientId);
-        connectionStatus.delete(clientId);
-        removedCount++;
-      }
-    });
-    
-    // If we removed any clients or it's time for a status update, broadcast connected count
-    if (removedCount > 0 || Math.random() < 0.2) { // 20% chance of sending status update
-      broadcast({
-        type: 'server_status',
-        data: {
-          connectedClients: clients.size,
-          timestamp: new Date().toISOString()
-        }
-      });
-      
-      // Also log it
-      log(`WebSocket server status: ${clients.size} connected clients`);
-    }
-  }, 30000); // Check every 30 seconds
-  
-  // Clean up the interval when the server closes
-  wss.on('close', () => {
-    clearInterval(pingInterval);
-  });
+  // Set up heartbeat to keep connections alive
+  startHeartbeat();
   
   return wss;
 }
 
 /**
- * Register a message handler
- * @param type Message type to handle
- * @param handler Function to handle message
+ * Send heartbeat pings to clients to keep connections alive
  */
-export function registerMessageHandler(type: string, handler: MessageHandler): void {
-  messageHandlers.set(type, handler);
-  log(`Registered WebSocket message handler for type: ${type}`);
-}
-
-/**
- * Handle incoming message
- * @param message Parsed message
- * @param ws WebSocket connection
- */
-function handleMessage(message: WebSocketMessage, ws: WebSocket): void {
-  const { type } = message;
-  
-  // Handle system messages first
-  if (type === 'heartbeat') {
-    // Respond to heartbeat with a pong message
-    sendToClient(ws, {
-      type: 'heartbeat',
-      data: { 
-        timestamp: new Date().toISOString(),
-        serverTime: new Date().toISOString()
-      }
-    });
-    return;
-  }
-  
-  // Find registered handler for the message type
-  if (messageHandlers.has(type)) {
-    try {
-      const handler = messageHandlers.get(type);
-      if (handler) {
-        handler(message, ws);
-      }
-    } catch (e: unknown) {
-      // Safe error handling
-      let errorMessage = 'Unknown error';
-      if (typeof e === 'object' && e !== null && 'message' in e) {
-        errorMessage = String(e.message);
-      } else if (e !== null) {
-        errorMessage = String(e);
+function startHeartbeat() {
+  setInterval(() => {
+    const now = Date.now();
+    
+    // Check each client
+    clients.forEach((client, id) => {
+      // If socket is not open, remove it
+      if (client.socket.readyState !== WebSocket.OPEN) {
+        clients.delete(id);
+        return;
       }
       
-      error(`Error in message handler for type ${type}: ${errorMessage}`);
-      sendToClient(ws, {
-        type: 'error',
-        data: { 
-          message: `Error processing ${type} message`, 
-          error: errorMessage 
-        }
-      });
-    }
-  } else {
-    warn(`No handler for WebSocket message type: ${type}`);
-    sendToClient(ws, {
-      type: 'error',
-      data: { message: `Unsupported message type: ${type}` }
+      // Send heartbeat ping
+      try {
+        client.socket.send(JSON.stringify({
+          type: 'ping',
+          timestamp: now
+        }));
+      } catch (err) {
+        error(`Error sending heartbeat to client ${id}`);
+        clients.delete(id);
+      }
     });
-  }
+  }, HEARTBEAT_INTERVAL);
 }
 
 /**
- * Send message to specific client
- * @param ws WebSocket connection or client ID
- * @param message Message to send
+ * Broadcast a message to all connected clients
+ * @param message The message to broadcast
  */
-export function sendToClient(ws: WebSocket | string, message: WebSocketMessage): void {
-  let targetWs: WebSocket | undefined;
-  
-  if (typeof ws === 'string') {
-    targetWs = clients.get(ws);
-  } else {
-    targetWs = ws;
-  }
-  
-  if (targetWs && targetWs.readyState === WebSocket.OPEN) {
-    targetWs.send(JSON.stringify(message));
-  } else if (typeof ws === 'string') {
-    warn(`Cannot send message to client ${ws}: Client not connected`);
-  }
-}
-
-/**
- * Broadcast message to all connected clients
- * @param message Message to broadcast
- * @param excludeClientId Optional client ID to exclude
- */
-export function broadcast(message: WebSocketMessage, excludeClientId?: string): void {
-  clients.forEach((ws, clientId) => {
-    if (excludeClientId && clientId === excludeClientId) return;
+export function broadcastToAll(message: any): void {
+  const messageString = typeof message === 'string' 
+    ? message 
+    : JSON.stringify(message);
     
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(message));
+  clients.forEach((client) => {
+    if (client.socket.readyState === WebSocket.OPEN) {
+      try {
+        client.socket.send(messageString);
+      } catch (err) {
+        error(`Error broadcasting to client ${client.id}`);
+      }
     }
   });
 }
 
 /**
- * Broadcast message to clients subscribed to a project
- * @param projectId Project ID
- * @param message Message to broadcast
- * @param excludeClientId Optional client ID to exclude
+ * Send a message to clients subscribed to a specific project
+ * @param projectId The project ID
+ * @param message The message to send
  */
-export function broadcastToProject(projectId: number, message: WebSocketMessage, excludeClientId?: string): void {
-  // Add project ID to message
-  message.projectId = projectId;
+export function broadcastToProject(projectId: number, message: any): void {
+  const messageString = typeof message === 'string' 
+    ? message 
+    : JSON.stringify(message);
   
-  // For now, broadcast to all clients
-  // In the future, implement project-specific subscriptions
-  broadcast(message, excludeClientId);
+  let sentCount = 0;
+  
+  clients.forEach((client) => {
+    // Send to clients subscribed to this project
+    if (client.projectId === projectId && client.socket.readyState === WebSocket.OPEN) {
+      try {
+        client.socket.send(messageString);
+        sentCount++;
+      } catch (err) {
+        error(`Error sending to client ${client.id}`);
+      }
+    }
+  });
+  
+  // Log broadcast statistics
+  if (sentCount > 0) {
+    log(`Broadcast to ${sentCount} clients for project ${projectId}`);
+  }
 }
 
 /**
- * Generate a unique client ID
+ * Send thinking updates for a project
+ * @param projectId The project ID
+ * @param message The thinking message
+ * @param codeSnippet Optional code snippet
  */
-function generateClientId(): string {
-  return `client_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+export function sendThinking(
+  projectId: number,
+  message: string,
+  codeSnippet?: string
+): void {
+  broadcastToProject(projectId, {
+    type: 'thinking',
+    projectId,
+    message,
+    codeSnippet,
+    timestamp: Date.now()
+  });
 }
 
 /**
@@ -312,4 +231,33 @@ function generateClientId(): string {
  */
 export function getConnectedClientCount(): number {
   return clients.size;
+}
+
+/**
+ * Get connected client IDs
+ */
+export function getConnectedClientIds(): string[] {
+  return Array.from(clients.keys());
+}
+
+/**
+ * Close all connections
+ */
+export function closeAllConnections(): void {
+  clients.forEach((client) => {
+    try {
+      client.socket.terminate();
+    } catch (err) {
+      // Ignore errors on shutdown
+    }
+  });
+  
+  clients.clear();
+}
+
+/**
+ * Get the WebSocket server instance
+ */
+export function getWebSocketServer(): WebSocketServer | null {
+  return wss || null;
 }
