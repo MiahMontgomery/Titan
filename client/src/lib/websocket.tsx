@@ -13,6 +13,10 @@ export interface WebSocketMessage {
   codeSnippet?: string;
   timestamp?: number | string;
   error?: any;
+  personaId?: string;
+  debugSteps?: string[];
+  isDebugging?: boolean;
+  stepByStep?: boolean;
 }
 
 type MessageHandler = (message: WebSocketMessage) => void;
@@ -214,8 +218,12 @@ function handleMessage(event: MessageEvent): void {
       // Log server-side errors
       console.error('Server error:', message.data?.message || 'Unknown server error');
     } else if (message.type === 'thinking') {
-      // Process thinking updates for active projects
-      console.debug('Thinking update for project:', message.projectId);
+      // Process thinking updates for active projects or personas
+      if (message.personaId) {
+        console.debug('Thinking update for persona:', message.personaId);
+      } else {
+        console.debug('Thinking update for project:', message.projectId);
+      }
     }
     
     // Notify all subscribers about the message

@@ -1177,12 +1177,7 @@ export class FirebaseStorage implements IStorage {
       log(`Error updating project progress: ${error}`, 'firebase');
     }
   }
-}
-
-/**
- * Get Firebase storage instance (create if doesn't exist)
- * Falls back to memory storage if Firebase initialization fails
- */
+  
   // Persona Management
   async getPersonasByProject(projectId: number): Promise<Persona[]> {
     try {

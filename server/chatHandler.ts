@@ -165,7 +165,6 @@ export async function handleChatMessage(req: Request, res: Response) {
       );
       
       // Generate thinking with OpenAI
-      const personaId = req.body.personaId; // Get personaId from request if available
       await generateThinking(projectIdNum, personaId, message, 3);
       
       // Using simpler response for now
