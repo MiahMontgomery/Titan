@@ -21,9 +21,9 @@ try {
   console.log('Installing client dependencies...');
   execSync('cd client && npm install', { stdio: 'inherit' });
 
-  // Build the frontend with explicit path
+  // Build the frontend with explicit path and ensure node_modules/.bin is in PATH
   console.log('Building frontend...');
-  execSync('cd client && npm run build', { stdio: 'inherit' });
+  execSync('cd client && PATH="$PATH:$(pwd)/node_modules/.bin" npm run build', { stdio: 'inherit' });
   
   // Ensure public directory exists in dist
   const distPublicDir = path.join(__dirname, 'dist', 'public');

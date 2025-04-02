@@ -67,6 +67,7 @@ export interface Persona {
     responsiveness: number;
     creativity?: number;
     customPrompt?: string;
+    instructions?: string;
   };
   
   // Performance metrics
@@ -77,6 +78,10 @@ export interface Persona {
     conversionRate: number;
     revenue: number;
     lastUpdated: string;
+    totalIncome?: number;
+    responseRate?: number;
+    contentCreated?: number;
+    contentPublished?: number;
   };
   
   // Autonomy settings
@@ -84,6 +89,9 @@ export interface Persona {
     level: number;
     canInitiateConversation: boolean;
     canCreateContent: boolean;
+    chatEnabled?: boolean;
+    contentEnabled?: boolean;
+    marketingEnabled?: boolean;
     workingHours?: {
       start: number;
       end: number;
@@ -177,6 +185,7 @@ export interface BehaviorUpdate {
 export interface WebSocketMessage {
   type: string;
   message?: string | Record<string, any>;
+  data?: any;
   projectId?: number;
   personaId?: string;
   timestamp?: Date;
