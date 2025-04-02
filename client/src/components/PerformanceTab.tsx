@@ -17,7 +17,7 @@ interface LogEntry {
 }
 
 interface PerformanceTabProps {
-  persona: Persona;
+  persona?: Persona;
   projectId: number;
 }
 
@@ -140,7 +140,7 @@ export function PerformanceTab({ persona, projectId }: PerformanceTabProps) {
                 {/* This is where the CodeGenerationMonitor will go */}
                 <CodeGenerationMonitor 
                   projectId={projectId} 
-                  personaId={Number(persona.id)} 
+                  personaId={persona ? Number(persona.id) : 0} 
                 />
               </CardContent>
             </Card>
@@ -156,7 +156,7 @@ export function PerformanceTab({ persona, projectId }: PerformanceTabProps) {
               </CardHeader>
               <CardContent className="h-[calc(100vh-300px)]">
                 {/* This is where the chat UI will go */}
-                {persona && <ChatTab persona={persona} />}
+                {persona && persona.id && <ChatTab personaId={persona.id.toString()} />}
               </CardContent>
             </Card>
           </TabsContent>

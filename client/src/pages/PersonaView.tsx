@@ -19,7 +19,7 @@ import { PerformanceTab } from '@/components/PerformanceTab';
 
 export default function PersonaView() {
   const [_, params] = useRoute('/personas/:id');
-  const personaId = params?.id;
+  const personaId = params?.id || "";
   const [activeTab, setActiveTab] = useState('progress');
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -327,7 +327,11 @@ export default function PersonaView() {
           </TabsContent>
           
           <TabsContent value="chat" className="mt-4">
-            <ChatTab personaId={personaId} />
+            {personaId ? <ChatTab personaId={personaId} /> : (
+              <Card className="w-full p-4 text-center">
+                <p className="text-gray-400">Cannot load chat. Persona ID is missing.</p>
+              </Card>
+            )}
           </TabsContent>
           
           <TabsContent value="settings" className="mt-4">

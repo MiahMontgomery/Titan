@@ -8,9 +8,10 @@ import { Persona } from "@/lib/types";
 import { SendHorizontal, Bot, User } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 interface ChatTabProps {
-  persona: Persona;
+  personaId: string;
 }
 
 interface ChatMessage {
@@ -19,12 +20,18 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-export function ChatTab({ persona }: ChatTabProps) {
+export function ChatTab({ personaId }: ChatTabProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  // Fetch persona data
+  const { data: persona, isLoading: personaLoading } = useQuery<Persona>({
+    queryKey: [`/api/personas/${personaId}`],
+    enabled: !!personaId,
+  });
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -35,7 +42,7 @@ export function ChatTab({ persona }: ChatTabProps) {
 
   // Add initial greeting message
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && persona) {
       setMessages([
         {
           sender: "system",
@@ -52,7 +59,7 @@ export function ChatTab({ persona }: ChatTabProps) {
   }, [persona, messages.length]);
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !persona) return;
     
     const userMessage = {
       sender: "user",
@@ -65,7 +72,7 @@ export function ChatTab({ persona }: ChatTabProps) {
     setIsLoading(true);
     
     try {
-      const response = await apiRequest(`/api/personas/${persona.id}/chat`, {
+      const response = await apiRequest(`/api/personas/${personaId}/chat`, {
         method: "POST",
         body: {
           message: input
@@ -91,6 +98,18 @@ export function ChatTab({ persona }: ChatTabProps) {
       setIsLoading(false);
     }
   };
+
+  // If persona is loading or not found, show loading state
+  if (personaLoading || !persona) {
+    return (
+      <Card className="w-full bg-gray-900 border-gray-800">
+        <div className="flex flex-col h-[600px] items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mb-4"></div>
+          <p className="text-gray-400">Loading chat data...</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full bg-gray-900 border-gray-800">
