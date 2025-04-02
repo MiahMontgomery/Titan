@@ -6,9 +6,8 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: "dist", // NOT dist/public
     emptyOutDir: true,
-    chunkSizeWarningLimit: 1000,
   },
   resolve: {
     alias: {
