@@ -37,20 +37,20 @@ export default function PersonaCard({
   const handleToggleActive = () => {
     const newState = !isActive;
     setIsActive(newState);
-    onToggleActive(persona.id, newState);
+    onToggleActive(persona.id.toString(), newState);
   };
   
   const getInitials = (name: string) => {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount);
+    }).format(amount || 0);
   };
   
   return (
@@ -144,7 +144,7 @@ export default function PersonaCard({
           <Button 
             variant="destructive" 
             size="sm" 
-            onClick={() => onDelete(persona.id)}
+            onClick={() => onDelete(persona.id.toString())}
             className="h-8"
           >
             <Trash2 className="h-3.5 w-3.5 mr-1" />
@@ -156,7 +156,7 @@ export default function PersonaCard({
             variant="outline"
             size="sm"
             className="h-8"
-            onClick={() => onViewStats(persona.id)}
+            onClick={() => onViewStats(persona.id.toString())}
           >
             <BarChart className="h-3.5 w-3.5" />
           </Button>
@@ -164,7 +164,7 @@ export default function PersonaCard({
             variant="outline"
             size="sm"
             className="h-8"
-            onClick={() => onViewMessages(persona.id)}
+            onClick={() => onViewMessages(persona.id.toString())}
           >
             <MessageSquare className="h-3.5 w-3.5" />
           </Button>
@@ -172,7 +172,7 @@ export default function PersonaCard({
             variant="outline"
             size="sm"
             className="h-8"
-            onClick={() => onViewContent(persona.id)}
+            onClick={() => onViewContent(persona.id.toString())}
           >
             <FileText className="h-3.5 w-3.5" />
           </Button>

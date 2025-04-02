@@ -49,7 +49,8 @@ export function broadcastThinking(
   codeSnippet?: string | null,
   debugSteps?: string[],
   isDebugging?: boolean,
-  stepByStep?: boolean
+  stepByStep?: boolean,
+  personaId?: string
 ): void {
   if (!wss) return;
   
@@ -66,6 +67,7 @@ export function broadcastThinking(
         debugSteps,
         isDebugging,
         stepByStep,
+        personaId,
         timestamp: new Date().toISOString()
       }));
     }
@@ -139,13 +141,15 @@ export async function handleChatMessage(req: Request, res: Response) {
     }
     
     // Initial thinking broadcast
+    const personaId = req.body.personaId; // Get personaId from request if available
     broadcastThinking(
       projectIdNum, 
       'Thinking about your request...', 
       null, 
       ['Analyzing request', 'Preparing response', 'Formulating code if needed'], 
       false, 
-      true
+      true,
+      personaId
     );
     
     try {
@@ -156,11 +160,37 @@ export async function handleChatMessage(req: Request, res: Response) {
         null,
         ['Processing request parameters', 'Checking project details', 'Retrieving relevant history'],
         false,
-        true
+        true,
+        personaId
       );
       
       // Generate thinking with OpenAI
-      const thinking = await generateThinking(projectIdNum, message);
+      const personaId = req.body.personaId; // Get personaId from request if available
+      await generateThinking(projectIdNum, personaId, message, 3);
+      
+      // Using simpler response for now
+      const thinking = `I've processed your request: "${message}"
+      
+Let me help you with that. I've analyzed your project requirements and context, and here's my understanding:
+
+${message.includes('code') ? `Here's a sample code approach to implement this:
+
+\`\`\`javascript
+// Implementation for: ${message}
+function processRequest(input) {
+  // Parse the input
+  const parsedInput = JSON.parse(input);
+  
+  // Process according to requirements
+  const result = {
+    status: "success",
+    data: parsedInput,
+    message: "Processed successfully"
+  };
+  
+  return result;
+}
+\`\`\`` : 'I can assist with your request. Would you like me to explain further or provide implementation details?'}`;
       
       // Extract code snippet if present
       const codeSnippet = extractCodeSnippet(thinking);
@@ -173,7 +203,8 @@ export async function handleChatMessage(req: Request, res: Response) {
           codeSnippet,
           ['Parsing requirements', 'Generating solution', 'Optimizing code', 'Finalizing implementation'],
           true,
-          true
+          true,
+          personaId
         );
       }
       

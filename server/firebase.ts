@@ -11,7 +11,12 @@ import {
   ExternalApi, InsertExternalApi,
   AgentTask, InsertAgentTask,
   WebAccount, InsertWebAccount,
-  User, InsertUser
+  User, InsertUser,
+  DBPersona, InsertDBPersona, 
+  DBChatMessage, InsertDBChatMessage,
+  DBContentItem, InsertDBContentItem,
+  DBBehaviorUpdate, InsertDBBehaviorUpdate,
+  Persona, ChatMessage, ContentItem, BehaviorUpdate
 } from "@shared/schema";
 
 // Firebase Admin initialization state
@@ -35,7 +40,11 @@ const COLLECTIONS = {
   ACTIVITY_LOGS: 'activityLogs',
   EXTERNAL_APIS: 'externalApis',
   AGENT_TASKS: 'agentTasks',
-  WEB_ACCOUNTS: 'webAccounts'
+  WEB_ACCOUNTS: 'webAccounts',
+  PERSONAS: 'personas',
+  CHAT_MESSAGES: 'chatMessages',
+  CONTENT_ITEMS: 'contentItems',
+  BEHAVIOR_UPDATES: 'behaviorUpdates'
 };
 
 /**
@@ -112,13 +121,25 @@ export function initializeFirebase(config: {
 }
 
 /**
- * Convert Firestore document data to model object
+ * Convert Firestore document data to model object with numeric ID
  * @param doc Firestore document
- * @returns Model object with ID
+ * @returns Model object with numeric ID
  */
 function convertDoc<T>(doc: any): T {
   return {
     id: Number(doc.id),
+    ...doc.data()
+  } as unknown as T;
+}
+
+/**
+ * Convert Firestore document data to model object with string ID
+ * @param doc Firestore document
+ * @returns Model object with string ID
+ */
+function convertStringIdDoc<T>(doc: any): T {
+  return {
+    id: doc.id,
     ...doc.data()
   } as unknown as T;
 }
@@ -1162,6 +1183,368 @@ export class FirebaseStorage implements IStorage {
  * Get Firebase storage instance (create if doesn't exist)
  * Falls back to memory storage if Firebase initialization fails
  */
+  // Persona Management
+  async getPersonasByProject(projectId: number): Promise<Persona[]> {
+    try {
+      const snapshot = await getFirestoreDb()
+        .collection(COLLECTIONS.PERSONAS)
+        .where('projectId', '==', projectId)
+        .get();
+      
+      return snapshot.docs.map(doc => convertStringIdDoc<Persona>(doc));
+    } catch (error) {
+      log(`Error getting personas for project ${projectId}: ${error}`, 'firebase');
+      return [];
+    }
+  }
+  
+  async getPersona(id: string): Promise<Persona | undefined> {
+    try {
+      const doc = await getFirestoreDb()
+        .collection(COLLECTIONS.PERSONAS)
+        .doc(id)
+        .get();
+      
+      if (!doc.exists) return undefined;
+      return convertStringIdDoc<Persona>(doc);
+    } catch (error) {
+      log(`Error getting persona ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  async createPersona(persona: Omit<Persona, "id" | "createdAt" | "updatedAt">): Promise<Persona> {
+    try {
+      const timestamp = new Date();
+      const id = `persona_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      
+      const personaWithId: Persona = {
+        ...persona,
+        id,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        isActive: persona.isActive ?? false,
+        conversationHistory: persona.conversationHistory || [],
+        systemPrompt: persona.systemPrompt || "",
+        stats: persona.stats || {
+          messagesReceived: 0,
+          messagesSent: 0,
+          contentCreated: 0,
+          engagementRate: 0,
+          conversionRate: 0,
+          averageResponseTime: 0
+        },
+        behaviorSettings: persona.behaviorSettings || {
+          responseDelay: 0,
+          initiateConversations: false,
+          followUpFrequency: "low",
+          conversationStyle: "formal",
+          topicPreferences: []
+        }
+      };
+      
+      await getFirestoreDb()
+        .collection(COLLECTIONS.PERSONAS)
+        .doc(id)
+        .set(personaWithId);
+      
+      return personaWithId;
+    } catch (error) {
+      log(`Error creating persona: ${error}`, 'firebase');
+      throw error;
+    }
+  }
+  
+  async updatePersona(id: string, data: Partial<Persona>): Promise<Persona | undefined> {
+    try {
+      const docRef = getFirestoreDb().collection(COLLECTIONS.PERSONAS).doc(id);
+      const doc = await docRef.get();
+      
+      if (!doc.exists) return undefined;
+      
+      const updatedPersona = {
+        ...doc.data(),
+        ...data,
+        updatedAt: new Date()
+      };
+      
+      await docRef.update(updatedPersona);
+      return { ...updatedPersona, id } as Persona;
+    } catch (error) {
+      log(`Error updating persona ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  async deletePersona(id: string): Promise<boolean> {
+    try {
+      await getFirestoreDb()
+        .collection(COLLECTIONS.PERSONAS)
+        .doc(id)
+        .delete();
+      
+      return true;
+    } catch (error) {
+      log(`Error deleting persona ${id}: ${error}`, 'firebase');
+      return false;
+    }
+  }
+  
+  async togglePersonaActive(id: string, isActive: boolean): Promise<Persona | undefined> {
+    return this.updatePersona(id, { isActive });
+  }
+  
+  // Chat Messages
+  async getChatMessagesByPersona(personaId: string): Promise<ChatMessage[]> {
+    try {
+      const snapshot = await getFirestoreDb()
+        .collection(COLLECTIONS.CHAT_MESSAGES)
+        .where('personaId', '==', personaId)
+        .orderBy('timestamp')
+        .get();
+      
+      return snapshot.docs.map(doc => convertStringIdDoc<ChatMessage>(doc));
+    } catch (error) {
+      log(`Error getting chat messages for persona ${personaId}: ${error}`, 'firebase');
+      return [];
+    }
+  }
+  
+  async getChatMessage(id: string): Promise<ChatMessage | undefined> {
+    try {
+      const doc = await getFirestoreDb()
+        .collection(COLLECTIONS.CHAT_MESSAGES)
+        .doc(id)
+        .get();
+      
+      if (!doc.exists) return undefined;
+      return convertStringIdDoc<ChatMessage>(doc);
+    } catch (error) {
+      log(`Error getting chat message ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  async createChatMessage(message: Omit<ChatMessage, "id" | "timestamp">): Promise<ChatMessage> {
+    try {
+      const timestamp = new Date();
+      const id = `msg_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      
+      const messageWithId: ChatMessage = {
+        ...message,
+        id,
+        timestamp
+      };
+      
+      await getFirestoreDb()
+        .collection(COLLECTIONS.CHAT_MESSAGES)
+        .doc(id)
+        .set(messageWithId);
+      
+      return messageWithId;
+    } catch (error) {
+      log(`Error creating chat message: ${error}`, 'firebase');
+      throw error;
+    }
+  }
+  
+  async deleteChatMessage(id: string): Promise<boolean> {
+    try {
+      await getFirestoreDb()
+        .collection(COLLECTIONS.CHAT_MESSAGES)
+        .doc(id)
+        .delete();
+      
+      return true;
+    } catch (error) {
+      log(`Error deleting chat message ${id}: ${error}`, 'firebase');
+      return false;
+    }
+  }
+  
+  // Content Items
+  async getContentItemsByPersona(personaId: string): Promise<ContentItem[]> {
+    try {
+      const snapshot = await getFirestoreDb()
+        .collection(COLLECTIONS.CONTENT_ITEMS)
+        .where('personaId', '==', personaId)
+        .orderBy('createdAt', 'desc')
+        .get();
+      
+      return snapshot.docs.map(doc => convertStringIdDoc<ContentItem>(doc));
+    } catch (error) {
+      log(`Error getting content items for persona ${personaId}: ${error}`, 'firebase');
+      return [];
+    }
+  }
+  
+  async getContentItem(id: string): Promise<ContentItem | undefined> {
+    try {
+      const doc = await getFirestoreDb()
+        .collection(COLLECTIONS.CONTENT_ITEMS)
+        .doc(id)
+        .get();
+      
+      if (!doc.exists) return undefined;
+      return convertStringIdDoc<ContentItem>(doc);
+    } catch (error) {
+      log(`Error getting content item ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  async createContentItem(item: Omit<ContentItem, "id" | "createdAt">): Promise<ContentItem> {
+    try {
+      const createdAt = new Date();
+      const id = `content_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      
+      const itemWithId: ContentItem = {
+        ...item,
+        id,
+        createdAt
+      };
+      
+      await getFirestoreDb()
+        .collection(COLLECTIONS.CONTENT_ITEMS)
+        .doc(id)
+        .set(itemWithId);
+      
+      return itemWithId;
+    } catch (error) {
+      log(`Error creating content item: ${error}`, 'firebase');
+      throw error;
+    }
+  }
+  
+  async updateContentItem(id: string, data: Partial<ContentItem>): Promise<ContentItem | undefined> {
+    try {
+      const docRef = getFirestoreDb().collection(COLLECTIONS.CONTENT_ITEMS).doc(id);
+      const doc = await docRef.get();
+      
+      if (!doc.exists) return undefined;
+      
+      const updatedItem = {
+        ...doc.data(),
+        ...data
+      };
+      
+      await docRef.update(updatedItem);
+      return { ...updatedItem, id } as ContentItem;
+    } catch (error) {
+      log(`Error updating content item ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  async deleteContentItem(id: string): Promise<boolean> {
+    try {
+      await getFirestoreDb()
+        .collection(COLLECTIONS.CONTENT_ITEMS)
+        .doc(id)
+        .delete();
+      
+      return true;
+    } catch (error) {
+      log(`Error deleting content item ${id}: ${error}`, 'firebase');
+      return false;
+    }
+  }
+  
+  // Behavior Updates
+  async getBehaviorUpdatesByPersona(personaId: string): Promise<BehaviorUpdate[]> {
+    try {
+      const snapshot = await getFirestoreDb()
+        .collection(COLLECTIONS.BEHAVIOR_UPDATES)
+        .where('personaId', '==', personaId)
+        .orderBy('timestamp', 'desc')
+        .get();
+      
+      return snapshot.docs.map(doc => convertStringIdDoc<BehaviorUpdate>(doc));
+    } catch (error) {
+      log(`Error getting behavior updates for persona ${personaId}: ${error}`, 'firebase');
+      return [];
+    }
+  }
+  
+  async getBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    try {
+      const doc = await getFirestoreDb()
+        .collection(COLLECTIONS.BEHAVIOR_UPDATES)
+        .doc(id)
+        .get();
+      
+      if (!doc.exists) return undefined;
+      return convertStringIdDoc<BehaviorUpdate>(doc);
+    } catch (error) {
+      log(`Error getting behavior update ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  async createBehaviorUpdate(update: Omit<BehaviorUpdate, "id" | "timestamp">): Promise<BehaviorUpdate> {
+    try {
+      const timestamp = new Date();
+      const id = `behavior_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      
+      const updateWithId: BehaviorUpdate = {
+        ...update,
+        id,
+        timestamp,
+        applied: update.applied ?? false
+      };
+      
+      await getFirestoreDb()
+        .collection(COLLECTIONS.BEHAVIOR_UPDATES)
+        .doc(id)
+        .set(updateWithId);
+      
+      return updateWithId;
+    } catch (error) {
+      log(`Error creating behavior update: ${error}`, 'firebase');
+      throw error;
+    }
+  }
+  
+  async applyBehaviorUpdate(id: string): Promise<BehaviorUpdate | undefined> {
+    try {
+      const docRef = getFirestoreDb().collection(COLLECTIONS.BEHAVIOR_UPDATES).doc(id);
+      const doc = await docRef.get();
+      
+      if (!doc.exists) return undefined;
+      
+      const update = convertStringIdDoc<BehaviorUpdate>(doc);
+      
+      // Get the persona
+      const persona = await this.getPersona(update.personaId);
+      if (!persona) return undefined;
+      
+      // Apply the behavior updates to the persona
+      const updatedSettings = {
+        ...persona.behaviorSettings,
+        ...update.behaviorChanges
+      };
+      
+      // Update persona
+      await this.updatePersona(update.personaId, { 
+        behaviorSettings: updatedSettings 
+      });
+      
+      // Mark update as applied
+      await docRef.update({ applied: true });
+      
+      return { ...update, applied: true };
+    } catch (error) {
+      log(`Error applying behavior update ${id}: ${error}`, 'firebase');
+      return undefined;
+    }
+  }
+  
+  // WebAccounts alias
+  async getWebAccounts(projectId: number): Promise<WebAccount[]> {
+    return this.getWebAccountsByProject(projectId);
+  }
+}
+
 export function getFirebaseStorage(): IStorage {
   if (!firebaseStorage) {
     try {

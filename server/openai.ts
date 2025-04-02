@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat";
 import { log, error } from './helpers';
+import { broadcastThinking } from './chatHandler';
 
 // The newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -172,5 +173,68 @@ export async function generateImage(prompt: string): Promise<string> {
   } catch (err: any) {
     error(`DALL-E image generation error: ${err.message}`);
     throw new Error(`OpenAI API error: ${err.message}`);
+  }
+}
+
+/**
+ * Generate and broadcast AI thinking steps (simulated stream)
+ * @param projectId Project ID to associate the thinking with
+ * @param personaId Optional persona ID for personalized thinking
+ * @param prompt The prompt to think about
+ * @param steps Number of thinking steps to generate
+ */
+export async function generateThinking(
+  projectId: number,
+  personaId: string | undefined,
+  prompt: string,
+  steps: number = 3
+): Promise<void> {
+  try {
+    log(`Generating thinking process: ${prompt.substring(0, 50)}...`);
+    
+    // For each step, generate thinking and broadcast
+    for (let i = 0; i < steps; i++) {
+      // Create step prompt
+      const stepPrompt = `You are an AI assistant explaining your thinking process step by step.
+      This is step ${i+1} of ${steps} for this thinking sequence.
+      Think about: ${prompt}
+      
+      Provide a detailed, specific explanation for this step of your thinking. Focus on one aspect only.`;
+      
+      // Generate content
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: stepPrompt }],
+      });
+      
+      const thinking = response.choices[0].message.content || "Thinking...";
+      
+      // Broadcast thinking to clients
+      broadcastThinking(
+        projectId,
+        thinking,
+        null, // code snippet
+        [], // debug steps
+        false, // is debugging
+        true, // step by step
+        personaId
+      );
+      
+      // Wait a short time between steps for natural flow
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    log('Thinking process generation complete');
+  } catch (err: any) {
+    error(`Thinking process generation error: ${err.message}`);
+    broadcastThinking(
+      projectId,
+      `Error generating thinking process: ${err.message}`,
+      null,
+      [],
+      true,
+      false,
+      personaId
+    );
   }
 }
