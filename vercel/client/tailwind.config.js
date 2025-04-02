@@ -1,5 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-const theme = require('./theme.json');
+let theme = {
+  primary: "#4a6cf7",
+  radius: 0.5
+};
+
+// Try to load theme from theme.json, but don't fail if it's not available
+try {
+  theme = require('./theme.json');
+} catch (e) {
+  console.warn('theme.json not found, using default theme');
+}
 
 module.exports = {
   content: [
@@ -31,6 +41,14 @@ module.exports = {
     },
   },
   plugins: [
-    require('tailwindcss-animate')
+    // Safely try to use tailwindcss-animate, but don't fail if it's not available
+    (function() {
+      try {
+        return require('tailwindcss-animate');
+      } catch (e) {
+        console.warn('tailwindcss-animate plugin not available, skipping...');
+        return {};
+      }
+    })()
   ],
 }

@@ -33,12 +33,32 @@ jobs:
 
     - name: Install dependencies
       run: npm ci || npm install
+      
+    - name: Create theme.json if missing
+      run: |
+        if [ ! -f "theme.json" ]; then
+          echo '{
+            "primary": "#4a6cf7",
+            "variant": "professional",
+            "appearance": "light", 
+            "radius": 0.5
+          }' > theme.json
+          echo "Created default theme.json file"
+        fi
 
-    - name: Ensure Tailwind CSS is installed
-      run: npm install tailwindcss autoprefixer postcss --save
+    - name: Ensure all required dependencies are installed
+      run: |
+        npm install tailwindcss autoprefixer postcss tailwindcss-animate --save
+        npm install vite @vitejs/plugin-react --save
+
+    - name: Install project build dependencies
+      run: npm install
+
+    - name: List installed packages
+      run: npm ls --depth=0
 
     - name: Build Vercel client
-      run: npm run build
+      run: npm run build || node vercel-build.js
 
     # Optional: deploy to Vercel on push to main (requires additional setup)
     # - name: Deploy to Vercel

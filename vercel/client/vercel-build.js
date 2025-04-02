@@ -18,10 +18,20 @@ try {
   
   // Build the client application with Vite
   console.log('Building client application...');
-  execSync('vite build', { 
-    stdio: 'inherit',
-    cwd: __dirname
-  });
+  try {
+    // First try using local vite
+    execSync('npx vite build', { 
+      stdio: 'inherit',
+      cwd: __dirname
+    });
+  } catch (buildError) {
+    console.warn('Failed to build with npx vite, trying node_modules/.bin/vite', buildError);
+    // Fallback to node_modules path
+    execSync('node_modules/.bin/vite build', { 
+      stdio: 'inherit',
+      cwd: __dirname
+    });
+  }
   
   console.log('Client build completed successfully!');
 } catch (error) {
