@@ -75,22 +75,28 @@ export function calculatePersonaScore(persona: Persona): number {
   let score = 0;
   
   // Income score (assuming $1000 is a perfect score)
-  score += (Math.min(stats.totalIncome, 1000) / 1000) * 100 * weights.income;
+  const totalIncome = stats.totalIncome ?? 0;
+  score += (Math.min(totalIncome, 1000) / 1000) * 100 * weights.income;
   
   // Message activity score (assuming 100 messages is a perfect score)
-  score += (Math.min(stats.messageCount, 100) / 100) * 100 * weights.messages;
+  const messageCount = stats.messageCount ?? 0;
+  score += (Math.min(messageCount, 100) / 100) * 100 * weights.messages;
   
   // Response rate score (already a percentage)
-  score += stats.responseRate * weights.responseRate;
+  const responseRate = stats.responseRate ?? 0;
+  score += responseRate * weights.responseRate;
   
   // Content effectiveness (published vs created)
-  const contentEffectiveness = stats.contentCreated > 0 
-    ? (stats.contentPublished / stats.contentCreated) * 100 
+  const contentCreated = stats.contentCreated ?? 0;
+  const contentPublished = stats.contentPublished ?? 0;
+  const contentEffectiveness = contentCreated > 0 
+    ? (contentPublished / contentCreated) * 100 
     : 0;
   score += contentEffectiveness * weights.contentEffectiveness;
   
   // Conversion rate (already a percentage)
-  score += stats.conversionRate * weights.conversionRate;
+  const conversionRate = stats.conversionRate ?? 0;
+  score += conversionRate * weights.conversionRate;
   
   // Cap at 100
   return Math.min(Math.round(score), 100);

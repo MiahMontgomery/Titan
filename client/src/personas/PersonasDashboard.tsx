@@ -73,7 +73,7 @@ export default function PersonasDashboard() {
           case "name":
             return a.displayName.localeCompare(b.displayName);
           case "income":
-            return b.stats.totalIncome - a.stats.totalIncome;
+            return (b.stats.totalIncome ?? 0) - (a.stats.totalIncome ?? 0);
           case "messages":
             return b.stats.messageCount - a.stats.messageCount;
           case "newest":
@@ -228,7 +228,7 @@ export default function PersonasDashboard() {
   const handleFormSubmit = (formData: any) => {
     if (editingPersona) {
       updatePersonaMutation.mutate({ 
-        id: editingPersona.id, 
+        id: typeof editingPersona.id === 'number' ? editingPersona.id.toString() : editingPersona.id, 
         data: formData 
       });
     } else {

@@ -1,0 +1,122 @@
+The job failed due to several TypeScript errors. Here are the details of the errors and recommendations on how to fix them:
+
+### Errors and Fixes
+
+1. **Possibly 'undefined' properties**:
+    - **client/src/lib/utils.ts**:
+        ```
+        error TS18048: 'stats.contentCreated' is possibly 'undefined'.
+        ```
+
+    - **client/src/personas/PersonasDashboard.tsx**:
+        ```
+        error TS18048: 'b.stats.totalIncome' is possibly 'undefined'.
+        error TS18048: 'a.stats.totalIncome' is possibly 'undefined'.
+        ```
+
+    **Fix**: Ensure that these properties are defined before accessing them, or provide default values.
+    ```typescript
+    const contentCreated = stats.contentCreated ?? defaultValue;
+    const totalIncomeB = b.stats.totalIncome ?? 0;
+    const totalIncomeA = a.stats.totalIncome ?? 0;
+    ```
+
+2. **Type 'string | number' is not assignable to type 'string'**:
+    - **client/src/personas/PersonasDashboard.tsx**:
+        ```
+        error TS2322: Type 'string | number' is not assignable to type 'string'.
+        ```
+
+    **Fix**: Ensure that the value assigned is of type `string`.
+    ```typescript
+    const value: string = String(numberOrStringValue);
+    ```
+
+3. **Comparison of different types**:
+    - **server/browserClient.ts**:
+        ```
+        error TS2367: This comparison appears to be unintentional because the types 'Promise<string>' and 'string' have no overlap.
+        ```
+
+    **Fix**: Make sure to resolve the promise before comparison.
+    ```typescript
+    somePromise.then(value => {
+        if (value === someString) {
+            // Comparison logic
+        }
+    });
+    ```
+
+4. **Implicit 'any' type**:
+    - **server/browserClient.ts**:
+        ```
+        error TS7006: Parameter 'sel' implicitly has an 'any' type.
+        ```
+
+    **Fix**: Explicitly define the type for the parameters.
+    ```typescript
+    function someFunction(sel: SomeType) {
+        // Function logic
+    }
+    ```
+
+5. **Property type mismatch**:
+    - **server/firebase.ts**:
+        ```
+        error TS2322: Type 'Date | null | undefined' is not assignable to type 'Date | null'.
+        ```
+
+    **Fix**: Ensure that the property is always defined as `Date | null`.
+    ```typescript
+    const lastAutomationRun: Date | null = someValue ?? null;
+    ```
+
+6. **Unknown properties**:
+    - **server/firebase.ts**:
+        ```
+        error TS2353: Object literal may only specify known properties, and 'previousState' does not exist in type '{ id: number; message: string; timestamp: Date; projectId: number; featureId: number | null; milestoneId: number | null; agentId: string | null; }'.
+        ```
+
+    **Fix**: Remove or correct the property names according to the type definition.
+    ```typescript
+    const validObject = {
+        id: number,
+        message: string,
+        timestamp: Date,
+        projectId: number,
+        featureId: number | null,
+        milestoneId: number | null,
+        agentId: string | null,
+    };
+    ```
+
+7. **Type mismatch in function parameters**:
+    - **server/storage.ts**:
+        ```
+        error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+        ```
+
+    **Fix**: Ensure the argument type matches the parameter type.
+    ```typescript
+    someFunction(String(numberValue));
+    ```
+
+8. **Boolean property type mismatch**:
+    - **server/firebase.ts**:
+        ```
+        error TS2322: Type 'boolean | undefined' is not assignable to type 'boolean'.
+        ```
+
+    **Fix**: Ensure the property is always a boolean.
+    ```typescript
+    const aiGenerated: boolean = someCondition ? true : false;
+    ```
+
+### General Recommendations
+- Ensure all TypeScript types and interfaces are correctly defined and used.
+- Use type assertions or type guards where necessary to make sure variables have the expected types.
+- Add comprehensive tests to catch these issues earlier in the development process.
+
+By addressing these errors, your build should pass successfully. If you need further assistance with any specific error, please let me know!
+
+Link to the failing job: https://github.com/MiahMontgomery/Titan/actions/runs/14229679254
