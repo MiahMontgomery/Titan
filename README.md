@@ -22,7 +22,7 @@ The system has been split into two independently deployable components:
 
 ## Development
 
-### Running the Client
+### Running the Client <3
 
 ```bash
 cd client
