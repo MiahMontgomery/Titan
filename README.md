@@ -110,7 +110,7 @@ See `server/.env.example` for required backend environment variables.
 - **FINDOM Agent**: Specialized autonomous agent system for marketing and content management
 - **Real-time Monitoring**: WebSocket-based real-time monitoring of autonomous operations
 
-## Technical Stack
+## Technical Stack <3
 
 - TypeScript/React frontend
 - Node.js/Express backend
