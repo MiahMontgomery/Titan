@@ -2,7 +2,7 @@
 
 Titan is an intelligent, locally-deployable project management system powered by AI agents to revolutionize software development workflows, offering advanced collaboration and optimization tools.
 
-## Project Architecture
+## Project Architecture <3
 
 The system has been split into two independently deployable components:
 
