@@ -1,4 +1,4 @@
-# Titan - Autonomous AI Project Management System <3
+# Titan - Autonomous AI Project Management System <33
 
 Titan is an intelligent, locally-deployable project management system powered by AI agents to revolutionize software development workflows, offering advanced collaboration and optimization tools.
 
