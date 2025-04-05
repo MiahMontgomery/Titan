@@ -1,6 +1,8 @@
 // ByteUI.tsx - Component wrappers for Arco Design / ByteUI
 import React from 'react';
 import * as Arco from '@arco-design/web-react';
+// Import global styles
+import '@arco-design/web-react/dist/css/arco.css';
 
 // Theming provider
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -86,7 +88,8 @@ const ByteUI = {
   Divider: Arco.Divider,
   Spin: Arco.Spin,
   Progress: Arco.Progress,
-  Upload: Arco.Upload,
+  // Upload component commented out due to style import issues
+  // Upload: Arco.Upload,
   
   // Utility functions
   toast,
@@ -102,5 +105,6 @@ export const {
   Card, Tabs, TabPane, Modal, Form, FormItem, useForm, Dropdown, Menu, 
   MenuItem, SubMenu, MenuItemGroup, Avatar, Badge, Tooltip, Switch, 
   Checkbox, CheckboxGroup, Tag, Space, Grid, Row, Col, Typography, 
-  Title, Paragraph, Text, Skeleton, Divider, Spin, Progress, Upload
+  Title, Paragraph, Text, Skeleton, Divider, Spin, Progress
+  // Upload component removed from exports
 } = ByteUI;

@@ -11,6 +11,7 @@ import cors from 'cors';
 import { log, error } from './helpers';
 import { initWebSocketServer } from './websocket';
 import { setRoutes } from './routes';
+import { webhookRouter } from './webhook';
 
 // Load environment variables
 dotenv.config();
@@ -61,6 +62,10 @@ app.use(express.static(clientDistPath));
 // Initialize WebSocket server
 const wss = initWebSocketServer(httpServer);
 
+// Mount the webhook router
+app.use('/webhook', webhookRouter);
+log('📝 GitHub webhook endpoints registered at /webhook/github');
+
 // Set up API routes
 setRoutes(app, httpServer);
 
@@ -77,9 +82,9 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // Start the server
-httpServer.listen(port, () => {
+httpServer.listen(port, '0.0.0.0', () => {
   log(`🚀 Titan API Server running on port ${port}`);
-  log(`🔌 WebSocket server available at ws://localhost:${port}/ws`);
+  log(`🔌 WebSocket server available at ws://0.0.0.0:${port}/ws`);
   log(`🔑 CORS enabled for origins: ${allowedOrigins.join(', ')} and all Replit domains`);
 });
 

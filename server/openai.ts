@@ -3,8 +3,20 @@ import { ChatCompletionMessageParam } from "openai/resources/chat";
 import { log, error } from './helpers';
 import { broadcastThinking } from './chatHandler';
 
-// The newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Create OpenAI client only if API key is available
+let openai: OpenAI | null = null;
+
+try {
+  if (process.env.OPENAI_API_KEY) {
+    // The newest OpenAI model is "gpt-4o" which was released May 13, 2024
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    log('OpenAI client initialized successfully');
+  } else {
+    log('No OpenAI API key found. OpenAI features will return fallback responses.');
+  }
+} catch (err: any) {
+  error(`Failed to initialize OpenAI client: ${err.message}`);
+}
 
 /**
  * Basic text processing with OpenAI
@@ -15,6 +27,12 @@ export async function processText(prompt: string): Promise<string> {
   try {
     log(`Processing prompt with OpenAI: ${prompt.substring(0, 50)}...`);
     
+    // Check if OpenAI client is initialized
+    if (!openai) {
+      log('OpenAI client not available. Returning fallback response.');
+      return `OpenAI processing not available. I've received your prompt: "${prompt.substring(0, 100)}${prompt.length > 100 ? '...' : ''}"`;
+    }
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
@@ -23,7 +41,7 @@ export async function processText(prompt: string): Promise<string> {
     return response.choices[0].message.content || "No response generated";
   } catch (err: any) {
     error(`OpenAI text processing error: ${err.message}`);
-    throw new Error(`OpenAI API error: ${err.message}`);
+    return `Error processing text: ${err.message}. Please check your API key.`;
   }
 }
 
@@ -36,6 +54,14 @@ export async function processChat(messages: Array<ChatCompletionMessageParam>): 
   try {
     log(`Processing chat with OpenAI: ${messages.length} messages`);
     
+    // Check if OpenAI client is initialized
+    if (!openai) {
+      log('OpenAI client not available. Returning fallback response.');
+      const lastMessage = messages[messages.length - 1]?.content;
+      const lastMessageText = typeof lastMessage === 'string' ? lastMessage : 'your message';
+      return `OpenAI processing not available. I've received ${messages.length} messages, most recently: "${lastMessageText.substring(0, 100)}${lastMessageText.length > 100 ? '...' : ''}"`;
+    }
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages,
@@ -44,7 +70,7 @@ export async function processChat(messages: Array<ChatCompletionMessageParam>): 
     return response.choices[0].message.content || "No response generated";
   } catch (err: any) {
     error(`OpenAI chat processing error: ${err.message}`);
-    throw new Error(`OpenAI API error: ${err.message}`);
+    return `Error processing chat: ${err.message}. Please check your API key.`;
   }
 }
 
@@ -61,6 +87,18 @@ export async function generateJsonResponse<T>(
   try {
     log(`Generating JSON response with OpenAI: ${prompt.substring(0, 50)}...`);
     
+    // Check if OpenAI client is initialized
+    if (!openai) {
+      log('OpenAI client not available. Returning fallback JSON response.');
+      // Create a sample JSON response as fallback
+      const fallbackResponse = {
+        message: "OpenAI processing not available",
+        prompt: prompt.substring(0, 100) + (prompt.length > 100 ? '...' : ''),
+        timestamp: new Date().toISOString()
+      } as unknown as T;
+      return fallbackResponse;
+    }
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -74,7 +112,13 @@ export async function generateJsonResponse<T>(
     return result;
   } catch (err: any) {
     error(`OpenAI JSON generation error: ${err.message}`);
-    throw new Error(`OpenAI API error: ${err.message}`);
+    // Return a fallback error response
+    const errorResponse = {
+      error: true,
+      message: `Error generating JSON: ${err.message}`,
+      timestamp: new Date().toISOString()
+    } as unknown as T;
+    return errorResponse;
   }
 }
 
@@ -120,6 +164,12 @@ export async function analyzeImage(base64Image: string, prompt: string = "Analyz
   try {
     log('Analyzing image with OpenAI Vision');
     
+    // Check if OpenAI client is initialized
+    if (!openai) {
+      log('OpenAI client not available. Cannot analyze image.');
+      return "Image analysis not available. Please configure your OpenAI API key to analyze images.";
+    }
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -144,7 +194,7 @@ export async function analyzeImage(base64Image: string, prompt: string = "Analyz
     return response.choices[0].message.content || "No analysis generated";
   } catch (err: any) {
     error(`OpenAI Vision analysis error: ${err.message}`);
-    throw new Error(`OpenAI API error: ${err.message}`);
+    return `Error analyzing image: ${err.message}. Please check your API key.`;
   }
 }
 
@@ -156,6 +206,12 @@ export async function analyzeImage(base64Image: string, prompt: string = "Analyz
 export async function generateImage(prompt: string): Promise<string> {
   try {
     log(`Generating image with DALL-E: ${prompt.substring(0, 50)}...`);
+    
+    // Check if OpenAI client is initialized
+    if (!openai) {
+      log('OpenAI client not available. Cannot generate image.');
+      return "Image generation not available. Please configure your OpenAI API key to generate images.";
+    }
     
     const response = await openai.images.generate({
       model: "dall-e-3",
@@ -172,7 +228,7 @@ export async function generateImage(prompt: string): Promise<string> {
     return response.data[0].url;
   } catch (err: any) {
     error(`DALL-E image generation error: ${err.message}`);
-    throw new Error(`OpenAI API error: ${err.message}`);
+    return `Error generating image: ${err.message}. Please check your API key.`;
   }
 }
 
@@ -191,6 +247,40 @@ export async function generateThinking(
 ): Promise<void> {
   try {
     log(`Generating thinking process: ${prompt.substring(0, 50)}...`);
+    
+    // Check if OpenAI client is initialized
+    if (!openai) {
+      log('OpenAI client not available. Using simulated thinking process.');
+      // Simulate thinking steps with fallback messages
+      for (let i = 0; i < steps; i++) {
+        const fallbackThinking = `Step ${i+1} of ${steps}: Thinking about "${prompt.substring(0, 50)}..." (OpenAI API not available)`;
+        
+        broadcastThinking(
+          projectId,
+          fallbackThinking,
+          null, // code snippet
+          [], // debug steps
+          false, // is debugging
+          true, // step by step
+          personaId
+        );
+        
+        // Wait a short time between steps for natural flow
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      broadcastThinking(
+        projectId,
+        "Thinking complete (OpenAI API not available). Please configure your OpenAI API key for enhanced AI thinking capabilities.",
+        null,
+        [],
+        false,
+        true,
+        personaId
+      );
+      
+      return;
+    }
     
     // For each step, generate thinking and broadcast
     for (let i = 0; i < steps; i++) {
@@ -229,7 +319,7 @@ export async function generateThinking(
     error(`Thinking process generation error: ${err.message}`);
     broadcastThinking(
       projectId,
-      `Error generating thinking process: ${err.message}`,
+      `Error generating thinking process: ${err.message}. Please check your API key.`,
       null,
       [],
       true,
