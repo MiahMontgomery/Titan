@@ -9,7 +9,8 @@ import {
   Globe, 
   Settings, 
   CreditCard, 
-  LogOut 
+  LogOut,
+  Sparkles
 } from "lucide-react";
 
 interface SidebarProps {
@@ -42,6 +43,11 @@ export function Sidebar({ className }: SidebarProps) {
           title: "Web Automation",
           path: "/web-automation",
           icon: <Globe className="h-5 w-5" />,
+        },
+        {
+          title: "AI Testing",
+          path: "/ai-testing",
+          icon: <Sparkles className="h-5 w-5" />,
         },
       ],
     },
