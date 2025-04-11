@@ -1,0 +1,23 @@
+Create a web-based task management system with the following features:
+
+1. User authentication (sign up, login, logout)
+2. Task creation, editing, and deletion
+3. Task categorization with tags and priorities
+4. Due dates and reminders
+5. Filtering and sorting tasks
+6. Responsive design for mobile and desktop
+7. Dark and light theme support
+8. Task sharing and collaboration features
+9. Statistics and productivity insights
+10. Data export functionality
+
+Technical requirements:
+- Frontend: React with TypeScript
+- Backend: Node.js with Express
+- Database: MongoDB for data storage
+- Authentication: JWT-based
+- Styling: Tailwind CSS
+- Hosting: Ready for deployment on Vercel or similar platforms
+
+The system should follow best practices for security, performance, and accessibility.
+The codebase should be well-structured, fully tested, and include comprehensive documentation.

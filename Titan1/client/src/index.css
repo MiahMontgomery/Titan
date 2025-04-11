@@ -1,0 +1,598 @@
+<<<<<<< HEAD
+/* Import Arco Design styles */
+@import '@arco-design/web-react/dist/css/arco.css';
+
+=======
+>>>>>>> 1d84bc7 (Set up Node.js project for Titan AI assistant.)
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+<<<<<<< HEAD
+  :root {
+    --background: 200 29% 3%; /* Very dark background */
+    --foreground: 0 0% 100%; /* White text */
+    
+    --card: 200 29% 5%; /* Dark grey for cards */
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 200 29% 7%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 164 99% 49%; /* Findom green #01F9C6 */
+    --primary-foreground: 0 0% 0%;
+    
+    --secondary: 200 29% 12%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 200 29% 15%;
+    --muted-foreground: 200 29% 75%;
+    
+    --accent: 164 99% 49%; /* Same as primary */
+    --accent-foreground: 0 0% 0%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 200 29% 10%;
+    --input: 200 29% 10%;
+    --ring: 164 99% 49%; /* Green glow for focus rings */
+    
+    --radius: 0.375rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-color: #050A0F; /* Very dark navy/black background */
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #01F9C6;
+}
+
+/* Project transition animation */
+.project-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Tab animation */
+.tab-transition {
+  transition: all 0.3s ease;
+}
+
+/* Chat styles for AI interface */
+.bg-gray-750 {
+  background-color: #262b36;
+}
+
+.bg-gray-850 {
+  background-color: #1a1e2a;
+}
+
+/* Findom-specific styles */
+.findom-box {
+  border: 1px solid rgba(1, 249, 198, 0.15);
+  background-color: rgba(15, 18, 23, 0.9);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.findom-box:hover {
+  box-shadow: 0 0 15px 2px rgba(1, 249, 198, 0.4);
+  border-color: rgba(1, 249, 198, 0.5);
+}
+
+.findom-box:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(1, 249, 198, 0.05) 0%, rgba(1, 249, 198, 0) 100%);
+  pointer-events: none;
+}
+
+.findom-green {
+  color: #01F9C6;
+}
+
+.findom-bg-green {
+  background-color: #01F9C6;
+}
+
+.findom-border-green {
+  border-color: #01F9C6;
+}
+
+/* Pulsing status indicator */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(1, 249, 198, 0.7);
+    opacity: 0.75;
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(1, 249, 198, 0);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(1, 249, 198, 0);
+    opacity: 0.75;
+  }
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #01F9C6;
+  position: relative;
+}
+
+.status-indicator::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: rgba(1, 249, 198, 0.1);
+}
+
+.status-indicator.active {
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.inactive {
+  background-color: rgba(1, 249, 198, 0.25);
+}
+
+/* Project list item styles */
+.project-list-item {
+  background-color: rgba(5, 10, 15, 0.9);
+  border: 1px solid rgba(1, 249, 198, 0.15);
+  border-radius: 4px;
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 70px; /* Fixed height for horizontal boxes */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.project-list-item:hover {
+  border-color: rgba(1, 249, 198, 0.5);
+  box-shadow: 0 0 15px rgba(1, 249, 198, 0.35);
+  background-color: rgba(7, 12, 17, 0.98);
+}
+
+.project-list-item.expanded {
+  height: auto;
+  min-height: 300px;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.project-title-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.project-content {
+  margin-top: 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Project status styles */
+.project-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-progress-bar {
+  height: 4px;
+  background-color: rgba(1, 249, 198, 0.1);
+  width: 100%;
+  margin: 16px 0;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.project-progress-fill {
+  height: 100%;
+  background-color: #01F9C6;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(1, 249, 198, 0.6);
+}
+
+/* Findom tab styling - 5-tab system */
+.findom-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(1, 249, 198, 0.1);
+  width: 100%;
+}
+
+.findom-tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.findom-tab:hover {
+  color: #01F9C6;
+}
+
+.findom-tab.active {
+  color: #01F9C6;
+  font-weight: 500;
+}
+
+.findom-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #01F9C6;
+  box-shadow: 0 0 8px rgba(1, 249, 198, 0.6);
+}
+
+/* Tab content styles */
+.tab-content {
+  display: none;
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Progress tab styles */
+.progress-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.system-status-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(1, 249, 198, 0.1);
+}
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-top: 10px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.feature-item.cursor-pointer:hover {
+  background-color: rgba(1, 249, 198, 0.05);
+}
+
+.feature-status {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: #01F9C6;
+}
+
+.feature-description {
+  flex: 1;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
+/* Subfeature styles */
+.subfeature-list {
+  margin-left: 25px;
+  border-left: 1px solid rgba(1, 249, 198, 0.2);
+  padding-left: 15px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subfeature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.subfeature-item:hover {
+  background-color: rgba(1, 249, 198, 0.03);
+}
+
+.subfeature-bullet {
+  color: #01F9C6;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.subfeature-description {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Goal styles */
+.goals-list {
+  margin-left: 25px;
+  border-left: 1px solid rgba(1, 249, 198, 0.1);
+  padding-left: 12px;
+  margin-top: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.goal-item {
+  padding: 4px 0;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.goal-item:hover {
+  opacity: 1;
+}
+
+.goal-bullet {
+  color: rgba(1, 249, 198, 0.6);
+  font-size: 12px;
+}
+
+.goal-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Chat tab styles */
+.chat-input {
+  background-color: rgba(1, 249, 198, 0.05);
+  border: 1px solid rgba(1, 249, 198, 0.2);
+  color: white;
+  border-radius: 4px;
+  padding: 12px;
+  width: 100%;
+  margin-top: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.chat-input:focus {
+  border-color: rgba(1, 249, 198, 0.5);
+  box-shadow: 0 0 10px rgba(1, 249, 198, 0.3);
+}
+
+.chat-messages {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.chat-message {
+  padding: 10px 14px;
+  border-radius: 6px;
+  max-width: 85%;
+  animation: slideIn 0.3s ease;
+}
+
+.chat-message.user {
+  background-color: rgba(1, 249, 198, 0.1);
+  align-self: flex-end;
+  border: 1px solid rgba(1, 249, 198, 0.2);
+}
+
+.chat-message.system {
+  background-color: rgba(255, 255, 255, 0.05);
+  align-self: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Log tab styles */
+.log-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 8px 12px;
+  background-color: rgba(5, 10, 15, 0.6);
+  border-left: 3px solid rgba(1, 249, 198, 0.5);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: pre-wrap;
+}
+
+.log-timestamp {
+  color: rgba(1, 249, 198, 0.8);
+  font-size: 11px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Findom Logo Styles */
+.findom-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.findom-logo-image {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.findom-logo-image::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(1, 249, 198, 0.3) 0%, rgba(1, 249, 198, 0) 70%);
+  z-index: -1;
+}
+
+.findom-logo-text {
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 1px;
+}
+
+.findom-green-glow {
+  text-shadow: 0 0 10px rgba(1, 249, 198, 0.6);
+  color: #01F9C6;
+}
+
+/* Add Project Button */
+.add-project-button {
+  background-color: transparent;
+  border: 1px dashed rgba(1, 249, 198, 0.3);
+  border-radius: 4px;
+  color: rgba(1, 249, 198, 0.7);
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+  width: 100%;
+  height: 70px;
+}
+
+.add-project-button:hover {
+  background-color: rgba(1, 249, 198, 0.05);
+  border-color: rgba(1, 249, 198, 0.5);
+  color: #01F9C6;
+  box-shadow: 0 0 15px rgba(1, 249, 198, 0.2);
+}
+
+/* Thinking animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+=======
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+>>>>>>> 1d84bc7 (Set up Node.js project for Titan AI assistant.)

@@ -1,0 +1,39 @@
+Place frontend files in the appropriate React/Next.js app or pages directory
+	•	Ensure backend logic is correctly linked to agent code (Python) and the database
+	2.	Install all required dependencies, including:
+	•	Node.js packages from package.json for the frontend
+	•	Python packages from requirements.txt for backend agents
+	•	OpenAI SDK, Firebase Admin SDK, Flask or FastAPI (if required)
+	•	Any additional tooling listed inside the project
+	3.	Create and inject environment variables based on the .env template or documentation. These will include:		•	Ensure .env is loaded for both the frontend and backend execution environments
+	•	If required, configure secrets in Replit’s built-in secret manager
+
+	4.	Open and expose necessary ports/hooks for live testing:
+	•	Frontend should run on port 3000 or similar and be accessible via preview
+	•	Backend should accept POST requests from the frontend for prompt submission
+	•	Webhooks for real-time updates from Firebase/Firestore should be set up
+	•	Enable logging of output and auto-refreshing of UI where applicable
+	5.	Configure Firebase integration for real-time data:
+	•	Connect to Firestore and ensure that:
+	•	Projects are loaded from the projects collection
+	•	Logs are updated live
+	•	Agent outputs are saved to output_logs and last_code_output fields
+	•	Backend should listen for changes and trigger agents to act accordingly
+	6.	Trigger autonomous agents on prompt detection:
+	•	Upon prompt or form input in the UI, send data to the backend
+	•	Backend agent receives this, parses intent, and uses OpenAI (GPT-4 or GPT-4-turbo) to:
+	•	Generate code
+	•	Create milestone lists
+	•	Estimate completion times
+	•	Push results to the Firestore
+	•	If errors occur, the agent should auto-debug, retry, and update status logs
+	7.	Ensure the AI Assistant is not hardcoded to one project
+	•	It should dynamically pull project names, prompts, and details from Firestore
+	•	A new instance of the agent should be initialized for each project
+	•	Avoid any global state issues between agents
+	8.	Post-integration you should:
+	•	Confirm the project runs automatically on startup
+	•	Validate that prompts from the UI launch the correct agent flows
+	•	Check that outputs are rendered visibly in the frontend (code, logs, status)
+	•	Auto-start or offer the option to run_agent_a_forever.py if included
+	9.	Ask me only if you need missing environment variables or if any config is unclear. Otherwise, you are expected to make intelligent assumptions and move forward.

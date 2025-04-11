@@ -1,0 +1,59 @@
+// Here's how to instruct Replit's agent to fix all these errors in a single copy-paste prompt:
+
+// Copy-paste this into the Replit agent:
+
+You’re working on a TypeScript monorepo project with Vite, Firebase, and a UI powered by Byte. You're facing persistent TypeScript errors across client and server. Fix every error in the current build so the TypeScript compiler runs cleanly, the UI works, and Firebase functions are wired properly. Focus on type accuracy, missing fields, outdated function calls, and schema alignment.
+
+---
+
+### 🔧 Fix these specific error classes:
+
+1. **Fix TS2554** – Update all `useState`, `useEffect`, and `fetch` calls with correct argument count. Usually `useEffect(fn, deps)` or `setState(value)`.
+
+2. **Fix TS2353** – In object literals (like Firebase config), only include known keys. Remove or add type definitions to support fields like `authDomain`, `clientEmail`, etc.
+
+3. **Fix TS2339** – If a property like `data`, `status`, `totalIncome`, or `chatEnabled` does not exist on a type, update the interface or safely access it via optional chaining.
+
+4. **Fix TS2345 / TS2322** – Fix mismatches between expected and provided types (e.g. string vs number). Use `String(x)` to convert to string if needed.
+
+5. **Fix TS2561** – Update `Persona` interface so properties like `status`, `contentPublished`, `instructions`, etc. are valid or replaced with the correct key.
+
+6. **Fix TS2305 / TS2741 / TS2420** – Ensure imports are valid and implement interfaces fully, especially for storage interfaces like `IStorage`, `FirebaseStorage`.
+
+7. **Fix TS2367** – Update equality checks so string and number comparisons don’t mix. Use `=== String(x)` or `parseInt(y)` to coerce.
+
+8. **Fix TS7006** – Add type annotations to all parameters missing types (e.g. `sel: string`, `btn: HTMLButtonElement`, etc.).
+
+9. **Fix TS2559 / TS2349 / TS2339** – Fix API types. Ensure `fetch` or `axios` calls pass properly typed `ApiRequestOptions` if expected.
+
+---
+
+### 🧠 Schema Refactor
+
+- Go to `shared/schema.ts` and ensure the `Persona`, `Project`, `Task`, and `WebAccount` types contain **all** the fields used across client + server.
+- Sync `client/src/lib/types.ts` with `shared/schema.ts` so there are no mismatches.
+- Add fields like:
+  ```ts
+  export interface Persona {
+    progress: number;
+    sales: number;
+    settings: Record<string, any>;
+    stats: {
+      totalIncome: number;
+      contentPublished: number;
+      // etc...
+    }
+  }
+  ```
+- Export consistent `ApiRequestOptions`, `PerformanceTabProps`, etc. types.
+
+---
+
+### ✅ Final Goal:
+- TypeScript compiles with 0 errors
+- Firebase config allows `authDomain`, `clientEmail`, `credentials`, `startedAt`, etc.
+- All React components receive valid props
+- No runtime mismatches from shared schema
+- Server-side types (Firebase, LowDB, Puppeteer) match interface expectations
+
+Once complete, commit the fixed code and re-run `npm run build`. Report any remaining errors at the bottom.

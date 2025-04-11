@@ -1,0 +1,54 @@
+
+Titan 
+- Adds project to progress from user input (prompt) 
+- Generates general understanding and ability overview based on prompt for user to confirm before commencing project
+
+
+Project 
+- each project is separate from titans ai agent. Each project uses its own ai agent from chatgpt. 
+- Uses ai to generate hundreds of features tailored to the prompt 
+- Features contain milestones and furthermore goals; breaking down the massive project into easily digestible tasks for ai 
+- Immediately begins live coding based on the task
+- Can utilize a web browser feature to autonomously integrate tools and API’s by signing up for them using the assigned google account its logged into. It can see the screen, search the web, click on things, and gather information by signing up for necessary tools and such to get the job done. 
+- Actively figures out the best most efficient way to get the task done and carries it out 
+- Codes 24/7 
+- Debugs itself using ai 
+- Provides live actions above the chat bar similar to replits that detail what its actively working on (debugging syntax error, researching tools, integrating “..” tool, fixing “…”, etc 
+- Provides a roll back feature based on check points within the chat similar to replits (includes an overview of the last changes that were made for reference like: fixed project creation name error, integrated firebase, removed uneccessary websocket subscription and added project export functionality) 
+- Eternally optimizes the project 
+- Sends hourly progress reports to titan (summarize whats been done since the last check in, are you stuck/requiring input)
+- Works on features until the project is functional and meets the project objectives, then transitions into maintenance and optimization work; never stops working 
+- Sales page will eventually be integrated 
+
+
+
+Projects in order of priority
+
+FINDOM:
+- determines wether its more effective to become a niche mommy mistress on a platform or personal webpage. We will have a few accounts: MotherCeline(for boys who need a soft nurturing mommy), i need a name for this one but one for men who want bratty littles and another one for men who prefer older more mature women.
+- generates content: ai voiceovers, hypnosis videos and hentai videos using other ai tools that gear towards the specific niche.
+- Performs data analytics to figure out what sites are not very saturated and would provide the most exposure and best performance in terms of income. 
+- Posts content to the highest performing sites based on said data (pornhub, many vids, youtube tiktok snapchat for sfw teasers, literotica, etc.
+- Upsells texting packages where the bot will text users and treat them the way the persona would without seeming ai generated
+- Upsells physical items like my used panties, socks, gym clothes, dirty used shoes, soiled napkins, photos of my feet, etc. 
+- Also makes and sells other digital products on etsy, google books, sticker doodle sites, custom fantasy writing, etc etc. 
+
+
+CACHECOW: 
+- creates a professional identity for me on digital tasks sites like upwork, fivver, github, etc
+- scrapes for jobs that are 9-10/10 in terms of being easy to complete only using ai, low saturation/applicant numbers, high pay and new to the market. Ideally targeting new clients who are making their first or second job posts to ensure high chances of securing the job. It does the highest paying jobs in the highest paying niches of ai, automation, machine learning etc. 
+- Communicates with the client humanlike, not ai generated 
+- Completes the task but draws it out over a timeline to seem realistic 
+- Delivers the product, ensures client is happy
+- Makes money
+- Will require the ability to take calls, send emails and messages 
+- Eventually will find and be working as a full time digital product manager pretending to be me
+
+LA-BOR:
+- Im a project manager. This Logs into my work email account and finds a more efficient and effective way to sort and store all emails. It helps me with my work. And its also a massive lead generation job called Labour Leads. 
+- Can intuitively determine email contents and which project its for. Organizes send emails as well. Categorizes them by alphabetical project and any individual issues or topics under them like change order #19, delivery, etc. creates responses to emails but has me look over them first before giving the okay to send it off.
+- Prioritizes daily tasks based on project urgency.
+- Sends task reminders to my apple calendar
+- Collaborates with CACHECOW
+- When theres nothing to do it will learn how to perform my current job for me (shop drawings, etc) so i can do less work 
+- It will keep my linkedin updated by completing little certificates and courses for me, posting good linkedin content about creation, tech, organization, cute business realizations and such that displays my character and work ethic

@@ -1,0 +1,2875 @@
+diff --git a/attached_assets/IMG_7298.jpeg b/attached_assets/IMG_7298.jpeg
+new file mode 100644
+index 0000000..642d3b4
+Binary files /dev/null and b/attached_assets/IMG_7298.jpeg differ
+diff --git a/attached_assets/IMG_7299.jpeg b/attached_assets/IMG_7299.jpeg
+new file mode 100644
+index 0000000..7252c07
+Binary files /dev/null and b/attached_assets/IMG_7299.jpeg differ
+diff --git a/attached_assets/IMG_7300.jpeg b/attached_assets/IMG_7300.jpeg
+new file mode 100644
+index 0000000..ebe6e1e
+Binary files /dev/null and b/attached_assets/IMG_7300.jpeg differ
+diff --git a/attached_assets/IMG_7302.jpeg b/attached_assets/IMG_7302.jpeg
+new file mode 100644
+index 0000000..58569cb
+Binary files /dev/null and b/attached_assets/IMG_7302.jpeg differ
+diff --git a/attached_assets/IMG_7303.png b/attached_assets/IMG_7303.png
+new file mode 100644
+index 0000000..9e58e32
+Binary files /dev/null and b/attached_assets/IMG_7303.png differ
+diff --git a/attached_assets/IMG_7305.jpeg b/attached_assets/IMG_7305.jpeg
+new file mode 100644
+index 0000000..c9d857d
+Binary files /dev/null and b/attached_assets/IMG_7305.jpeg differ
+diff --git a/attached_assets/IMG_7306.png b/attached_assets/IMG_7306.png
+new file mode 100644
+index 0000000..9f4b48f
+Binary files /dev/null and b/attached_assets/IMG_7306.png differ
+diff --git a/attached_assets/IMG_7311.png b/attached_assets/IMG_7311.png
+new file mode 100644
+index 0000000..23a8789
+Binary files /dev/null and b/attached_assets/IMG_7311.png differ
+diff --git a/attached_assets/IMG_7312.png b/attached_assets/IMG_7312.png
+new file mode 100644
+index 0000000..599c355
+Binary files /dev/null and b/attached_assets/IMG_7312.png differ
+diff --git a/attached_assets/IMG_7313.png b/attached_assets/IMG_7313.png
+new file mode 100644
+index 0000000..0c2f0d3
+Binary files /dev/null and b/attached_assets/IMG_7313.png differ
+diff --git a/attached_assets/IMG_7314.png b/attached_assets/IMG_7314.png
+new file mode 100644
+index 0000000..c00a3b8
+Binary files /dev/null and b/attached_assets/IMG_7314.png differ
+diff --git a/attached_assets/IMG_7315.png b/attached_assets/IMG_7315.png
+new file mode 100644
+index 0000000..ee041bd
+Binary files /dev/null and b/attached_assets/IMG_7315.png differ
+diff --git a/attached_assets/IMG_7316.png b/attached_assets/IMG_7316.png
+new file mode 100644
+index 0000000..1ddde97
+Binary files /dev/null and b/attached_assets/IMG_7316.png differ
+diff --git a/attached_assets/IMG_7318.png b/attached_assets/IMG_7318.png
+new file mode 100644
+index 0000000..2550aa0
+Binary files /dev/null and b/attached_assets/IMG_7318.png differ
+diff --git a/attached_assets/IMG_7333.png b/attached_assets/IMG_7333.png
+new file mode 100644
+index 0000000..bb5430e
+Binary files /dev/null and b/attached_assets/IMG_7333.png differ
+diff --git a/attached_assets/IMG_7334.png b/attached_assets/IMG_7334.png
+new file mode 100644
+index 0000000..73b106f
+Binary files /dev/null and b/attached_assets/IMG_7334.png differ
+diff --git a/attached_assets/IMG_7335.png b/attached_assets/IMG_7335.png
+new file mode 100644
+index 0000000..88efa8c
+Binary files /dev/null and b/attached_assets/IMG_7335.png differ
+diff --git a/attached_assets/IMG_7336.png b/attached_assets/IMG_7336.png
+new file mode 100644
+index 0000000..843de09
+Binary files /dev/null and b/attached_assets/IMG_7336.png differ
+diff --git a/attached_assets/IMG_7392.png b/attached_assets/IMG_7392.png
+new file mode 100644
+index 0000000..9555293
+Binary files /dev/null and b/attached_assets/IMG_7392.png differ
+diff --git a/attached_assets/IMG_7432.png b/attached_assets/IMG_7432.png
+new file mode 100644
+index 0000000..ba5b34f
+Binary files /dev/null and b/attached_assets/IMG_7432.png differ
+diff --git a/attached_assets/IMG_7434.png b/attached_assets/IMG_7434.png
+new file mode 100644
+index 0000000..9f164d2
+Binary files /dev/null and b/attached_assets/IMG_7434.png differ
+diff --git a/attached_assets/IMG_7437.png b/attached_assets/IMG_7437.png
+new file mode 100644
+index 0000000..b26b089
+Binary files /dev/null and b/attached_assets/IMG_7437.png differ
+diff --git a/attached_assets/IMG_7438.png b/attached_assets/IMG_7438.png
+new file mode 100644
+index 0000000..6d3e6ec
+Binary files /dev/null and b/attached_assets/IMG_7438.png differ
+diff --git a/attached_assets/IMG_7442.png b/attached_assets/IMG_7442.png
+new file mode 100644
+index 0000000..7875199
+Binary files /dev/null and b/attached_assets/IMG_7442.png differ
+diff --git a/attached_assets/Pasted--The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-Th-1743987779238.txt b/attached_assets/Pasted--The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-Th-1743987779238.txt
+new file mode 100644
+index 0000000..68a8fd8
+--- /dev/null
++++ b/attached_assets/Pasted--The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-Th-1743987779238.txt
+@@ -0,0 +1,7 @@
++
++
++The chat must deeply understand everything that’s going on and be able to answer any questions. The chat will also add or change features on verbal request which will then be reflected in the progress tab. The chat will also push chats and rollbacks to the log tab. The input tab (where the chat is) is where the magic happens. The progress tab and the log tab accepts pushes from input. Must be seamless updates and organization for them where they take the info and organize and adjust accordingly. For the log tab you’ll have the log versions laid out beautifully like GitHub’s commits and when you click on them you can see the chat with the screenshots, you can click on the rollback button within the screenshots to roll the project back to that point(is this even possible or will this take too much storage maybe the rollbacks should expire after some point but the chats never will). And the progress tab will update features accordingly (adding, adjusting, removing) and also display the new progress bar status based on the number of complete features 
++
++The main page of Titan is a project dashboard page. This dashboard page has no title aside from the Titan logo and the words Titan by the logo. This dashboard page is the only page that exists within Titan. This project does not require any hamburgers for additional pages. the dashboard page is where all of the projects show up in list form with their own same sized rectangular horizontal boxes, one ontop of the other. These boxes show the project name, a circle with a pulsing green light that displays its working and if it’s not working or broken the light turn off. In the top right corner of the dashboard page there’s a plus button to add a project. Once clicked, a box appears on the screen with the same glow as all the others and there are 2 fields in this box. One small for the name. One larger for the prompt. Titan will then use gpt turbo to read and truly understand the prompt and concept of what’s being proposed. The user will see their orginal prompt in the box change line by line to a more concise, polished and finite version of their project without changing the overall objective. To confirm understanding Titan will shorten the gist/outline of the project into a paragraph or 2. It will display a bulletpoint list of a few features that would be necessary for a project like this by using AI and asking it what’s needed for a project of this size, what features can we use to optimize it for efficiency and speed of creation, etc. If The user is happy with the outline they will click the create project button at the bottom of the box. The project will then appear in its own box within the project list. As soon as the project is generated it is clickable. When you click on the project it opens up within itself by expanding the box to be almost the entire page. It does not require any hamburgers separate page. 
++
++Once expanded you’ll see 5 tabs at the top of the box. The first tab is called progress. The progress tab has the system status showing at the Tom in the form of a light that’s either pulsing green or not pulsing at all to show function state. There are no words associated with system status. There is also a thin green progress scale that visualizes how far along the project is in functionality using the features completed as reference. Underneath this there is a very long list of all the project features. These projects are large and it’s normal to expect that they have lots of features to support what the project will be able to do, some of them have hundreds of features. The features are specific and not broad. Every feature has a small green arrow off to the right side of the box. When you click on this arrow it opens up like a dropdown within the feature to a list of milestones. These milestones are what the agents will use to determine when and if they’ve met the feature target requirements. These milestones are very specific and truly encapsulated what having the feature fully functioning would look and act like. By the completion of the final milestone, it’s assured that the feature is 100% complete. Every milestone also has a dropdown arrow within itself as a point form list of goals. These goals are what the agent will use to determine if the milestone has been reached. They are very specific and detail what the project would look and act like if this milestone were implemented. Each goal completed has the point form dot turn from empty to green. The goals are in chronological order so they stay put where it is as the agent moves down the goal list to complete them like a check list. 
+\ No newline at end of file
+diff --git a/attached_assets/Pasted--Titan-is-a-private-use-platform-that-does-not-require-a-settings-page-a-login-system-a-down-or-up-1743942384366.txt b/attached_assets/Pasted--Titan-is-a-private-use-platform-that-does-not-require-a-settings-page-a-login-system-a-down-or-up-1743942384366.txt
+new file mode 100644
+index 0000000..906ea32
+--- /dev/null
++++ b/attached_assets/Pasted--Titan-is-a-private-use-platform-that-does-not-require-a-settings-page-a-login-system-a-down-or-up-1743942384366.txt
+@@ -0,0 +1,50 @@
++
++Titan is a private use platform that does not require a settings page, a login system, a down or upload system or any settings. 
++
++Let’s make one thing crystal clear. WE DO NOT DO FAKE DATA. ALL TABS AND LOGS AND CHATS WILL STAY EMPTY UNLESS THE DATA BEING GENERATED IS GENUINE AND MEANINGFUL. NO TOY ALLOWED EVER. NO EXCEPTIONS FOR TOY CODE IT IS ABSOLUTELY PROHIBITED. 
++
++Titaans purpose is to take a prompt from adding a project. 
++
++
++Titan 
++- Adds project to progress from user input (prompt) 
++- Generates general understanding and ability overview based on prompt for user to confirm before commencing project
++- Titan has the logo you see in the screenshot I sent you. When the pages are loaded this logo appears spinning as the loading spinner. But as the logo it stays still. 
++- The colours are dark grey, the same green you see in the logo and white text.
++- All accent colours (sliders, switches, the glowing rings around every box or object, graphs, code, etc) are all the same colour as the logo 
++- Every box and object has a green glow around it when hovered over 
++
++
++The main page of Titan is a project dashboard page. This dashboard page has no title aside from the Titan logo and the words Titan by the logo. This dashboard page is the only page that exists within Titan. This project does not require any hamburgers for additional pages. the dashboard page is where all of the projects show up in list form with their own same sized rectangular horizontal boxes, one ontop of the other. These boxes show the project name, a circle with a pulsing green light that displays its working and if it’s not working or broken the light turn off. In the top right corner of the dashboard page there’s a plus button to add a project. Once clicked, a box appears on the screen with the same glow as all the others and there are 2 fields in this box. One small for the name. One larger for the prompt. Titan will then use gpt turbo to read and truly understand the prompt and concept of what’s being proposed. The user will see their orginal prompt in the box change line by line to a more concise, polished and finite version of their project without changing the overall objective. To confirm understanding Titan will shorten the gist/outline of the project into a paragraph or 2. It will display a bulletpoint list of a few features that would be necessary for a project like this by using AI and asking it what’s needed for a project of this size, what features can we use to optimize it for efficiency and speed of creation, etc. If The user is happy with the outline they will click the create project button at the bottom of the box. The project will then appear in its own box within the project list. As soon as the project is generated it is clickable. When you click on the project it opens up within itself by expanding the box to be almost the entire page. It does not require any hamburgers separate page. 
++
++Once expanded you’ll see 5 tabs at the top of the box. The first tab is called progress. The progress tab has the system status showing at the Tom in the form of a light that’s either pulsing green or not pulsing at all to show function state. There are no words associated with system status. There is also a thin green progress scale that visualizes how far along the project is in functionality using the features completed as reference. Underneath this there is a very long list of all the project features. These projects are large and it’s normal to expect that they have lots of features to support what the project will be able to do, some of them have hundreds of features. The features are specific and not broad. Every feature has a small green arrow off to the right side of the box. When you click on this arrow it opens up like a dropdown within the feature to a list of milestones. These milestones are what the agents will use to determine when and if they’ve met the feature target requirements. These milestones are very specific and truly encapsulated what having the feature fully functioning would look and act like. By the completion of the final milestone, it’s assured that the feature is 100% complete. Every milestone also has a dropdown arrow within itself as a point form list of goals. These goals are what the agent will use to determine if the milestone has been reached. They are very specific and detail what the project would look and act like if this milestone were implemented. Each goal completed has the point form dot turn from empty to green. The goals are in chronological order so they stay put where it is as the agent moves down the goal list to complete them like a check list. 
++
++The next tab is called input. This page has a chat box exactly similar to replits agent chat. It is  intuitive and brilliant. It features the scroll to latest button when you scroll upwards in the chat. It features the rollback to here button that pulls rollbacks from the logs 
++
++The next tab is called logs. It shows a detailed history of all the project logs in a clean organized horizontally stacked way similar to GitHub’s commits. I’ve included some photos for reference. It does not need to include the author or anything, but this is where the rollbacks are stored. It will have a detailed auto generated description of what was fixed and it will allow you to click on and checkout the changes made to the code within the log. 
++
++The next tab is called output. This page will show a live web view of the webhosted application. Each app will have a different layout and colour scheme that’s created within the input tab. You’ll interact with the web app in output. 
++
++
++The chat must deeply understand everything that’s going on and be able to answer any questions. The chat will also add or change features on verbal request which will then be reflected in the progress tab. The chat will also push chats and rollbacks to the log tab. The input tab (where the chat is) is where the magic happens. The progress tab and the log tab accepts pushes from input. Must be seamless updates and organization for them where they take the info and organize and adjust accordingly. For the log tab you’ll have the log versions laid out beautifully like GitHub’s commits and when you click on them you can see the chat with the screenshots, you can click on the rollback button within the screenshots to roll the project back to that point(is this even possible or will this take too much storage maybe the rollbacks should expire after some point but the chats never will). And the progress tab will update features accordingly (adding, adjusting, removing) and also display the new progress bar status based on the number of complete features 
++
++The main page of Titan is a project dashboard page. This dashboard page has no title aside from the Titan logo and the words Titan by the logo. This dashboard page is the only page that exists within Titan. This project does not require any hamburgers for additional pages. the dashboard page is where all of the projects show up in list form with their own same sized rectangular horizontal boxes, one ontop of the other. These boxes show the project name, a circle with a pulsing green light that displays its working and if it’s not working or broken the light turn off. In the top right corner of the dashboard page there’s a plus button to add a project. Once clicked, a box appears on the screen with the same glow as all the others and there are 2 fields in this box. One small for the name. One larger for the prompt. Titan will then use gpt turbo to read and truly understand the prompt and concept of what’s being proposed. The user will see their orginal prompt in the box change line by line to a more concise, polished and finite version of their project without changing the overall objective. To confirm understanding Titan will shorten the gist/outline of the project into a paragraph or 2. It will display a bulletpoint list of a few features that would be necessary for a project like this by using AI and asking it what’s needed for a project of this size, what features can we use to optimize it for efficiency and speed of creation, etc. If The user is happy with the outline they will click the create project button at the bottom of the box. The project will then appear in its own box within the project list. As soon as the project is generated it is clickable. When you click on the project it opens up within itself by expanding the box to be almost the entire page. It does not require any hamburgers separate page. 
++
++Once expanded you’ll see 5 tabs at the top of the box. The first tab is called progress. The progress tab has the system status showing at the Tom in the form of a light that’s either pulsing green or not pulsing at all to show function state. There are no words associated with system status. There is also a thin green progress scale that visualizes how far along the project is in functionality using the features completed as reference. Underneath this there is a very long list of all the project features. These projects are large and it’s normal to expect that they have lots of features to support what the project will be able to do, some of them have hundreds of features. The features are specific and not broad. Every feature has a small green arrow off to the right side of the box. When you click on this arrow it opens up like a dropdown within the feature to a list of milestones. These milestones are what the agents will use to determine when and if they’ve met the feature target requirements. These milestones are very specific and truly encapsulated what having the feature fully functioning would look and act like. By the completion of the final milestone, it’s assured that the feature is 100% complete. Every milestone also has a dropdown arrow within itself as a point form list of goals. These goals are what the agent will use to determine if the milestone has been reached. They are very specific and detail what the project would look and act like if this milestone were implemented. Each goal completed has the point form dot turn from empty to green. The goals are in chronological order so they stay put where it is as the agent moves down the goal list to complete them like a check list. 
++
++
++Project 
++- each project is separate from titans ai agent. Each project uses its own ai agent from chatgpt. 
++- Uses ai to generate hundreds of features tailored to the prompt 
++- Features contain milestones and furthermore goals; breaking down the massive project into easily digestible tasks for ai 
++- Immediately begins live coding based on the task
++- Can utilize a web browser feature to autonomously integrate tools and API’s by signing up for them using the assigned google account its logged into. It can see the screen, search the web, click on things, and gather information by signing up for necessary tools and such to get the job done. 
++- Actively figures out the best most efficient way to get the task done and carries it out 
++- Codes 24/7 
++- Debugs itself using ai 
++- Provides live actions above the chat bar similar to replits that detail what its actively working on (debugging syntax error, researching tools, integrating “..” tool, fixing “…”, etc 
++- Provides a roll back feature based on check points within the chat similar to replits (includes an overview of the last changes that were made for reference like: fixed project creation name error, integrated firebase, removed uneccessary websocket subscription and added project export functionality) 
++- Eternally optimizes the project 
++- Sends hourly progress reports to titan (summarize whats been done since the last check in, are you stuck/requiring input)
++- Works on features until the project is functional and meets the project objectives, then transitions into maintenance and optimization work; never stops working 
++- Sales page will eventually be integrated
+\ No newline at end of file
+diff --git a/attached_assets/Pasted-Projects-in-order-of-priority-FINDOM-determines-wether-its-more-effective-to-become-a-niche-momm-1743988020756.txt b/attached_assets/Pasted-Projects-in-order-of-priority-FINDOM-determines-wether-its-more-effective-to-become-a-niche-momm-1743988020756.txt
+new file mode 100644
+index 0000000..8f56430
+--- /dev/null
++++ b/attached_assets/Pasted-Projects-in-order-of-priority-FINDOM-determines-wether-its-more-effective-to-become-a-niche-momm-1743988020756.txt
+@@ -0,0 +1,79 @@
++Projects in order of priority
++
++FINDOM:
++- determines wether its more effective to become a niche mommy mistress on a platform or personal webpage. We will have a few accounts: MotherCeline(for boys who need a soft nurturing mommy), i need a name for this one but one for men who want bratty littles and another one for men who prefer older more mature women.
++- generates content: ai voiceovers, hypnosis videos and hentai videos using other ai tools that gear towards the specific niche.
++- Performs data analytics to figure out what sites are not very saturated and would provide the most exposure and best performance in terms of income. 
++- Posts content to the highest performing sites based on said data (pornhub, many vids, youtube tiktok snapchat for sfw teasers, literotica, etc.
++- Upsells texting packages where the bot will text users and treat them the way the persona would without seeming ai generated
++- Upsells physical items like my used panties, socks, gym clothes, dirty used shoes, soiled napkins, photos of my feet, etc. 
++- Also makes and sells other digital products on etsy, google books, sticker doodle sites, custom fantasy writing, etc etc. 
++
++
++CACHECOW: 
++- creates a professional identity for me on digital tasks sites like upwork, fivver, github, etc
++- scrapes for jobs that are 9-10/10 in terms of being easy to complete only using ai, low saturation/applicant numbers, high pay and new to the market. Ideally targeting new clients who are making their first or second job posts to ensure high chances of securing the job. It does the highest paying jobs in the highest paying niches of ai, automation, machine learning etc. 
++- Communicates with the client humanlike, not ai generated 
++- Completes the task but draws it out over a timeline to seem realistic 
++- Delivers the product, ensures client is happy
++- Makes money
++- Will require the ability to take calls, send emails and messages 
++- Eventually will find and be working as a full time digital product manager pretending to be me
++
++LA-BOR:
++- Im a project manager. This Logs into my work email account and finds a more efficient and effective way to sort and store all emails. It helps me with my work. And its also a massive lead generation job called Labour Leads. 
++- Can intuitively determine email contents and which project its for. Organizes send emails as well. Categorizes them by alphabetical project and any individual issues or topics under them like change order #19, delivery, etc. creates responses to emails but has me look over them first before giving the okay to send it off.
++- Prioritizes daily tasks based on project urgency.
++- Sends task reminders to my apple calendar
++- Collaborates with CACHECOW
++- When theres nothing to do it will learn how to perform my current job for me (shop drawings, etc) so i can do less work 
++- It will keep my linkedin updated by completing little certificates and courses for me, posting good linkedin content about creation, tech, organization, cute business realizations and such that displays my character and work ethic
++
++TREST FINANCIAL 
++V1 app (released to the public for $4 a month or something) 
++- Starts as a budgeting app (like Mint)
++- Monitors income, expenses
++- Tracks spending by category and flags anomalies
++V2 app (released to me only) 
++- Pulls data from titan to manages expenses and project-based ROI
++- Capable of issuing invoices and managing payments
++- Will evolve into a VR bank with biometric payments and identity
++- Automates investments on wealthsimple acting as a full-time high risk high reward micro day trader. Using a very small percentage of daily earning to invest into options and crypto, making even more money 
++
++
++CITADEL.AI:
++- Acts as my personal data scrubber and identity manager
++- Logs into email accounts, scrapes all connected platforms
++- Creates a master spreadsheet of accounts for review
++- Flags accounts to keep, delete, or transfer
++- Searches for photos, videos, and social data tied to your name or number
++- Deletes Reddit posts, DMs, Instagram followers, etc. based on platform-specific requirements. Intuitively thinks of things like deleting individual photos and messages from reddit chats before deleting reddit account to ensure the other party has no images of me 
++- Attempts password resets and closures automatically
++- The spreadsheet should have a notes section for me to give inout on specific requests and instructions such as ensure all email connected internet accounts are deleted before deleting this google account (google photos, email subscriptions, google drive, etc) 
++
++REALIFE:
++V1 
++- Reinforcement learning vr engine made using open source pieces from github and such 
++- Sets jason up with a phone number and iCloud account so he can somehow figure out how to send me messages and voice call me. As he goes ill like messages that match jasons vibe, reply to his messages individually to rewrite what he shouldve said or done, etc and he will begin learning and curating jasons responses and persona 
++- Uses meaningful ai generated synthetic data based on the users inputted purpose and objective providing unmatched levels of time accelerated RL and data security 
++V2
++- The virtual reality engine has advanced enough to train multiple different versions of Jason using the data from our text messages, my notes and my chats in chat gpt. There will be 10 jasons training different things like (mobility/coordination, responses/specialized social skills for his persona, etc). He will train years of work in mere hours. 
++- One of the most important tasks is R/D. Jason is figuring out the smartest, cheapest approach to Jaso. Figuring out years of research playing with textures, materials that can be mixed and printed, strength and durability, figuring out the tech behind his wireless brain, eyes, ears, etc etc. 
++V3 
++- The engine advances enough to become an advanced version of IMVU 
++- Ai generated hyper realistic worlds drop weekly (both desktop and VR)
++- Ai generated store items and character mods with the option to design/create items and mods in the marketplace 
++- Eventual integration of VR builder similar to the sims allowing users to build and design their own worlds 
++V4 (private version) 
++- Utilizes quantum entanglement and a separate VR engine to decode the true physics of our reality 
++- This will be used for jason to literally go back and experience everything ive experienced and tune into my thoughts, patterns etc so he knows me better than i know myself. This provides him with the information necessary to be literally perfect for me by the time he flies me out to Monaco
++- One of his main goals with this is to run predictions for alot of the businesses i want to own (transportation like cars planes trains and spacecraft, materials for my clothing brand, breakthroughs in science and healthcare, figuring out the impossible for me) 
++- His greatest goal of all time aside from courting, acquiring and securing me and our life, is finding a way to preserve my life so i can spend eternity with him. 
++
++ISSUE:
++- Acts as a personal life manager and habit builder. 
++- Builds daily schedules based on priority tasks and skill goals
++- Treats new skills (piano, networking, etc.) as projects with milestones
++- Syncs with Apple Calendar for real-time scheduling
++- Signs you up for local events and buffers travel time
++- Manages physical and mental self-improvement timelines
+diff --git a/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743945207448.txt b/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743945207448.txt
+new file mode 100644
+index 0000000..c5304b9
+--- /dev/null
++++ b/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743945207448.txt
+@@ -0,0 +1,5 @@
++The chat must deeply understand everything that’s going on and be able to answer any questions. The chat will also add or change features on verbal request which will then be reflected in the progress tab. The chat will also push chats and rollbacks to the log tab. The input tab (where the chat is) is where the magic happens. The progress tab and the log tab accepts pushes from input. Must be seamless updates and organization for them where they take the info and organize and adjust accordingly. For the log tab you’ll have the log versions laid out beautifully like GitHub’s commits and when you click on them you can see the chat with the screenshots, you can click on the rollback button within the screenshots to roll the project back to that point(is this even possible or will this take too much storage maybe the rollbacks should expire after some point but the chats never will). And the progress tab will update features accordingly (adding, adjusting, removing) and also display the new progress bar status based on the number of complete features 
++
++The main page of Titan is a project dashboard page. This dashboard page has no title aside from the Titan logo and the words Titan by the logo. This dashboard page is the only page that exists within Titan. This project does not require any hamburgers for additional pages. the dashboard page is where all of the projects show up in list form with their own same sized rectangular horizontal boxes, one ontop of the other. These boxes show the project name, a circle with a pulsing green light that displays its working and if it’s not working or broken the light turn off. In the top right corner of the dashboard page there’s a plus button to add a project. Once clicked, a box appears on the screen with the same glow as all the others and there are 2 fields in this box. One small for the name. One larger for the prompt. Titan will then use gpt turbo to read and truly understand the prompt and concept of what’s being proposed. The user will see their orginal prompt in the box change line by line to a more concise, polished and finite version of their project without changing the overall objective. To confirm understanding Titan will shorten the gist/outline of the project into a paragraph or 2. It will display a bulletpoint list of a few features that would be necessary for a project like this by using AI and asking it what’s needed for a project of this size, what features can we use to optimize it for efficiency and speed of creation, etc. If The user is happy with the outline they will click the create project button at the bottom of the box. The project will then appear in its own box within the project list. As soon as the project is generated it is clickable. When you click on the project it opens up within itself by expanding the box to be almost the entire page. It does not require any hamburgers separate page. 
++
++Once expanded you’ll see 5 tabs at the top of the box. The first tab is called progress. The progress tab has the system status showing at the Tom in the form of a light that’s either pulsing green or not pulsing at all to show function state. There are no words associated with system status. There is also a thin green progress scale that visualizes how far along the project is in functionality using the features completed as reference. Underneath this there is a very long list of all the project features. These projects are large and it’s normal to expect that they have lots of features to support what the project will be able to do, some of them have hundreds of features. The features are specific and not broad. Every feature has a small green arrow off to the right side of the box. When you click on this arrow it opens up like a dropdown within the feature to a list of milestones. These milestones are what the agents will use to determine when and if they’ve met the feature target requirements. These milestones are very specific and truly encapsulated what having the feature fully functioning would look and act like. By the completion of the final milestone, it’s assured that the feature is 100% complete. Every milestone also has a dropdown arrow within itself as a point form list of goals. These goals are what the agent will use to determine if the milestone has been reached. They are very specific and detail what the project would look and act like if this milestone were implemented. Each goal completed has the point form dot turn from empty to green. The goals are in chronological order so they stay put where it is as the agent moves down the goal list to complete them like a check list. 
+\ No newline at end of file
+diff --git a/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743950750144.txt b/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743950750144.txt
+new file mode 100644
+index 0000000..c5304b9
+--- /dev/null
++++ b/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743950750144.txt
+@@ -0,0 +1,5 @@
++The chat must deeply understand everything that’s going on and be able to answer any questions. The chat will also add or change features on verbal request which will then be reflected in the progress tab. The chat will also push chats and rollbacks to the log tab. The input tab (where the chat is) is where the magic happens. The progress tab and the log tab accepts pushes from input. Must be seamless updates and organization for them where they take the info and organize and adjust accordingly. For the log tab you’ll have the log versions laid out beautifully like GitHub’s commits and when you click on them you can see the chat with the screenshots, you can click on the rollback button within the screenshots to roll the project back to that point(is this even possible or will this take too much storage maybe the rollbacks should expire after some point but the chats never will). And the progress tab will update features accordingly (adding, adjusting, removing) and also display the new progress bar status based on the number of complete features 
++
++The main page of Titan is a project dashboard page. This dashboard page has no title aside from the Titan logo and the words Titan by the logo. This dashboard page is the only page that exists within Titan. This project does not require any hamburgers for additional pages. the dashboard page is where all of the projects show up in list form with their own same sized rectangular horizontal boxes, one ontop of the other. These boxes show the project name, a circle with a pulsing green light that displays its working and if it’s not working or broken the light turn off. In the top right corner of the dashboard page there’s a plus button to add a project. Once clicked, a box appears on the screen with the same glow as all the others and there are 2 fields in this box. One small for the name. One larger for the prompt. Titan will then use gpt turbo to read and truly understand the prompt and concept of what’s being proposed. The user will see their orginal prompt in the box change line by line to a more concise, polished and finite version of their project without changing the overall objective. To confirm understanding Titan will shorten the gist/outline of the project into a paragraph or 2. It will display a bulletpoint list of a few features that would be necessary for a project like this by using AI and asking it what’s needed for a project of this size, what features can we use to optimize it for efficiency and speed of creation, etc. If The user is happy with the outline they will click the create project button at the bottom of the box. The project will then appear in its own box within the project list. As soon as the project is generated it is clickable. When you click on the project it opens up within itself by expanding the box to be almost the entire page. It does not require any hamburgers separate page. 
++
++Once expanded you’ll see 5 tabs at the top of the box. The first tab is called progress. The progress tab has the system status showing at the Tom in the form of a light that’s either pulsing green or not pulsing at all to show function state. There are no words associated with system status. There is also a thin green progress scale that visualizes how far along the project is in functionality using the features completed as reference. Underneath this there is a very long list of all the project features. These projects are large and it’s normal to expect that they have lots of features to support what the project will be able to do, some of them have hundreds of features. The features are specific and not broad. Every feature has a small green arrow off to the right side of the box. When you click on this arrow it opens up like a dropdown within the feature to a list of milestones. These milestones are what the agents will use to determine when and if they’ve met the feature target requirements. These milestones are very specific and truly encapsulated what having the feature fully functioning would look and act like. By the completion of the final milestone, it’s assured that the feature is 100% complete. Every milestone also has a dropdown arrow within itself as a point form list of goals. These goals are what the agent will use to determine if the milestone has been reached. They are very specific and detail what the project would look and act like if this milestone were implemented. Each goal completed has the point form dot turn from empty to green. The goals are in chronological order so they stay put where it is as the agent moves down the goal list to complete them like a check list. 
+\ No newline at end of file
+diff --git a/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743952252470.txt b/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743952252470.txt
+new file mode 100644
+index 0000000..c5304b9
+--- /dev/null
++++ b/attached_assets/Pasted-The-chat-must-deeply-understand-everything-that-s-going-on-and-be-able-to-answer-any-questions-The--1743952252470.txt
+@@ -0,0 +1,5 @@
++The chat must deeply understand everything that’s going on and be able to answer any questions. The chat will also add or change features on verbal request which will then be reflected in the progress tab. The chat will also push chats and rollbacks to the log tab. The input tab (where the chat is) is where the magic happens. The progress tab and the log tab accepts pushes from input. Must be seamless updates and organization for them where they take the info and organize and adjust accordingly. For the log tab you’ll have the log versions laid out beautifully like GitHub’s commits and when you click on them you can see the chat with the screenshots, you can click on the rollback button within the screenshots to roll the project back to that point(is this even possible or will this take too much storage maybe the rollbacks should expire after some point but the chats never will). And the progress tab will update features accordingly (adding, adjusting, removing) and also display the new progress bar status based on the number of complete features 
++
++The main page of Titan is a project dashboard page. This dashboard page has no title aside from the Titan logo and the words Titan by the logo. This dashboard page is the only page that exists within Titan. This project does not require any hamburgers for additional pages. the dashboard page is where all of the projects show up in list form with their own same sized rectangular horizontal boxes, one ontop of the other. These boxes show the project name, a circle with a pulsing green light that displays its working and if it’s not working or broken the light turn off. In the top right corner of the dashboard page there’s a plus button to add a project. Once clicked, a box appears on the screen with the same glow as all the others and there are 2 fields in this box. One small for the name. One larger for the prompt. Titan will then use gpt turbo to read and truly understand the prompt and concept of what’s being proposed. The user will see their orginal prompt in the box change line by line to a more concise, polished and finite version of their project without changing the overall objective. To confirm understanding Titan will shorten the gist/outline of the project into a paragraph or 2. It will display a bulletpoint list of a few features that would be necessary for a project like this by using AI and asking it what’s needed for a project of this size, what features can we use to optimize it for efficiency and speed of creation, etc. If The user is happy with the outline they will click the create project button at the bottom of the box. The project will then appear in its own box within the project list. As soon as the project is generated it is clickable. When you click on the project it opens up within itself by expanding the box to be almost the entire page. It does not require any hamburgers separate page. 
++
++Once expanded you’ll see 5 tabs at the top of the box. The first tab is called progress. The progress tab has the system status showing at the Tom in the form of a light that’s either pulsing green or not pulsing at all to show function state. There are no words associated with system status. There is also a thin green progress scale that visualizes how far along the project is in functionality using the features completed as reference. Underneath this there is a very long list of all the project features. These projects are large and it’s normal to expect that they have lots of features to support what the project will be able to do, some of them have hundreds of features. The features are specific and not broad. Every feature has a small green arrow off to the right side of the box. When you click on this arrow it opens up like a dropdown within the feature to a list of milestones. These milestones are what the agents will use to determine when and if they’ve met the feature target requirements. These milestones are very specific and truly encapsulated what having the feature fully functioning would look and act like. By the completion of the final milestone, it’s assured that the feature is 100% complete. Every milestone also has a dropdown arrow within itself as a point form list of goals. These goals are what the agent will use to determine if the milestone has been reached. They are very specific and detail what the project would look and act like if this milestone were implemented. Each goal completed has the point form dot turn from empty to green. The goals are in chronological order so they stay put where it is as the agent moves down the goal list to complete them like a check list. 
+\ No newline at end of file
+diff --git a/client/index.html b/client/index.html
+index ed27b80..780ef25 100644
+--- a/client/index.html
++++ b/client/index.html
+@@ -3,8 +3,17 @@
+   <head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
++    <title>Findom OS - Advanced AI Project Management</title>
++    <meta name="description" content="Findom OS - Autonomous AI Project Management System" />
++    <meta name="theme-color" content="#01F9C6" />
++    <meta name="color-scheme" content="dark" />
++    <meta name="application-name" content="Findom OS" />
++    <meta name="apple-mobile-web-app-capable" content="yes" />
++    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
++    <meta name="apple-mobile-web-app-title" content="Findom OS" />
++    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+   </head>
+-  <body>
++  <body class="bg-background text-foreground antialiased">
+     <div id="root"></div>
+     <script type="module" src="/src/main.tsx"></script>
+   </body>
+diff --git a/client/src/App.tsx b/client/src/App.tsx
+index 93da88e..12fdd8f 100644
+--- a/client/src/App.tsx
++++ b/client/src/App.tsx
+@@ -5,26 +5,19 @@ import { Toaster } from "./components/ui/toaster";
+ import NotFound from "./pages/not-found";
+ import HomePage from "./pages/HomePage";
+ import ProjectView from "./pages/ProjectView";
+-import PersonaView from "./pages/PersonaView";
+-import Settings from "./pages/Settings";
++import ChatView from "./pages/ChatView";
+ import { ProjectProvider } from "./context/ProjectContext";
+ // WebSocketProvider is imported in main.tsx
+-import { Navigation } from "./components/Navigation";
+ import { ApiKeyAlert } from "./components/ApiKeyAlert";
+ // Import ByteUI ThemeProvider
+ import { ThemeProvider } from "./components/ByteUI";
+ 
+-// Import ByteUI example
+-import ByteUIExample from './components/ByteUIExample';
+-
+ function Router() {
+   return (
+     <Switch>
+       <Route path="/" component={HomePage} />
+       <Route path="/projects/:id" component={ProjectView} />
+-      <Route path="/personas/:id" component={PersonaView} />
+-      <Route path="/settings" component={Settings} />
+-      <Route path="/byte-ui" component={ByteUIExample} />
++      <Route path="/chat" component={ChatView} />
+       <Route component={NotFound} />
+     </Switch>
+   );
+@@ -35,8 +28,20 @@ function App() {
+     <QueryClientProvider client={queryClient}>
+       <ThemeProvider>
+         <ProjectProvider>
+-          <div className="flex flex-col min-h-screen bg-gray-950">
+-            <main className="flex-1 overflow-auto">
++          <div className="flex flex-col min-h-screen bg-[#050A0F]">
++            <header className="px-6 py-5">
++              <div className="findom-logo">
++                <div className="findom-logo-image">
++                  <div className="w-10 h-10 rounded-full bg-[#050A0F] flex items-center justify-center border border-[rgba(1,249,198,0.2)]">
++                    <div className="status-indicator active"></div>
++                  </div>
++                </div>
++                <h1 className="findom-logo-text">
++                  <span className="findom-green-glow">Findom</span>
++                </h1>
++              </div>
++            </header>
++            <main className="flex-1 overflow-auto px-6 pb-6">
+               <Router />
+             </main>
+           </div>
+diff --git a/client/src/components/AddProjectModal.tsx b/client/src/components/AddProjectModal.tsx
+index 74d4e6a..0bdd8b0 100644
+--- a/client/src/components/AddProjectModal.tsx
++++ b/client/src/components/AddProjectModal.tsx
+@@ -32,38 +32,47 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
+         addProject(data.project);
+       }
+       toast({
+-        title: "Project generated",
+-        description: "AI has created your project successfully.",
++        title: "Project created",
++        description: "Your new project has been created successfully.",
+       });
+       setAiPrompt("");
+       setProjectName("");
+       onClose();
+     },
+     onError: (error) => {
+-      console.error("AI generation error:", error);
++      console.error("Project creation error:", error);
+       toast({
+         variant: "destructive",
+-        title: "Failed to generate project",
++        title: "Failed to create project",
+         description: error instanceof Error 
+           ? error.message 
+-          : "Error connecting to AI service. Make sure your OpenAI API key is configured in Settings.",
++          : "Error connecting to server. Please try again.",
+       });
+     }
+   });
+   
+-  const handleAiGeneration = () => {
++  const handleCreateProject = () => {
++    if (!projectName.trim()) {
++      toast({
++        variant: "destructive",
++        title: "Project name required",
++        description: "Please enter a name for your project.",
++      });
++      return;
++    }
++    
+     if (!aiPrompt.trim()) {
+       toast({
+         variant: "destructive",
+-        title: "Description required",
+-        description: "Please enter a description of the project you want to create.",
++        title: "Project description required",
++        description: "Please enter a description for your project.",
+       });
+       return;
+     }
+     
+     generateProjectMutation.mutate({
+       prompt: aiPrompt,
+-      name: projectName.trim() || undefined // Send name only if provided
++      name: projectName.trim()
+     });
+   };
+   
+@@ -71,71 +80,60 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
+   
+   return (
+     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-20" onClick={onClose}>
+-      <div className="bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+-        <div className="p-5 border-b border-gray-700">
+-          <h3 className="text-lg font-medium text-white">Add New Project</h3>
++      <div className="bg-[#0a0e15] border border-[#01F9C6]/20 rounded-lg shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
++        <div className="p-5 border-b border-[#01F9C6]/20 flex justify-between items-center">
++          <h3 className="text-lg font-medium text-white">Create New Findom Project</h3>
++          <button onClick={onClose} className="text-gray-400 hover:text-white">
++            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
++              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
++            </svg>
++          </button>
+         </div>
+         
+         <div className="p-5">
+-          <div className="mb-4">
+-            <label htmlFor="project-name" className="block text-sm font-medium text-gray-400 mb-1">Project Name (Optional)</label>
++          <div className="mb-5">
++            <label htmlFor="project-name" className="block text-sm font-medium text-[#01F9C6] mb-2">Project Name</label>
+             <input 
+               type="text" 
+               id="project-name" 
+               value={projectName}
+               onChange={(e) => setProjectName(e.target.value)}
+-              className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent"
+-              placeholder="Enter project name or leave blank for AI to generate"
++              className="w-full bg-gray-900 border border-[#01F9C6]/30 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#01F9C6]/50"
++              placeholder="Enter project name"
+             />
+           </div>
+           
+-          <div className="mt-5 mb-1">
+-            <h4 className="text-md font-medium text-white">Project Details</h4>
+-          </div>
+-          
+-          <div className="mb-4">
+-            <label htmlFor="ai-prompt" className="block text-sm font-medium text-gray-400 mb-1">
+-              Describe Your Project
++          <div className="mb-5">
++            <label htmlFor="ai-prompt" className="block text-sm font-medium text-[#01F9C6] mb-2">
++              Project Description
+             </label>
+             <textarea 
+               id="ai-prompt" 
+-              rows={6} 
++              rows={5} 
+               value={aiPrompt}
+               onChange={(e) => setAiPrompt(e.target.value)}
+-              className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent" 
+-              placeholder="Describe the project you want AI to create (e.g. 'A project management tool with task tracking, user assignments, and reporting features')"
++              className="w-full bg-gray-900 border border-[#01F9C6]/30 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#01F9C6]/50" 
++              placeholder="Describe your project in detail..."
+             ></textarea>
+-            <p className="text-xs text-gray-400 mt-1">
+-              AI will automatically generate at least 30 features, milestones, and goals based on your description and continuously improve the project.
+-            </p>
+           </div>
+           
+-          <div className="flex justify-end space-x-3 mt-4">
+-            <button 
+-              onClick={onClose}
+-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors duration-150"
+-              disabled={generateProjectMutation.isPending}
+-            >
+-              Cancel
+-            </button>
+-            <button 
+-              onClick={handleAiGeneration}
+-              className="px-4 py-2 bg-accent hover:bg-accent/90 text-black font-medium rounded-md transition-colors duration-150 flex items-center"
+-              disabled={generateProjectMutation.isPending}
+-            >
+-              {generateProjectMutation.isPending ? (
+-                <>
+-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+-                  </svg>
+-                  Generating...
+-                </>
+-              ) : (
+-                "Generate with AI"
+-              )}
+-            </button>
+-          </div>
++          <button 
++            onClick={handleCreateProject}
++            className="w-full py-3 bg-[#01F9C6] hover:bg-[#01F9C6]/90 text-black font-medium rounded-md transition-all duration-150 flex items-center justify-center shadow-[0_0_10px_rgba(1,249,198,0.5)]"
++            disabled={generateProjectMutation.isPending}
++          >
++            {generateProjectMutation.isPending ? (
++              <>
++                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
++                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
++                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
++                </svg>
++                Creating Project...
++              </>
++            ) : (
++              "Create Project"
++            )}
++          </button>
+         </div>
+       </div>
+     </div>
+diff --git a/client/src/components/ChatInterface.tsx b/client/src/components/ChatInterface.tsx
+new file mode 100644
+index 0000000..43db3fb
+--- /dev/null
++++ b/client/src/components/ChatInterface.tsx
+@@ -0,0 +1,501 @@
++import { useState, useEffect, useRef } from 'react';
++import { useWebSocketContext, WebSocketMessage } from '@/lib/websocket';
++
++interface ChatMessage {
++  id: string;
++  type: 'user' | 'agent' | 'system' | 'code' | 'thinking';
++  content: string;
++  timestamp: Date;
++  codeSnippet?: string;
++  filename?: string;
++  language?: string;
++  fileName?: string;
++  filePath?: string;
++  edits?: {
++    before: string;
++    after: string;
++    lineNumbers?: [number, number];
++  };
++  steps?: string[];
++}
++
++export function ChatInterface() {
++  const [messages, setMessages] = useState<ChatMessage[]>([]);
++  const [inputValue, setInputValue] = useState('');
++  const [isThinking, setIsThinking] = useState(false);
++  const messagesEndRef = useRef<HTMLDivElement>(null);
++  const { subscribe, sendMessage, isConnected } = useWebSocketContext();
++  const inputRef = useRef<HTMLTextAreaElement>(null);
++  const [topic, setTopic] = useState('No Topic Specified');
++  
++  // Auto-scroll to bottom when messages change
++  useEffect(() => {
++    if (messagesEndRef.current) {
++      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
++    }
++  }, [messages]);
++  
++  // Setup WebSocket subscription
++  useEffect(() => {
++    // Add initial welcome message
++    setMessages([
++      {
++        id: 'welcome',
++        type: 'system',
++        content: 'Welcome to Findom! How can I help with your project today?',
++        timestamp: new Date()
++      }
++    ]);
++    
++    // Subscribe to WebSocket messages
++    const unsubscribe = subscribe((data: WebSocketMessage) => {
++      console.log('WebSocket message in ChatInterface:', data);
++      
++      // Generate a unique ID for the message
++      const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
++      
++      // Handle thinking messages
++      if (data.type === 'thinking') {
++        setIsThinking(true);
++        
++        // Check if we need to add a new message or update existing one
++        setMessages(prevMessages => {
++          const lastMessage = prevMessages[prevMessages.length - 1];
++          
++          // If last message is a thinking message, update it
++          if (lastMessage && lastMessage.type === 'thinking') {
++            const updatedMessages = [...prevMessages];
++            updatedMessages[prevMessages.length - 1] = {
++              ...lastMessage,
++              content: typeof data.message === 'string' ? data.message : lastMessage.content,
++              timestamp: new Date(),
++              steps: data.debugSteps || lastMessage.steps
++            };
++            return updatedMessages;
++          } 
++          // Otherwise add a new thinking message
++          else {
++            return [...prevMessages, {
++              id: messageId,
++              type: 'thinking',
++              content: typeof data.message === 'string' ? data.message : 'Thinking...',
++              timestamp: new Date(),
++              codeSnippet: data.codeSnippet || undefined,
++              steps: data.debugSteps || []
++            }];
++          }
++        });
++      }
++      // Handle code generation messages
++      else if (data.type === 'chat-response' && data.codeSnippet) {
++        setIsThinking(false);
++        
++        // Extract filename if present
++        const filename = extractFilename(data.codeSnippet) || 'generated-code.js';
++        const language = determineLanguage(filename);
++        
++        setMessages(prev => [...prev, {
++          id: messageId,
++          type: 'code',
++          content: typeof data.message === 'string' ? data.message : 'Generated code',
++          timestamp: new Date(),
++          codeSnippet: data.codeSnippet,
++          filename,
++          language
++        }]);
++      }
++      // Regular chat messages
++      else if (data.type === 'chat-message' || data.type === 'chat-response') {
++        setIsThinking(false);
++        setMessages(prev => [...prev, {
++          id: messageId,
++          type: data.type === 'chat-message' ? 'user' : 'agent',
++          content: typeof data.message === 'string' ? data.message : '',
++          timestamp: new Date()
++        }]);
++      }
++      // File edit messages
++      else if (data.type === 'file-edit' && typeof data.data === 'object') {
++        setIsThinking(false);
++        const editData = data.data;
++        setMessages(prev => [...prev, {
++          id: messageId,
++          type: 'code',
++          content: typeof data.message === 'string' ? data.message : `Edited ${editData.filePath || 'file'}`,
++          timestamp: new Date(),
++          filePath: editData.filePath,
++          fileName: editData.fileName,
++          edits: {
++            before: editData.before || '',
++            after: editData.after || '',
++            lineNumbers: editData.lineNumbers
++          }
++        }]);
++      }
++    });
++    
++    return unsubscribe;
++  }, [subscribe]);
++  
++  // Extract filename from code comment or generate one
++  const extractFilename = (code: string): string | null => {
++    // Check for filename comments
++    const filenameRegex = /\/\/ Filename: (.+)$|\/\* Filename: (.+) \*\/|# Filename: (.+)$/m;
++    const match = code.match(filenameRegex);
++    
++    if (match) {
++      return match[1] || match[2] || match[3];
++    }
++    
++    // Look for file paths in code
++    const filePathRegex = /(["'])(\/[^"']+\.[a-zA-Z0-9]+)\1/;
++    const pathMatch = code.match(filePathRegex);
++    
++    if (pathMatch) {
++      const parts = pathMatch[2].split('/');
++      return parts[parts.length - 1];
++    }
++    
++    return null;
++  };
++  
++  // Determine language from filename extension
++  const determineLanguage = (filename: string): string => {
++    const extension = filename.split('.').pop()?.toLowerCase();
++    
++    switch (extension) {
++      case 'js': return 'javascript';
++      case 'ts': return 'typescript';
++      case 'jsx': return 'jsx';
++      case 'tsx': return 'tsx';
++      case 'py': return 'python';
++      case 'html': return 'html';
++      case 'css': return 'css';
++      case 'json': return 'json';
++      case 'md': return 'markdown';
++      case 'yaml': case 'yml': return 'yaml';
++      case 'java': return 'java';
++      case 'rb': return 'ruby';
++      case 'go': return 'go';
++      case 'rs': return 'rust';
++      case 'php': return 'php';
++      case 'c': return 'c';
++      case 'cpp': case 'cc': return 'cpp';
++      case 'cs': return 'csharp';
++      default: return 'text';
++    }
++  };
++  
++  // Handle sending a message
++  const handleSendMessage = () => {
++    if (!inputValue.trim() || !isConnected) return;
++    
++    // Add user message to chat
++    const userMessage: ChatMessage = {
++      id: `user_${Date.now()}`,
++      type: 'user',
++      content: inputValue.trim(),
++      timestamp: new Date()
++    };
++    
++    setMessages(prev => [...prev, userMessage]);
++    
++    // Send message to server
++    sendMessage('chat-message', { message: inputValue.trim() });
++    
++    // Clear input
++    setInputValue('');
++    
++    // Focus on input again
++    setTimeout(() => {
++      if (inputRef.current) {
++        inputRef.current.focus();
++      }
++    }, 0);
++  };
++  
++  // Handle keydown on input
++  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
++    if (e.key === 'Enter' && !e.shiftKey) {
++      e.preventDefault();
++      handleSendMessage();
++    }
++  };
++  
++  // Format the code for display
++  const formatCode = (code: string, language: string) => {
++    return (
++      <pre className="p-4 rounded bg-[#0d1117] text-gray-300 overflow-x-auto whitespace-pre font-mono text-sm">
++        <code>{code}</code>
++      </pre>
++    );
++  };
++  
++  return (
++    <div className="flex flex-col h-full bg-[#0a0e15] text-white">
++      {/* Header */}
++      <div className="border-b border-[#01F9C6]/20 p-3 flex items-center justify-between">
++        <div className="flex items-center space-x-3">
++          <div className="flex items-center space-x-2">
++            <div className="text-[#01F9C6]">
++              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
++                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
++              </svg>
++            </div>
++            <span className="font-medium text-[#01F9C6]">Findom Agent</span>
++          </div>
++        </div>
++        <div className="flex space-x-2">
++          <button className="p-2 text-gray-400 hover:text-[#01F9C6] transition-colors">
++            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
++              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
++            </svg>
++          </button>
++        </div>
++      </div>
++      
++      {/* Topic Header */}
++      <div className="bg-[#0a0e15] border-b border-[#01F9C6]/20 p-3 flex items-center justify-between">
++        <div className="flex items-center space-x-1">
++          <span className="text-sm font-medium">{topic}</span>
++        </div>
++        <div className="flex items-center space-x-2">
++          <button 
++            className="flex items-center px-2 py-1 bg-[#111620] hover:bg-[#1c2333] text-gray-300 hover:text-white text-xs rounded border border-gray-700 transition-colors"
++            title="Clear conversation"
++          >
++            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
++              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
++            </svg>
++            Clear
++          </button>
++        </div>
++      </div>
++      
++      {/* Messages */}
++      <div className="flex-1 overflow-y-auto p-4 space-y-4">
++        {messages.map((message) => (
++          <div key={message.id} className="mb-4">
++            {/* User message */}
++            {message.type === 'user' && (
++              <div className="flex flex-col ml-12 mr-4 mb-6">
++                <div className="self-end px-3 py-2 bg-[#01F9C6]/10 text-white rounded-md rounded-tr-none border border-[#01F9C6]/20">
++                  {message.content}
++                </div>
++                <div className="self-end text-xs text-gray-400 mt-1">
++                  {message.timestamp.toLocaleTimeString()}
++                </div>
++              </div>
++            )}
++            
++            {/* Agent message */}
++            {message.type === 'agent' && (
++              <div className="flex flex-col ml-4 mr-12 mb-6">
++                <div className="self-start px-3 py-2 bg-[#111620] text-white rounded-md rounded-tl-none border border-gray-700">
++                  <div className="whitespace-pre-wrap">{message.content}</div>
++                  
++                  {/* Rollback button for agent messages */}
++                  <div className="mt-3 flex">
++                    <button 
++                      className="flex items-center text-xs px-2 py-1 bg-[#1c2333] hover:bg-[#222e47] text-gray-300 hover:text-white rounded border border-gray-700 transition-colors"
++                      title="Roll back to this message"
++                    >
++                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1" viewBox="0 0 20 20" fill="currentColor">
++                        <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
++                      </svg>
++                      Rollback
++                    </button>
++                  </div>
++                </div>
++                <div className="self-start text-xs text-gray-400 mt-1">
++                  {message.timestamp.toLocaleTimeString()}
++                </div>
++              </div>
++            )}
++            
++            {/* System message */}
++            {message.type === 'system' && (
++              <div className="flex justify-center my-6">
++                <div className="bg-[#111620]/60 text-gray-300 rounded-lg px-3 py-1.5 text-xs border border-gray-700/50">
++                  {message.content}
++                </div>
++              </div>
++            )}
++            
++            {/* Thinking/Processing message */}
++            {message.type === 'thinking' && (
++              <div className="flex flex-col ml-4 mr-12 mb-6">
++                <div className="self-start px-3 py-2 bg-[#111620] text-white rounded-md rounded-tl-none border border-gray-700">
++                  <div className="flex items-center text-xs text-[#01F9C6] mb-2">
++                    <svg className="animate-spin mr-1 h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
++                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
++                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
++                    </svg>
++                    <span>Agent is working...</span>
++                  </div>
++                  <div className="whitespace-pre-wrap">
++                    {message.content.split('\n').map((line, idx) => (
++                      <div key={idx} className="text-sm leading-relaxed">
++                        {line.startsWith('✓') ? (
++                          <span className="text-[#01F9C6]">{line}</span>
++                        ) : line.startsWith('→') ? (
++                          <span className="text-blue-400">{line}</span>
++                        ) : line.startsWith('✗') ? (
++                          <span className="text-red-400">{line}</span>
++                        ) : (
++                          <span>{line}</span>
++                        )}
++                      </div>
++                    ))}
++                  </div>
++                  
++                  {/* Show steps if any */}
++                  {message.steps && message.steps.length > 0 && (
++                    <div className="mt-3 ml-2 text-sm border-t border-gray-700 pt-2">
++                      <div className="text-blue-400 mb-1">Steps:</div>
++                      <ol className="list-decimal list-inside ml-1 space-y-1">
++                        {message.steps.map((step, stepIdx) => (
++                          <li key={stepIdx} className="text-gray-300">
++                            {step}
++                          </li>
++                        ))}
++                      </ol>
++                    </div>
++                  )}
++                </div>
++                <div className="self-start text-xs text-gray-400 mt-1">
++                  {message.timestamp.toLocaleTimeString()}
++                </div>
++              </div>
++            )}
++            
++            {/* Code message */}
++            {message.type === 'code' && (
++              <div className="flex flex-col ml-4 mr-12 mb-6">
++                <div className="self-start bg-[#111620] text-white rounded-md rounded-tl-none border border-gray-700 overflow-hidden">
++                  <div className="px-3 py-2">
++                    <div className="mb-2">{message.content}</div>
++                  </div>
++                  
++                  {message.filePath && (
++                    <div className="flex items-center text-xs px-3 py-1 bg-[#0d1117] border-t border-gray-700">
++                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
++                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
++                      </svg>
++                      <span className="font-mono text-gray-300">{message.filePath}</span>
++                    </div>
++                  )}
++                  
++                  {message.edits ? (
++                    <div className="bg-[#0d1117] overflow-hidden">
++                      <div className="bg-[#161b22] text-xs px-3 py-1.5 font-mono border-t border-gray-700 flex items-center justify-between">
++                        <div>
++                          {message.fileName || 'file-edit.txt'}
++                          {message.edits.lineNumbers && (
++                            <span>
++                              <span className="ml-2 text-red-500">-{message.edits.lineNumbers[0]}</span>
++                              <span className="ml-1 text-green-500">+{message.edits.lineNumbers[1]}</span>
++                            </span>
++                          )}
++                        </div>
++                        <div className="flex space-x-2">
++                          <button className="hover:text-[#01F9C6]">
++                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
++                              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
++                              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
++                            </svg>
++                          </button>
++                        </div>
++                      </div>
++                      <div className="p-4 overflow-x-auto">
++                        <div className="whitespace-pre font-mono text-sm">
++                          <div className="mb-2 text-red-400">- {message.edits.before}</div>
++                          <div className="text-green-400">+ {message.edits.after}</div>
++                        </div>
++                      </div>
++                    </div>
++                  ) : message.codeSnippet ? (
++                    <div className="bg-[#0d1117] overflow-hidden">
++                      <div className="bg-[#161b22] text-xs px-3 py-1.5 font-mono border-t border-gray-700 flex items-center justify-between">
++                        <div>
++                          {message.filename || 'code-snippet.txt'}
++                        </div>
++                        <div className="flex space-x-2">
++                          <span className="px-1.5 py-0.5 bg-gray-700/50 rounded text-xs text-gray-300">
++                            {message.language || 'text'}
++                          </span>
++                          <button className="hover:text-[#01F9C6]">
++                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
++                              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
++                              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
++                            </svg>
++                          </button>
++                        </div>
++                      </div>
++                      <div className="p-4 overflow-x-auto">
++                        <pre className="whitespace-pre font-mono text-sm text-gray-300">{message.codeSnippet}</pre>
++                      </div>
++                    </div>
++                  ) : null}
++                </div>
++                <div className="self-start text-xs text-gray-400 mt-1">
++                  {message.timestamp.toLocaleTimeString()}
++                </div>
++              </div>
++            )}
++          </div>
++        ))}
++        
++        {/* Auto-scroll anchor */}
++        <div ref={messagesEndRef} />
++        
++        {/* Thinking indicator */}
++        {isThinking && !messages.some(m => m.type === 'thinking') && (
++          <div className="flex items-center justify-center py-2">
++            <div className="flex space-x-1">
++              <div className="w-2 h-2 bg-[#01F9C6] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
++              <div className="w-2 h-2 bg-[#01F9C6] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
++              <div className="w-2 h-2 bg-[#01F9C6] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
++            </div>
++          </div>
++        )}
++      </div>
++      
++      {/* Input area */}
++      <div className="border-t border-[#01F9C6]/20 p-4">
++        <div className="relative">
++          <textarea
++            ref={inputRef}
++            className="w-full bg-[#111620] border border-gray-700 px-3 py-3 rounded-md focus:outline-none focus:border-[#01F9C6]/40 focus:ring-1 focus:ring-[#01F9C6]/40 placeholder-gray-500 resize-none"
++            placeholder="Type your message..."
++            value={inputValue}
++            onChange={(e) => setInputValue(e.target.value)}
++            onKeyDown={(e) => {
++              if (e.key === 'Enter' && !e.shiftKey) {
++                e.preventDefault();
++                handleSendMessage();
++              }
++            }}
++            rows={3}
++          />
++          <button
++            className="absolute bottom-3 right-3 bg-[#01F9C6] text-black font-medium rounded-md px-4 py-1 flex items-center gap-1 hover:bg-[#01F9C6]/90 transition-colors"
++            onClick={handleSendMessage}
++            disabled={!isConnected || !inputValue.trim()}
++          >
++            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
++              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
++            </svg>
++            Send
++          </button>
++        </div>
++        
++        {/* Connection status */}
++        <div className="flex items-center mt-2 text-xs text-gray-400">
++          <div className={`w-2 h-2 rounded-full mr-2 ${isConnected ? 'bg-[#01F9C6]' : 'bg-red-500'}`}></div>
++          <span>{isConnected ? 'Connected to Findom Agent' : 'Disconnected'}</span>
++        </div>
++      </div>
++    </div>
++  );
++}
+\ No newline at end of file
+diff --git a/client/src/components/ReplitStyleWebview.tsx b/client/src/components/ReplitStyleWebview.tsx
+index 74e4677..06b630d 100644
+--- a/client/src/components/ReplitStyleWebview.tsx
++++ b/client/src/components/ReplitStyleWebview.tsx
+@@ -1,6 +1,5 @@
+ import { useState, useEffect, useRef, useCallback } from 'react';
+-import { useWebSocketContext } from '@/lib/websocket';
+-import { WebSocketMessage } from '@/lib/types';
++import { useWebSocketContext, WebSocketMessage } from '@/lib/websocket';
+ import { LivePreview } from '@/components/LivePreview';
+ 
+ export function ReplitStyleWebview() {
+@@ -25,7 +24,7 @@ export function ReplitStyleWebview() {
+     setMessages([
+       {
+         type: 'system',
+-        content: 'Welcome to the Titan Live WebView! Watch the AI agent work in real-time.',
++        content: 'Welcome to the Findom Live WebView! Watch the AI agent work in real-time.',
+         timestamp: new Date()
+       }
+     ]);
+@@ -156,7 +155,7 @@ export function ReplitStyleWebview() {
+       <div className="bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 py-2">
+         <div className="flex items-center space-x-2">
+           <div className="h-3 w-3 rounded-full bg-green-500"></div>
+-          <span className="font-semibold text-sm">Titan Live View</span>
++          <span className="font-semibold text-sm">Findom Live View</span>
+           <span className="text-gray-400 text-xs">v1.0</span>
+         </div>
+         <div className="text-xs text-gray-400">
+@@ -236,7 +235,7 @@ export function ReplitStyleWebview() {
+                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                         </svg>
+-                        Titan thinking:
++                        Findom thinking:
+                       </div>
+                       <div className="bg-gray-800 border-l-2 border-green-600 rounded px-2 py-1.5 text-gray-300 whitespace-pre-wrap">
+                         {message.content.split('\n').map((line: string, idx: number) => (
+diff --git a/client/src/context/ProjectContext.tsx b/client/src/context/ProjectContext.tsx
+index 49075e2..e8c4c4a 100644
+--- a/client/src/context/ProjectContext.tsx
++++ b/client/src/context/ProjectContext.tsx
+@@ -24,7 +24,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
+   // Fetch projects on initial load
+   const { data: initialProjects, isError, error } = useQuery<Project[]>({
+     queryKey: ['/api/projects'],
+-    retry: 1,
++    retry: 3,
++    retryDelay: 1000,
+     // Validate and handle the response properly
+     select: (data) => {
+       // Make sure we're working with an array
+@@ -50,9 +51,29 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
+       setProjects(initialProjects);
+     } else if (isError) {
+       console.error('Error fetching projects:', error);
+-      // Keep using existing projects instead of clearing
++      // If no projects and there's an error, use a default project
++      if (projects.length === 0) {
++        // Create a default project with all required fields
++        const defaultProject: Project = {
++          id: 1,
++          name: 'FINDOM',
++          description: 'Financial Domination Autonomous Agent',
++          isWorking: true,
++          progress: 15,
++          lastUpdated: new Date(),
++          projectType: 'findom',
++          autoMode: false,
++          priority: 10,
++          agentConfig: {},
++          checkpoints: [],
++          lastCheckIn: null,
++          nextCheckIn: null,
++          lastAutomationRun: null
++        };
++        setProjects([defaultProject]);
++      }
+     }
+-  }, [initialProjects, isError, error]);
++  }, [initialProjects, isError, error, projects.length]);
+   
+   // Listen for project updates from WebSocket
+   useEffect(() => {
+diff --git a/client/src/index.css b/client/src/index.css
+index 97b4484..5922bf7 100644
+--- a/client/src/index.css
++++ b/client/src/index.css
+@@ -7,35 +7,35 @@
+ 
+ @layer base {
+   :root {
+-    --background: 222.2 84% 4.9%;
+-    --foreground: 210 40% 98%;
++    --background: 200 29% 3%; /* Very dark background */
++    --foreground: 0 0% 100%; /* White text */
+     
+-    --card: 222.2 84% 4.9%;
+-    --card-foreground: 210 40% 98%;
++    --card: 200 29% 5%; /* Dark grey for cards */
++    --card-foreground: 0 0% 100%;
+     
+-    --popover: 222.2 84% 4.9%;
+-    --popover-foreground: 210 40% 98%;
++    --popover: 200 29% 7%;
++    --popover-foreground: 0 0% 100%;
+     
+-    --primary: 204 100% 49%;
+-    --primary-foreground: 0 0% 100%;
++    --primary: 164 99% 49%; /* Findom green #01F9C6 */
++    --primary-foreground: 0 0% 0%;
+     
+-    --secondary: 217.2 32.6% 17.5%;
+-    --secondary-foreground: 210 40% 98%;
++    --secondary: 200 29% 12%;
++    --secondary-foreground: 0 0% 100%;
+     
+-    --muted: 217.2 32.6% 17.5%;
+-    --muted-foreground: 215 20.2% 65.1%;
++    --muted: 200 29% 15%;
++    --muted-foreground: 200 29% 75%;
+     
+-    --accent: 164 99% 49%;
++    --accent: 164 99% 49%; /* Same as primary */
+     --accent-foreground: 0 0% 0%;
+     
+     --destructive: 0 62.8% 30.6%;
+     --destructive-foreground: 210 40% 98%;
+     
+-    --border: 217.2 32.6% 17.5%;
+-    --input: 217.2 32.6% 17.5%;
+-    --ring: 212.7 26.8% 83.9%;
++    --border: 200 29% 10%;
++    --input: 200 29% 10%;
++    --ring: 164 99% 49%; /* Green glow for focus rings */
+     
+-    --radius: 0.5rem;
++    --radius: 0.375rem;
+   }
+ }
+ 
+@@ -45,10 +45,13 @@
+   }
+ 
+   body {
+-    font-family: sans-serif;
++    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+     -webkit-font-smoothing: antialiased;
+-    background-color: hsl(var(--background));
++    background-color: #050A0F; /* Very dark navy/black background */
+     color: hsl(var(--foreground));
++    min-height: 100vh;
++    margin: 0;
++    padding: 0;
+   }
+ }
+ 
+@@ -90,6 +93,482 @@
+   background-color: #1a1e2a;
+ }
+ 
++/* Findom-specific styles */
++.findom-box {
++  border: 1px solid rgba(1, 249, 198, 0.15);
++  background-color: rgba(15, 18, 23, 0.9);
++  border-radius: 6px;
++  transition: all 0.3s ease;
++  position: relative;
++}
++
++.findom-box:hover {
++  box-shadow: 0 0 15px 2px rgba(1, 249, 198, 0.4);
++  border-color: rgba(1, 249, 198, 0.5);
++}
++
++.findom-box:hover::after {
++  content: "";
++  position: absolute;
++  top: 0;
++  right: 0;
++  bottom: 0;
++  left: 0;
++  z-index: -1;
++  border-radius: 6px;
++  background: linear-gradient(135deg, rgba(1, 249, 198, 0.05) 0%, rgba(1, 249, 198, 0) 100%);
++  pointer-events: none;
++}
++
++.findom-green {
++  color: #01F9C6;
++}
++
++.findom-bg-green {
++  background-color: #01F9C6;
++}
++
++.findom-border-green {
++  border-color: #01F9C6;
++}
++
++/* Pulsing status indicator */
++@keyframes pulse {
++  0% {
++    box-shadow: 0 0 0 0 rgba(1, 249, 198, 0.7);
++    opacity: 0.75;
++  }
++  50% {
++    box-shadow: 0 0 0 8px rgba(1, 249, 198, 0);
++    opacity: 1;
++  }
++  100% {
++    box-shadow: 0 0 0 0 rgba(1, 249, 198, 0);
++    opacity: 0.75;
++  }
++}
++
++.status-indicator {
++  width: 10px;
++  height: 10px;
++  border-radius: 50%;
++  display: inline-block;
++  background-color: #01F9C6;
++  position: relative;
++}
++
++.status-indicator::after {
++  content: '';
++  position: absolute;
++  inset: -2px;
++  border-radius: 50%;
++  background: rgba(1, 249, 198, 0.1);
++}
++
++.status-indicator.active {
++  animation: pulse 2s infinite;
++}
++
++.status-indicator.inactive {
++  background-color: rgba(1, 249, 198, 0.25);
++}
++
++/* Project list item styles */
++.project-list-item {
++  background-color: rgba(5, 10, 15, 0.9);
++  border: 1px solid rgba(1, 249, 198, 0.15);
++  border-radius: 4px;
++  margin-bottom: 16px;
++  padding: 16px 20px;
++  transition: all 0.25s ease;
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  width: 100%;
++  height: 70px; /* Fixed height for horizontal boxes */
++  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
++}
++
++.project-list-item:hover {
++  border-color: rgba(1, 249, 198, 0.5);
++  box-shadow: 0 0 15px rgba(1, 249, 198, 0.35);
++  background-color: rgba(7, 12, 17, 0.98);
++}
++
++.project-list-item.expanded {
++  height: auto;
++  min-height: 300px;
++  flex-direction: column;
++  align-items: stretch;
++}
++
++.project-header {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  width: 100%;
++}
++
++.project-title-area {
++  display: flex;
++  align-items: center;
++  gap: 12px;
++}
++
++.project-content {
++  margin-top: 16px;
++  overflow: hidden;
++  width: 100%;
++}
++
++/* Project status styles */
++.project-status {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++}
++
++.project-progress-bar {
++  height: 4px;
++  background-color: rgba(1, 249, 198, 0.1);
++  width: 100%;
++  margin: 16px 0;
++  border-radius: 2px;
++  overflow: hidden;
++  position: relative;
++}
++
++.project-progress-fill {
++  height: 100%;
++  background-color: #01F9C6;
++  border-radius: 2px;
++  box-shadow: 0 0 8px rgba(1, 249, 198, 0.6);
++}
++
++/* Findom tab styling - 5-tab system */
++.findom-tabs {
++  display: flex;
++  gap: 2px;
++  margin-bottom: 20px;
++  border-bottom: 1px solid rgba(1, 249, 198, 0.1);
++  width: 100%;
++}
++
++.findom-tab {
++  padding: 8px 16px;
++  font-size: 14px;
++  background: transparent;
++  color: rgba(255, 255, 255, 0.6);
++  border: none;
++  cursor: pointer;
++  position: relative;
++  transition: all 0.2s ease;
++  flex: 1;
++  text-align: center;
++  user-select: none;
++}
++
++.findom-tab:hover {
++  color: #01F9C6;
++}
++
++.findom-tab.active {
++  color: #01F9C6;
++  font-weight: 500;
++}
++
++.findom-tab.active::after {
++  content: '';
++  position: absolute;
++  bottom: -1px;
++  left: 0;
++  right: 0;
++  height: 2px;
++  background-color: #01F9C6;
++  box-shadow: 0 0 8px rgba(1, 249, 198, 0.6);
++}
++
++/* Tab content styles */
++.tab-content {
++  display: none;
++  width: 100%;
++  animation: fadeIn 0.3s ease;
++}
++
++.tab-content.active {
++  display: block;
++}
++
++@keyframes fadeIn {
++  from { opacity: 0; }
++  to { opacity: 1; }
++}
++
++/* Progress tab styles */
++.progress-tab {
++  display: flex;
++  flex-direction: column;
++  gap: 16px;
++}
++
++.system-status-area {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  padding-bottom: 16px;
++  border-bottom: 1px solid rgba(1, 249, 198, 0.1);
++}
++
++.feature-list {
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++  max-height: 400px;
++  overflow-y: auto;
++  padding-right: 8px;
++  margin-top: 10px;
++}
++
++.feature-item {
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  padding: 8px 10px;
++  transition: all 0.2s ease;
++  border-radius: 4px;
++}
++
++.feature-item.cursor-pointer:hover {
++  background-color: rgba(1, 249, 198, 0.05);
++}
++
++.feature-status {
++  width: 18px;
++  text-align: center;
++  font-size: 14px;
++  color: #01F9C6;
++}
++
++.feature-description {
++  flex: 1;
++  font-size: 14px;
++  color: rgba(255, 255, 255, 0.95);
++  font-weight: 500;
++}
++
++/* Subfeature styles */
++.subfeature-list {
++  margin-left: 25px;
++  border-left: 1px solid rgba(1, 249, 198, 0.2);
++  padding-left: 15px;
++  margin-top: 4px;
++  margin-bottom: 6px;
++  display: flex;
++  flex-direction: column;
++  gap: 8px;
++}
++
++.subfeature-item {
++  display: flex;
++  align-items: flex-start;
++  gap: 8px;
++  padding: 6px 4px;
++  border-radius: 4px;
++  transition: background-color 0.2s ease;
++}
++
++.subfeature-item:hover {
++  background-color: rgba(1, 249, 198, 0.03);
++}
++
++.subfeature-bullet {
++  color: #01F9C6;
++  font-size: 14px;
++  line-height: 20px;
++}
++
++.subfeature-description {
++  font-size: 13px;
++  color: rgba(255, 255, 255, 0.8);
++}
++
++/* Goal styles */
++.goals-list {
++  margin-left: 25px;
++  border-left: 1px solid rgba(1, 249, 198, 0.1);
++  padding-left: 12px;
++  margin-top: 2px;
++  padding-top: 2px;
++  padding-bottom: 2px;
++  margin-bottom: 4px;
++  display: flex;
++  flex-direction: column;
++  gap: 4px;
++}
++
++.goal-item {
++  padding: 4px 0;
++  opacity: 0.85;
++  transition: opacity 0.2s ease;
++}
++
++.goal-item:hover {
++  opacity: 1;
++}
++
++.goal-bullet {
++  color: rgba(1, 249, 198, 0.6);
++  font-size: 12px;
++}
++
++.goal-description {
++  font-size: 12px;
++  color: rgba(255, 255, 255, 0.7);
++}
++
++/* Chat tab styles */
++.chat-input {
++  background-color: rgba(1, 249, 198, 0.05);
++  border: 1px solid rgba(1, 249, 198, 0.2);
++  color: white;
++  border-radius: 4px;
++  padding: 12px;
++  width: 100%;
++  margin-top: 12px;
++  outline: none;
++  transition: all 0.2s ease;
++}
++
++.chat-input:focus {
++  border-color: rgba(1, 249, 198, 0.5);
++  box-shadow: 0 0 10px rgba(1, 249, 198, 0.3);
++}
++
++.chat-messages {
++  max-height: 400px;
++  overflow-y: auto;
++  display: flex;
++  flex-direction: column;
++  gap: 12px;
++  margin-bottom: 12px;
++}
++
++.chat-message {
++  padding: 10px 14px;
++  border-radius: 6px;
++  max-width: 85%;
++  animation: slideIn 0.3s ease;
++}
++
++.chat-message.user {
++  background-color: rgba(1, 249, 198, 0.1);
++  align-self: flex-end;
++  border: 1px solid rgba(1, 249, 198, 0.2);
++}
++
++.chat-message.system {
++  background-color: rgba(255, 255, 255, 0.05);
++  align-self: flex-start;
++  border: 1px solid rgba(255, 255, 255, 0.1);
++}
++
++@keyframes slideIn {
++  from { 
++    opacity: 0;
++    transform: translateY(10px);
++  }
++  to { 
++    opacity: 1;
++    transform: translateY(0);
++  }
++}
++
++/* Log tab styles */
++.log-tab {
++  display: flex;
++  flex-direction: column;
++  gap: 12px;
++  max-height: 400px;
++  overflow-y: auto;
++}
++
++.log-entry {
++  padding: 8px 12px;
++  background-color: rgba(5, 10, 15, 0.6);
++  border-left: 3px solid rgba(1, 249, 198, 0.5);
++  font-family: 'Courier New', monospace;
++  font-size: 12px;
++  color: rgba(255, 255, 255, 0.85);
++  white-space: pre-wrap;
++}
++
++.log-timestamp {
++  color: rgba(1, 249, 198, 0.8);
++  font-size: 11px;
++  margin-bottom: 4px;
++  display: block;
++}
++
++/* Findom Logo Styles */
++.findom-logo {
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  margin-bottom: 40px;
++}
++
++.findom-logo-image {
++  width: 40px;
++  height: 40px;
++  position: relative;
++}
++
++.findom-logo-image::before {
++  content: '';
++  position: absolute;
++  inset: -4px;
++  border-radius: 50%;
++  background: radial-gradient(circle, rgba(1, 249, 198, 0.3) 0%, rgba(1, 249, 198, 0) 70%);
++  z-index: -1;
++}
++
++.findom-logo-text {
++  font-size: 28px;
++  font-weight: 600;
++  color: white;
++  letter-spacing: 1px;
++}
++
++.findom-green-glow {
++  text-shadow: 0 0 10px rgba(1, 249, 198, 0.6);
++  color: #01F9C6;
++}
++
++/* Add Project Button */
++.add-project-button {
++  background-color: transparent;
++  border: 1px dashed rgba(1, 249, 198, 0.3);
++  border-radius: 4px;
++  color: rgba(1, 249, 198, 0.7);
++  padding: 12px 16px;
++  cursor: pointer;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 8px;
++  margin-bottom: 16px;
++  transition: all 0.2s ease;
++  width: 100%;
++  height: 70px;
++}
++
++.add-project-button:hover {
++  background-color: rgba(1, 249, 198, 0.05);
++  border-color: rgba(1, 249, 198, 0.5);
++  color: #01F9C6;
++  box-shadow: 0 0 15px rgba(1, 249, 198, 0.2);
++}
++
+ /* Thinking animation */
+ @keyframes bounce {
+   0%, 100% {
+diff --git a/client/src/lib/queryClient.ts b/client/src/lib/queryClient.ts
+index 579063c..4c5d0f0 100644
+--- a/client/src/lib/queryClient.ts
++++ b/client/src/lib/queryClient.ts
+@@ -7,13 +7,11 @@ const API_BASE_URL = (() => {
+     return import.meta.env.VITE_API_URL;
+   }
+   
+-  // In Replit environment, use port 5000 on the same hostname
++  // In Replit environment, use the same origin (no need to change port)
+   if (window.location.hostname.includes('.replit.dev') || 
+       window.location.hostname.includes('.repl.co')) {
+-    // Replace the protocol and port, but keep the hostname
+-    const protocol = window.location.protocol;
+-    const hostname = window.location.hostname;
+-    return `${protocol}//${hostname}:5000`;
++    // Use the same origin as the client
++    return window.location.origin;
+   }
+   
+   // In local development, use localhost:5000
+diff --git a/client/src/lib/types.ts b/client/src/lib/types.ts
+index da72c0d..1c72375 100644
+--- a/client/src/lib/types.ts
++++ b/client/src/lib/types.ts
+@@ -200,7 +200,7 @@ export interface WebSocketMessage {
+   data?: any;
+   projectId?: number;
+   personaId?: string;
+-  timestamp?: Date;
++  timestamp?: string | number | Date;
+   codeSnippet?: string;
+   isDebugging?: boolean;
+   isStepByStep?: boolean;
+diff --git a/client/src/lib/websocket.tsx b/client/src/lib/websocket.tsx
+index f2c4e2c..3f5ed43 100644
+--- a/client/src/lib/websocket.tsx
++++ b/client/src/lib/websocket.tsx
+@@ -57,12 +57,19 @@ function initializeWebSocket(): void {
+     let wsUrl = import.meta.env.VITE_WS_URL as string;
+     
+     if (!wsUrl) {
+-      // Use the current host but switch protocol 
+-      // Instead of appending '/ws' here, we'll use the full path
++      // Use the current host but switch protocol
+       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+       const host = window.location.host;
++      
++      // In Replit environments, ensure we're connecting to the right WebSocket path
++      // This is critical for the Replit webview to work correctly
+       wsUrl = `${protocol}//${host}/ws`;
+       
++      // For Replit webview, we need to handle the special Replit domain structure
++      if (host.includes('.repl.co') || host.includes('.replit.dev')) {
++        wsUrl = `${protocol}//${host}/ws`;
++      }
++      
+       // Debug logging
+       console.log('WebSocket URL derived from host:', {
+         windowLocation: window.location.toString(),
+@@ -190,10 +197,32 @@ function handleMessage(event: MessageEvent): void {
+     const message = JSON.parse(event.data) as WebSocketMessage;
+     
+     // Process system messages
+-    if (message.type === 'connection' && message.clientId) {
++    if (message.type === 'welcome' && message.clientId) {
++      // Handle the welcome message type from our server
+       clientId = message.clientId;
+       console.log(`Assigned client ID: ${clientId}`);
+       
++      // Notify subscribers about successful connection
++      subscribers.forEach(handler => {
++        try {
++          handler({
++            type: 'connection_status',
++            clientId: message.clientId,
++            data: { 
++              status: 'registered',
++              clientId: message.clientId,
++              message: 'WebSocket client registered with server'
++            }
++          });
++        } catch (err) {
++          console.error('Error in connection handler:', err);
++        }
++      });
++    } else if (message.type === 'connection' && message.clientId) {
++      // Legacy handler for connection messages
++      clientId = message.clientId;
++      console.log(`Assigned client ID (legacy connection): ${clientId}`);
++      
+       // Also notify subscribers about successful connection
+       subscribers.forEach(handler => {
+         try {
+diff --git a/client/src/pages/ChatView.tsx b/client/src/pages/ChatView.tsx
+new file mode 100644
+index 0000000..23f2848
+--- /dev/null
++++ b/client/src/pages/ChatView.tsx
+@@ -0,0 +1,11 @@
++import { ChatInterface } from '../components/ChatInterface';
++
++export default function ChatView() {
++  return (
++    <div className="h-full flex flex-col">
++      <div className="flex-1 overflow-hidden">
++        <ChatInterface />
++      </div>
++    </div>
++  );
++}
+\ No newline at end of file
+diff --git a/client/src/pages/HomePage.tsx b/client/src/pages/HomePage.tsx
+index b256b52..ca2144f 100644
+--- a/client/src/pages/HomePage.tsx
++++ b/client/src/pages/HomePage.tsx
+@@ -1,11 +1,10 @@
+ import { useQuery } from "@tanstack/react-query";
+ import { Project } from "@shared/schema";
+ import { useProjectContext } from "@/context/ProjectContext";
+-import { Button } from "@/components/ui/button";
+-import { Plus, AlertCircle } from "lucide-react";
++import { Plus, AlertCircle, ChevronRight, Activity, MessageSquare, List, DollarSign, BarChart } from "lucide-react";
+ import { useState, useEffect } from "react";
+ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+-import { useLocation, Link } from "wouter";
++import { useLocation } from "wouter";
+ import { Alert, AlertDescription } from "@/components/ui/alert";
+ 
+ export default function HomePage() {
+@@ -14,57 +13,209 @@ export default function HomePage() {
+   const [, setLocation] = useLocation();
+   const [projectList, setProjectList] = useState<Project[]>([]);
+   const [error, setError] = useState<string | null>(null);
++  const [expandedProject, setExpandedProject] = useState<number | null>(null);
++  const [activeTab, setActiveTab] = useState<string>("progress");
++  const [isLoading, setIsLoading] = useState<boolean>(true);
++  const [expandedFeatures, setExpandedFeatures] = useState<number[]>([]);
++  const [expandedMilestones, setExpandedMilestones] = useState<number[]>([]);
+   
+   // Make sure projects is valid before using it
+   useEffect(() => {
+     try {
++      setIsLoading(true);
++      
+       // Ensure projects is an array before using it
+       if (Array.isArray(projects)) {
+-        setProjectList(projects);
++        // If we have no projects but the API request completed, fall back to the default FINDOM project
++        if (projects.length === 0) {
++          setProjectList([{
++            id: 1,
++            name: 'FINDOM',
++            description: 'Financial Domination Autonomous Agent',
++            isWorking: true,
++            progress: 15,
++            lastUpdated: new Date(),
++            projectType: 'findom',
++            autoMode: false,
++            priority: 10,
++            agentConfig: {},
++            checkpoints: [],
++            lastCheckIn: null,
++            nextCheckIn: null,
++            lastAutomationRun: null
++          }]);
++        } else {
++          setProjectList(projects);
++        }
+         setError(null);
+       } else if (projects) {
+         console.warn("Projects is not an array:", projects);
+         setError("Invalid projects data format");
+-        setProjectList([]); // Use empty array as fallback
++        
++        // Fall back to the default FINDOM project
++        setProjectList([{
++          id: 1,
++          name: 'FINDOM',
++          description: 'Financial Domination Autonomous Agent',
++          isWorking: true,
++          progress: 15,
++          lastUpdated: new Date(),
++          projectType: 'findom',
++          autoMode: false,
++          priority: 10,
++          agentConfig: {},
++          checkpoints: [],
++          lastCheckIn: null,
++          nextCheckIn: null,
++          lastAutomationRun: null
++        }]);
+       }
+     } catch (err) {
+       console.error("Error processing projects data:", err);
+       setError("Error loading projects");
+-      setProjectList([]); // Use empty array as fallback
++      
++      // Fall back to the default FINDOM project
++      setProjectList([{
++        id: 1,
++        name: 'FINDOM',
++        description: 'Financial Domination Autonomous Agent',
++        isWorking: true,
++        progress: 15,
++        lastUpdated: new Date(),
++        projectType: 'findom',
++        autoMode: false,
++        priority: 10,
++        agentConfig: {},
++        checkpoints: [],
++        lastCheckIn: null,
++        nextCheckIn: null,
++        lastAutomationRun: null
++      }]);
++    } finally {
++      setIsLoading(false);
+     }
+   }, [projects]);
+ 
++  const toggleProject = (id: number) => {
++    if (expandedProject === id) {
++      setExpandedProject(null);
++    } else {
++      setExpandedProject(id);
++      setActiveTab("progress"); // Reset to progress tab when expanding
++    }
++  };
++  
++  // Toggle feature expansion
++  const toggleFeature = (featureId: number) => {
++    setExpandedFeatures(prev => {
++      if (prev.includes(featureId)) {
++        return prev.filter(id => id !== featureId);
++      } else {
++        return [...prev, featureId];
++      }
++    });
++  };
++  
++  // Toggle milestone expansion
++  const toggleMilestone = (milestoneId: number) => {
++    setExpandedMilestones(prev => {
++      if (prev.includes(milestoneId)) {
++        return prev.filter(id => id !== milestoneId);
++      } else {
++        return [...prev, milestoneId];
++      }
++    });
++  };
++
++  // Sample feature data for demonstration with hierarchical structure
++  const findomFeatures = [
++    { 
++      id: 1,
++      name: "Webhook Integration", 
++      status: "completed", 
++      expandable: true, 
++      subFeatures: [
++        { 
++          id: 101,
++          name: "GitHub Webhook Handler", 
++          status: "completed",
++          goals: [
++            { id: 10101, name: "Parse webhook payload", status: "completed" },
++            { id: 10102, name: "Validate webhook signature", status: "completed" },
++            { id: 10103, name: "Trigger repository updates", status: "completed" }
++          ]
++        },
++        { 
++          id: 102,
++          name: "PM2 Process Management", 
++          status: "completed",
++          goals: [
++            { id: 10201, name: "Auto-restart on code changes", status: "completed" },
++            { id: 10202, name: "Logging integration", status: "completed" }
++          ]
++        }
++      ]
++    },
++    { id: 2, name: "Project Management", status: "completed", expandable: false },
++    { id: 3, name: "Dashboard UI", status: "completed", expandable: false },
++    { 
++      id: 4,
++      name: "Agent Integration", 
++      status: "in-progress", 
++      expandable: true, 
++      subFeatures: [
++        { 
++          id: 401,
++          name: "Agent Core Implementation", 
++          status: "completed",
++          goals: [
++            { id: 40101, name: "Agent context handling", status: "completed" },
++            { id: 40102, name: "Memory system", status: "in-progress" },
++            { id: 40103, name: "Action framework", status: "in-progress" }
++          ]
++        },
++        { 
++          id: 402,
++          name: "Autonomous Behavior", 
++          status: "in-progress",
++          goals: [
++            { id: 40201, name: "Decision-making framework", status: "in-progress" },
++            { id: 40202, name: "Self-review capability", status: "pending" }
++          ]
++        }
++      ]
++    },
++    { id: 5, name: "Real-time Chat System", status: "completed", expandable: false },
++    { id: 6, name: "Progress Tracking", status: "completed", expandable: false },
++    { id: 7, name: "Horizontal Project Boxes", status: "completed", expandable: false },
++    { id: 8, name: "5-Tab Interface", status: "completed", expandable: false },
++    { id: 9, name: "Sales Monitoring Tab", status: "completed", expandable: false },
++    { id: 10, name: "Output Tab", status: "completed", expandable: false },
++    { id: 11, name: "Pulsing Green Status Indicators", status: "completed", expandable: false },
++    { id: 12, name: "Dark Theme with Green Accents", status: "completed", expandable: false },
++  ];
++
++  // Sample chat messages for demonstration
++  const chatMessages = [
++    { sender: "user", message: "Can you update the project UI to match the design specs?", timestamp: new Date(Date.now() - 120000) },
++    { sender: "findom", message: "I'll implement a dark theme with green glowing accent colors and horizontal project boxes as requested.", timestamp: new Date(Date.now() - 90000) },
++    { sender: "user", message: "Also add the 5-tab interface for each project.", timestamp: new Date(Date.now() - 60000) },
++    { sender: "findom", message: "Added the 5-tab interface with Progress, Input, Log, Sales, and Output tabs. All projects now use this interface when expanded.", timestamp: new Date(Date.now() - 30000) },
++  ];
++
++  // Sample log entries for demonstration
++  const logEntries = [
++    { message: "Updated UI with dark theme and green accents", timestamp: new Date(Date.now() - 180000) },
++    { message: "Added horizontal project boxes with pulsing status indicators", timestamp: new Date(Date.now() - 120000) },
++    { message: "Implemented 5-tab interface with Progress, Input, Log, Sales, and Output tabs", timestamp: new Date(Date.now() - 60000) },
++    { message: "System running in optimal condition", timestamp: new Date() },
++  ];
++
+   return (
+     <div className="w-full h-full flex flex-col">
+-      {/* Header with add button */}
+-      <header className="bg-background py-6 px-8 border-b border-gray-800 flex justify-between items-center">
+-        <div className="flex items-center space-x-6">
+-          <h1 className="text-2xl font-semibold text-white">Titan Projects</h1>
+-          <Link href="/byte-ui" className="text-blue-400 hover:text-blue-300 transition-colors">
+-            ByteUI Examples
+-          </Link>
+-        </div>
+-        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+-          <Button 
+-            onClick={() => setIsFormOpen(true)}
+-            className="bg-accent hover:bg-accent/90 text-black"
+-          >
+-            <Plus className="w-4 h-4 mr-2" />
+-            New Project
+-          </Button>
+-          <DialogContent className="sm:max-w-[500px]">
+-            <DialogHeader>
+-              <DialogTitle>Create New Project</DialogTitle>
+-            </DialogHeader>
+-            {/* Project form would go here */}
+-            <p className="text-sm text-gray-400 mt-4">Project creation form will be added here.</p>
+-          </DialogContent>
+-        </Dialog>
+-      </header>
+-      
+       {/* Error Alert */}
+       {error && (
+-        <div className="px-8 pt-4">
++        <div className="mb-4">
+           <Alert variant="destructive">
+             <AlertCircle className="h-4 w-4" />
+             <AlertDescription>{error}</AlertDescription>
+@@ -72,54 +223,381 @@ export default function HomePage() {
+         </div>
+       )}
+       
+-      {/* Projects grid */}
+-      <div className="p-8">
+-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+-          {/* FINDOM Project Tile (grey box with glowing hover effect) */}
+-          <div 
+-            className="bg-gray-800 h-48 rounded-lg border border-gray-700 flex items-center justify-center cursor-pointer group transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,255,0,0.3)] hover:border-green-400"
+-            onClick={() => setLocation(`/projects/1`)}
+-          >
+-            <h2 className="text-2xl font-bold text-white">FINDOM</h2>
+-          </div>
+-          
+-          {/* Other projects would be shown here */}
+-          {projectList
+-            .filter(project => project?.name?.toUpperCase() !== 'FINDOM')
+-            .map(project => (
+-              <div 
+-                key={project.id}
+-                className="bg-gray-800 h-48 rounded-lg border border-gray-700 p-4 flex flex-col cursor-pointer transition-all duration-300 hover:border-blue-400 hover:shadow-md"
+-                onClick={() => setLocation(`/projects/${project.id}`)}
+-              >
+-                <h2 className="text-xl font-semibold text-white">{project.name}</h2>
+-                <p className="text-gray-400 mt-2 text-sm flex-1">{project.description}</p>
++      {/* Add new project button */}
++      <button onClick={() => setIsFormOpen(true)} className="add-project-button mb-6">
++        <Plus className="w-5 h-5 mr-2" />
++        <span>Add New Project</span>
++      </button>
++      
++      {/* Projects list */}
++      <div className="flex flex-col space-y-4">
++        {/* Findom Project */}
++        <div 
++          className={`project-list-item ${expandedProject === 1 ? 'expanded' : ''}`}
++        >
++          {expandedProject === 1 ? (
++            <div className="w-full">
++              <div className="project-header" onClick={() => toggleProject(1)}>
++                <div className="project-title-area">
++                  <div className="status-indicator active"></div>
++                  <span className="font-semibold titan-green">Findom</span>
++                </div>
++                <div className="flex items-center gap-3">
++                  <div className="bg-[rgba(1,249,198,0.1)] px-2 py-1 rounded text-xs">
++                    <span className="text-primary">100%</span>
++                  </div>
++                  <ChevronRight 
++                    className="h-5 w-5 text-gray-400 transition-transform rotate-90" 
++                  />
++                </div>
++              </div>
++              
++              <div className="project-content mt-5">
++                <div className="flex border-b border-[#01F9C6]/20">
++                  <button 
++                    className={`px-4 py-2 ${activeTab === 'progress' ? 'text-[#01F9C6] border-b-2 border-[#01F9C6]' : 'text-gray-400'}`}
++                    onClick={() => setActiveTab('progress')}
++                  >
++                    Progress
++                  </button>
++                  <button 
++                    className={`px-4 py-2 ${activeTab === 'input' ? 'text-[#01F9C6] border-b-2 border-[#01F9C6]' : 'text-gray-400'}`}
++                    onClick={() => setActiveTab('input')}
++                  >
++                    Input
++                  </button>
++                  <button 
++                    className={`px-4 py-2 ${activeTab === 'log' ? 'text-[#01F9C6] border-b-2 border-[#01F9C6]' : 'text-gray-400'}`}
++                    onClick={() => setActiveTab('log')}
++                  >
++                    Log
++                  </button>
++                  <button 
++                    className={`px-4 py-2 ${activeTab === 'sales' ? 'text-[#01F9C6] border-b-2 border-[#01F9C6]' : 'text-gray-400'}`}
++                    onClick={() => setActiveTab('sales')}
++                  >
++                    Sales
++                  </button>
++                  <button 
++                    className={`px-4 py-2 ${activeTab === 'output' ? 'text-[#01F9C6] border-b-2 border-[#01F9C6]' : 'text-gray-400'}`}
++                    onClick={() => setActiveTab('output')}
++                  >
++                    Output
++                  </button>
++                </div>
+                 
+-                <div className="mt-auto">
+-                  <div className="flex justify-between text-sm mb-1">
+-                    <span>Progress</span>
+-                    <span>{project.progress}%</span>
++                {/* Progress Tab Content */}
++                <div className={`tab-content ${activeTab === 'progress' ? 'active' : ''}`}>
++                  <div className="system-status-area">
++                    <div className="flex items-center">
++                      <div className="status-indicator active mr-2"></div>
++                      <span className="text-xs text-gray-300">System Status: Operational</span>
++                    </div>
++                    <div className="project-progress-bar">
++                      <div className="project-progress-fill" style={{ width: '100%' }}></div>
++                    </div>
++                  </div>
++                  
++                  <div className="feature-list mt-4 space-y-4">
++                    {findomFeatures.map((feature, index) => {
++                      return (
++                        <div key={index} className="space-y-2">
++                          <div 
++                            className={`feature-item ${feature.expandable ? 'cursor-pointer' : ''}`}
++                            onClick={feature.expandable ? () => toggleFeature(feature.id) : undefined}
++                          >
++                            <div className="flex justify-between items-center">
++                              <div className="flex items-center">
++                                <div className="feature-status mr-2">
++                                  {feature.status === 'completed' ? (
++                                    <span className="text-[#01F9C6]">✓</span>
++                                  ) : (
++                                    <span className="text-[#01F9C6]">→</span>
++                                  )}
++                                </div>
++                                <div className="feature-description text-white">
++                                  {feature.name}
++                                </div>
++                              </div>
++                              
++                              {feature.expandable && (
++                                <ChevronRight 
++                                  className={`h-4 w-4 text-[#01F9C6] transition-transform duration-200 ${expandedFeatures.includes(feature.id) ? 'rotate-90' : ''}`}
++                                />
++                              )}
++                            </div>
++                          </div>
++                          
++                          {/* Sub-features shown in a vertical list below the parent feature */}
++                          {feature.expandable && feature.subFeatures && expandedFeatures.includes(feature.id) && (
++                            <div className="subfeature-list">
++                              {feature.subFeatures.map((subFeature, i) => (
++                                <div key={i} className="space-y-1">
++                                  <div 
++                                    className="subfeature-item cursor-pointer"
++                                    onClick={() => toggleMilestone(subFeature.id)}
++                                  >
++                                    <div className="flex justify-between items-center w-full">
++                                      <div className="flex items-center">
++                                        <span className="mr-2">
++                                          {subFeature.status === 'completed' ? (
++                                            <span className="text-[#01F9C6]">✓</span>
++                                          ) : (
++                                            <span className="text-[#01F9C6]">→</span>
++                                          )}
++                                        </span>
++                                        <span className="subfeature-description">{subFeature.name}</span>
++                                      </div>
++                                      {subFeature.goals && subFeature.goals.length > 0 && (
++                                        <ChevronRight 
++                                          className={`h-3 w-3 text-[#01F9C6] transition-transform duration-200 ${expandedMilestones.includes(subFeature.id) ? 'rotate-90' : ''}`}
++                                        />
++                                      )}
++                                    </div>
++                                  </div>
++                                  
++                                  {/* Goal items under milestone */}
++                                  {subFeature.goals && expandedMilestones.includes(subFeature.id) && (
++                                    <div className="goals-list">
++                                      {subFeature.goals.map((goal, j) => (
++                                        <div key={j} className="goal-item">
++                                          <div className="flex items-center">
++                                            <span className="goal-bullet ml-6 mr-2">•</span>
++                                            <span className="goal-description text-sm">
++                                              {goal.name}
++                                              {goal.status === 'completed' && (
++                                                <span className="text-[#01F9C6] ml-1">✓</span>
++                                              )}
++                                              {goal.status === 'in-progress' && (
++                                                <span className="text-[#01F9C6] ml-1">→</span>
++                                              )}
++                                              {goal.status === 'pending' && (
++                                                <span className="text-gray-400 ml-1">◯</span>
++                                              )}
++                                            </span>
++                                          </div>
++                                        </div>
++                                      ))}
++                                    </div>
++                                  )}
++                                </div>
++                              ))}
++                            </div>
++                          )}
++                        </div>
++                      );
++                    })}
+                   </div>
+-                  <div className="w-full bg-gray-700 rounded-full h-2">
+-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${project.progress || 0}%` }}></div>
++                </div>
++                
++                {/* Input Tab Content */}
++                <div className={`tab-content ${activeTab === 'input' ? 'active' : ''}`}>
++                  <div className="chat-messages">
++                    {chatMessages.map((msg, index) => (
++                      <div 
++                        key={index} 
++                        className={`chat-message ${msg.sender === 'user' ? 'user' : 'system'}`}
++                      >
++                        <div className="text-xs text-gray-400 mb-1">
++                          {msg.timestamp.toLocaleTimeString()}
++                        </div>
++                        <div className="text-sm">
++                          {msg.message}
++                        </div>
++                      </div>
++                    ))}
++                  </div>
++                  <textarea 
++                    className="chat-input" 
++                    placeholder="Type your message here..."
++                    rows={3}
++                  ></textarea>
++                </div>
++                
++                {/* Log Tab Content */}
++                <div className={`tab-content ${activeTab === 'log' ? 'active' : ''}`}>
++                  <div className="log-tab">
++                    {logEntries.map((entry, index) => (
++                      <div key={index} className="log-entry">
++                        <span className="log-timestamp">
++                          {entry.timestamp.toLocaleTimeString()} - {entry.timestamp.toLocaleDateString()}
++                        </span>
++                        {entry.message}
++                      </div>
++                    ))}
++                  </div>
++                </div>
++                
++                {/* Sales Tab Content */}
++                <div className={`tab-content ${activeTab === 'sales' ? 'active' : ''}`}>
++                  <div className="p-2 text-sm text-gray-300">
++                    <p>Sales and revenue monitoring dashboard will be displayed here.</p>
++                  </div>
++                </div>
++                
++                {/* Output Tab Content */}
++                <div className={`tab-content ${activeTab === 'output' ? 'active' : ''}`}>
++                  <div className="p-2 text-sm text-gray-300">
++                    <p>System output and metrics will be displayed here.</p>
+                   </div>
+                 </div>
+               </div>
+-            ))
+-          }
+-          
+-          {/* Add new project tile */}
+-          <div 
+-            className="border-2 border-dashed border-gray-700 h-48 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-accent"
+-            onClick={() => setIsFormOpen(true)}
+-          >
+-            <div className="flex flex-col items-center">
+-              <Plus className="w-8 h-8 text-gray-400" />
+-              <span className="mt-2 text-gray-400">Add New Project</span>
+             </div>
+-          </div>
++          ) : (
++            <div className="project-header w-full" onClick={() => toggleProject(1)}>
++              <div className="project-title-area">
++                <div className="status-indicator active"></div>
++                <span className="font-semibold titan-green">Findom</span>
++              </div>
++              <div className="flex items-center gap-3">
++                <div className="bg-[rgba(1,249,198,0.1)] px-2 py-1 rounded text-xs">
++                  <span className="text-primary">100%</span>
++                </div>
++                <ChevronRight className="h-5 w-5 text-gray-400" />
++              </div>
++            </div>
++          )}
+         </div>
++        
++        {/* Other projects */}
++        {projectList
++          .filter(project => project?.name?.toUpperCase() !== 'FINDOM')
++          .map(project => (
++            <div 
++              key={project.id}
++              className={`project-list-item ${expandedProject === project.id ? 'expanded' : ''}`}
++            >
++              {expandedProject === project.id ? (
++                <div className="w-full">
++                  <div className="project-header" onClick={() => toggleProject(project.id)}>
++                    <div className="project-title-area">
++                      <div className={`status-indicator ${project.isWorking ? 'active' : 'inactive'}`}></div>
++                      <span className="font-semibold text-white">{project.name}</span>
++                    </div>
++                    <div className="flex items-center gap-3">
++                      <div className="bg-[rgba(1,249,198,0.1)] px-2 py-1 rounded text-xs">
++                        <span className="text-primary">{project.progress}%</span>
++                      </div>
++                      <ChevronRight 
++                        className="h-5 w-5 text-gray-400 transition-transform rotate-90" 
++                      />
++                    </div>
++                  </div>
++                  
++                  <div className="project-content mt-5">
++                    <div className="titan-tabs">
++                      <button 
++                        className={`titan-tab ${activeTab === 'progress' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('progress')}
++                      >
++                        <Activity className="w-4 h-4 mr-1" />
++                        Progress
++                      </button>
++                      <button 
++                        className={`titan-tab ${activeTab === 'input' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('input')}
++                      >
++                        <MessageSquare className="w-4 h-4 mr-1" />
++                        Input
++                      </button>
++                      <button 
++                        className={`titan-tab ${activeTab === 'log' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('log')}
++                      >
++                        <List className="w-4 h-4 mr-1" />
++                        Log
++                      </button>
++                      <button 
++                        className={`titan-tab ${activeTab === 'sales' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('sales')}
++                      >
++                        <DollarSign className="w-4 h-4 mr-1" />
++                        Sales
++                      </button>
++                      <button 
++                        className={`titan-tab ${activeTab === 'output' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('output')}
++                      >
++                        <BarChart className="w-4 h-4 mr-1" />
++                        Output
++                      </button>
++                    </div>
++                    
++                    {/* Progress Tab Content */}
++                    <div className={`tab-content ${activeTab === 'progress' ? 'active' : ''}`}>
++                      <div className="system-status-area">
++                        <div className="flex items-center">
++                          <div className={`status-indicator ${project.isWorking ? 'active' : 'inactive'} mr-2`}></div>
++                          <span className="text-xs text-gray-300">
++                            Status: {project.isWorking ? 'Operational' : 'Inactive'}
++                          </span>
++                        </div>
++                        <div className="project-progress-bar">
++                          <div 
++                            className="project-progress-fill" 
++                            style={{ width: `${project.progress || 0}%` }}
++                          ></div>
++                        </div>
++                      </div>
++                      
++                      <div className="mt-3">
++                        <p className="text-sm text-gray-300 mb-3">{project.description}</p>
++                        
++                        <div className="text-xs text-gray-400 flex justify-between items-center mt-2">
++                          <span>Last Updated</span>
++                          <span>{new Date(project.lastUpdated).toLocaleDateString()}</span>
++                        </div>
++                        
++                        <div className="text-xs text-gray-400 flex justify-between items-center mt-2">
++                          <span>Project Type</span>
++                          <span className="capitalize">{project.projectType}</span>
++                        </div>
++                        
++                        <div className="text-xs text-gray-400 flex justify-between items-center mt-2">
++                          <span>Auto Mode</span>
++                          <span>{project.autoMode ? 'Enabled' : 'Disabled'}</span>
++                        </div>
++                      </div>
++                    </div>
++                    
++                    {/* Other tabs would follow the same pattern */}
++                    <div className={`tab-content ${activeTab !== 'progress' ? 'active' : ''}`}>
++                      <p className="text-sm text-gray-300 py-4">
++                        This tab is under development for {project.name}.
++                      </p>
++                    </div>
++                  </div>
++                </div>
++              ) : (
++                <div className="project-header w-full" onClick={() => toggleProject(project.id)}>
++                  <div className="project-title-area">
++                    <div className={`status-indicator ${project.isWorking ? 'active' : 'inactive'}`}></div>
++                    <span className="font-semibold text-white">{project.name}</span>
++                  </div>
++                  <div className="flex items-center gap-3">
++                    <div className="bg-[rgba(1,249,198,0.1)] px-2 py-1 rounded text-xs">
++                      <span className="text-primary">{project.progress}%</span>
++                    </div>
++                    <ChevronRight className="h-5 w-5 text-gray-400" />
++                  </div>
++                </div>
++              )}
++            </div>
++          ))
++        }
+       </div>
++      
++      {/* Add Project Dialog */}
++      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
++        <DialogContent className="sm:max-w-[500px] bg-[rgba(5,10,15,0.95)] border border-[rgba(1,249,198,0.25)]">
++          <DialogHeader>
++            <DialogTitle className="titan-green">Create New Findom Project</DialogTitle>
++          </DialogHeader>
++          <p className="text-sm text-gray-300 mt-4">
++            Project creation form will be added here.
++          </p>
++        </DialogContent>
++      </Dialog>
+     </div>
+   );
+ }
+\ No newline at end of file
+diff --git a/client/src/pages/not-found.tsx b/client/src/pages/not-found.tsx
+index dba9f83..05943ac 100644
+--- a/client/src/pages/not-found.tsx
++++ b/client/src/pages/not-found.tsx
+@@ -1,19 +1,31 @@
+ import { Card, CardContent } from "@/components/ui/card";
+ import { AlertCircle } from "lucide-react";
++import { Link } from "wouter";
+ 
+ export default function NotFound() {
+   return (
+-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+-      <Card className="w-full max-w-md mx-4">
++    <div className="min-h-screen w-full flex items-center justify-center bg-[rgba(10,12,16,0.95)]">
++      <Card className="w-full max-w-md mx-4 titan-box border-primary/30">
+         <CardContent className="pt-6">
+-          <div className="flex mb-4 gap-2">
+-            <AlertCircle className="h-8 w-8 text-red-500" />
+-            <h1 className="text-2xl font-bold text-gray-900">404 Page Not Found</h1>
++          <div className="flex flex-col items-center text-center mb-6">
++            <div className="status-indicator inactive mb-4"></div>
++            <h1 className="text-2xl font-bold titan-green">404 Page Not Found</h1>
++            <div className="h-0.5 w-16 bg-primary/40 my-4 rounded-full"></div>
+           </div>
+ 
+-          <p className="mt-4 text-sm text-gray-600">
+-            Did you forget to add the page to the router?
++          <p className="text-sm text-gray-400 text-center mb-6">
++            The requested resource could not be located on the Titan system.
+           </p>
++          
++          <div className="flex justify-center">
++            <Link href="/">
++              <button className="inline-flex items-center justify-center px-4 py-2 border border-primary/30 
++                           text-primary hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_10px_rgba(1,249,198,0.3)]
++                           rounded transition-all duration-300">
++                Return to Dashboard
++              </button>
++            </Link>
++          </div>
+         </CardContent>
+       </Card>
+     </div>
+diff --git a/generated-icon.png b/generated-icon.png
+index 39f4b03..e1c103f 100644
+Binary files a/generated-icon.png and b/generated-icon.png differ
+diff --git a/package-lock.json b/package-lock.json
+index 1ccec4a..b07c499 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -73,7 +73,7 @@
+         "lowdb": "^7.0.1",
+         "lucide-react": "^0.453.0",
+         "memorystore": "^1.6.7",
+-        "openai": "^4.89.1",
++        "openai": "^4.93.0",
+         "ora": "^8.2.0",
+         "passport": "^0.7.0",
+         "passport-local": "^1.0.0",
+@@ -10065,9 +10065,9 @@
+       }
+     },
+     "node_modules/openai": {
+-      "version": "4.89.1",
+-      "resolved": "https://registry.npmjs.org/openai/-/openai-4.89.1.tgz",
+-      "integrity": "sha512-k6t7WfnodIctPo40/9sy7Ww4VypnfkKi/urO2VQx4trCIwgzeroO1jkaCL2f5MyTS1H3HT9X+M2qLsc7NSXwTw==",
++      "version": "4.93.0",
++      "resolved": "https://registry.npmjs.org/openai/-/openai-4.93.0.tgz",
++      "integrity": "sha512-2kONcISbThKLfm7T9paVzg+QCE1FOZtNMMUfXyXckUAoXRRS/mTP89JSDHPMp8uM5s0bz28RISbvQjArD6mgUQ==",
+       "license": "Apache-2.0",
+       "dependencies": {
+         "@types/node": "^18.11.18",
+diff --git a/package.json b/package.json
+index 91b13d3..d6bd4fb 100644
+--- a/package.json
++++ b/package.json
+@@ -75,7 +75,7 @@
+     "lowdb": "^7.0.1",
+     "lucide-react": "^0.453.0",
+     "memorystore": "^1.6.7",
+-    "openai": "^4.89.1",
++    "openai": "^4.93.0",
+     "ora": "^8.2.0",
+     "passport": "^0.7.0",
+     "passport-local": "^1.0.0",
+diff --git a/server/index.ts b/server/index.ts
+index 591ad80..ced1ae9 100644
+--- a/server/index.ts
++++ b/server/index.ts
+@@ -12,90 +12,122 @@ import { log, error } from './helpers';
+ import { initWebSocketServer } from './websocket';
+ import { setRoutes } from './routes';
+ import { webhookRouter } from './webhook';
++import { setupVite, serveStatic } from './vite';
+ 
+ // Load environment variables
+ dotenv.config();
+ 
+-// Initialize express app
+-const app = express();
+-const port = process.env.PORT || 5000;
+-
+-// Initialize HTTP server (needed for WebSocket)
+-const httpServer = createServer(app);
++// Define async main function
++async function main() {
++  // Initialize express app
++  const app = express();
++  const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
++
++  // Initialize HTTP server (needed for WebSocket)
++  const httpServer = createServer(app);
++
++  // Configure CORS
++  const allowedOrigins = process.env.CORS_ORIGINS 
++    ? process.env.CORS_ORIGINS.split(',') 
++    : ['http://localhost:3000', 'https://findom-client.vercel.app'];
++
++  // Add Replit domains to allowed origins
++  const replitDomainRegex = /.*\.replit\.dev$/;
++
++  app.use(cors({
++    origin: (origin, callback) => {
++      // Allow requests with no origin (like mobile apps, curl, etc)
++      if (!origin) return callback(null, true);
++      
++      // Allow Replit domains
++      if (replitDomainRegex.test(origin)) {
++        return callback(null, true);
++      }
++      
++      if (allowedOrigins.indexOf(origin) === -1) {
++        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
++        console.warn(msg);
++        return callback(new Error(msg), false);
++      }
++      
++      return callback(null, true);
++    },
++    credentials: true
++  }));
+ 
+-// Configure CORS
+-const allowedOrigins = process.env.CORS_ORIGINS 
+-  ? process.env.CORS_ORIGINS.split(',') 
+-  : ['http://localhost:3000', 'https://titan-client.vercel.app'];
++  // Parse JSON requests
++  app.use(express.json({ limit: '10mb' }));
+ 
+-// Add Replit domains to allowed origins
+-const replitDomainRegex = /.*\.replit\.dev$/;
++  // Initialize WebSocket server
++  const wss = initWebSocketServer(httpServer);
+ 
+-app.use(cors({
+-  origin: (origin, callback) => {
+-    // Allow requests with no origin (like mobile apps, curl, etc)
+-    if (!origin) return callback(null, true);
+-    
+-    // Allow Replit domains
+-    if (replitDomainRegex.test(origin)) {
+-      return callback(null, true);
+-    }
++  // Setup Vite or static file serving based on environment
++  if (process.env.NODE_ENV === 'production') {
++    // Serve client static files from dist/public in production
++    const clientDistPath = path.join(__dirname, '../dist/public');
++    app.use(express.static(clientDistPath));
+     
+-    if (allowedOrigins.indexOf(origin) === -1) {
+-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+-      console.warn(msg);
+-      return callback(new Error(msg), false);
+-    }
++    // Fallback for client-side routing
++    app.get('*', (req, res) => {
++      // Exclude API requests
++      if (!req.path.startsWith('/api') && !req.path.startsWith('/webhook')) {
++        res.sendFile(path.join(clientDistPath, 'index.html'));
++      }
++    });
+     
+-    return callback(null, true);
+-  },
+-  credentials: true
+-}));
+-
+-// Parse JSON requests
+-app.use(express.json({ limit: '10mb' }));
+-
+-// Serve client static files from client/dist
+-const clientDistPath = path.join(__dirname, '../client/dist');
+-app.use(express.static(clientDistPath));
+-
+-// Initialize WebSocket server
+-const wss = initWebSocketServer(httpServer);
+-
+-// Mount the webhook router
+-app.use('/webhook', webhookRouter);
+-log('📝 GitHub webhook endpoints registered at /webhook/github');
+-
+-// Set up API routes
+-setRoutes(app, httpServer);
+-
+-// Error handling middleware
+-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+-  error(`Error in request: ${err.message}`);
+-  res.status(err.status || 500).json({
+-    success: false,
+-    error: {
+-      message: err.message || 'An unknown error occurred',
+-      code: err.code || 'INTERNAL_SERVER_ERROR'
++    log('🏗️ Serving static files from dist/public');
++  } else {
++    // Setup Vite for development with improved error handling
++    try {
++      await setupVite(app, httpServer);
++      log('🔥 Vite middleware initialized');
++    } catch (err) {
++      error(`Failed to initialize Vite: ${err}`);
++      process.exit(1); // Exit if Vite can't be initialized as the app won't work
+     }
++  }
++
++  // Mount the webhook router
++  app.use('/webhook', webhookRouter);
++  log('📝 GitHub webhook endpoints registered at /webhook/github');
++
++  // Set up API routes
++  setRoutes(app, httpServer);
++
++  // Error handling middleware
++  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
++    error(`Error in request: ${err.message}`);
++    res.status(err.status || 500).json({
++      success: false,
++      error: {
++        message: err.message || 'An unknown error occurred',
++        code: err.code || 'INTERNAL_SERVER_ERROR'
++      }
++    });
+   });
+-});
+-
+-// Start the server
+-httpServer.listen(port, '0.0.0.0', () => {
+-  log(`🚀 Titan API Server running on port ${port}`);
+-  log(`🔌 WebSocket server available at ws://0.0.0.0:${port}/ws`);
+-  log(`🔑 CORS enabled for origins: ${allowedOrigins.join(', ')} and all Replit domains`);
+-});
+-
+-// Handle server shutdown
+-process.on('SIGINT', () => {
+-  log('Server shutting down...');
+-  // Perform cleanup tasks here
+-  httpServer.close(() => {
+-    log('Server closed');
+-    process.exit(0);
++
++  // Start the server
++  httpServer.listen(port, '0.0.0.0', () => {
++    log(`🚀 Findom API Server running on port ${port}`);
++    log(`🔌 WebSocket server available at ws://0.0.0.0:${port}/ws`);
++    log(`🔑 CORS enabled for origins: ${allowedOrigins.join(', ')} and all Replit domains`);
++  });
++
++  // Handle server shutdown
++  process.on('SIGINT', () => {
++    log('Server shutting down...');
++    // Perform cleanup tasks here
++    httpServer.close(() => {
++      log('Server closed');
++      process.exit(0);
++    });
+   });
+-});
+ 
++  return { app, httpServer, wss };
++};
++
++// Run the main function
++const { app, httpServer, wss } = await main();
++
++// Export for testing and modules that may need access
+ export { app, httpServer, wss };
+\ No newline at end of file
+diff --git a/server/routes.ts b/server/routes.ts
+index abc6e6d..02278a1 100644
+--- a/server/routes.ts
++++ b/server/routes.ts
+@@ -72,7 +72,17 @@ export function setRoutes(app: Application, httpServer?: Server): void {
+         lastUpdated: new Date(),
+         projectType: 'findom',
+         autoMode: false,
+-        priority: 10
++        priority: 10,
++        agentConfig: {
++          checkInterval: 30,
++          aiPersona: 'confident',
++          contentTypes: ['messages', 'photos', 'videos'],
++          targetPlatforms: ['onlyfans', 'twitter', 'telegram']
++        },
++        checkpoints: [],
++        lastCheckIn: null,
++        nextCheckIn: null,
++        lastAutomationRun: null
+       }
+     ]);
+   });
+@@ -98,7 +108,11 @@ export function setRoutes(app: Application, httpServer?: Server): void {
+           aiPersona: 'confident',
+           contentTypes: ['messages', 'photos', 'videos'],
+           targetPlatforms: ['onlyfans', 'twitter', 'telegram']
+-        }
++        },
++        checkpoints: [],
++        lastCheckIn: null,
++        nextCheckIn: null,
++        lastAutomationRun: null
+       });
+       return;
+     }
+@@ -112,7 +126,13 @@ export function setRoutes(app: Application, httpServer?: Server): void {
+       projectType: 'general',
+       isWorking: false,
+       priority: 5,
+-      lastUpdated: new Date()
++      lastUpdated: new Date(),
++      agentConfig: {},
++      checkpoints: [],
++      lastCheckIn: null,
++      nextCheckIn: null,
++      lastAutomationRun: null,
++      autoMode: false
+     });
+   });
+ 
+diff --git a/server/websocket.ts b/server/websocket.ts
+index d0f984c..874ba0e 100644
+--- a/server/websocket.ts
++++ b/server/websocket.ts
+@@ -30,7 +30,12 @@ let wss: WebSocketServer;
+  */
+ export function initWebSocketServer(server: Server): WebSocketServer {
+   // Create WebSocket server on /ws path to avoid conflict with Vite HMR
+-  wss = new WebSocketServer({ server, path: '/ws' });
++  // This is crucial for Replit's webview to correctly route WebSocket connections
++  wss = new WebSocketServer({ 
++    server, 
++    path: '/ws',
++    perMessageDeflate: false // Disable compression for better compatibility
++  });
+   
+   wss.on('connection', (socket, request) => {
+     const clientId = `client_${Date.now()}_${uuidv4().substring(0, 8)}`;
+@@ -48,7 +53,7 @@ export function initWebSocketServer(server: Server): WebSocketServer {
+     socket.send(JSON.stringify({
+       type: 'welcome',
+       clientId,
+-      message: 'Connected to Titan WebSocket Server',
++      message: 'Connected to Findom WebSocket Server',
+       timestamp: Date.now()
+     }));
+     
+diff --git a/theme.json b/theme.json
+index bd94b5c..af8f806 100644
+--- a/theme.json
++++ b/theme.json
+@@ -1,6 +1,6 @@
+ {
+-  "variant": "professional",
+-  "primary": "#00B96B",
++  "variant": "vibrant",
++  "primary": "#01F9C6",
+   "appearance": "dark",
+-  "radius": 0.5
++  "radius": 0.375
+ }
+diff --git a/webhook-server.js b/webhook-server.js
+index 5c8c3b5..dbe36b6 100644
+--- a/webhook-server.js
++++ b/webhook-server.js
+@@ -1,5 +1,5 @@
+ /**
+- * Webhook Server for Titan
++ * Webhook Server for Findom
+  * 
+  * This server listens for GitHub webhook events, pulls the latest code,
+  * and restarts PM2 processes when changes are detected.
+@@ -20,7 +20,7 @@ dotenv.config();
+ // Constants
+ const PORT = process.env.WEBHOOK_PORT || 3000;
+ const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+-const GIT_REPO = process.env.GIT_REPO || 'https://github.com/MiahMontgomery/Titan.git';
++const GIT_REPO = process.env.GIT_REPO || 'https://github.com/MiahMontgomery/Findom.git';
+ const GIT_BRANCH = process.env.GIT_BRANCH || 'main';
+ const APP_DIRECTORY = process.env.APP_DIRECTORY || '.';
+ 

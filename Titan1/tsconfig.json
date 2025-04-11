@@ -1,0 +1,40 @@
+{
+  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+    "noEmit": true,
+    "module": "ESNext",
+<<<<<<< HEAD
+    "target": "ES2020",
+=======
+>>>>>>> 1d84bc7 (Set up Node.js project for Titan AI assistant.)
+    "strict": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+<<<<<<< HEAD
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+=======
+    "moduleResolution": "bundler",
+>>>>>>> 1d84bc7 (Set up Node.js project for Titan AI assistant.)
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./client/src/*"],
+      "@shared/*": ["./shared/*"]
+<<<<<<< HEAD
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./server/types"
+    ]
+=======
+    }
+>>>>>>> 1d84bc7 (Set up Node.js project for Titan AI assistant.)
+  }
+}

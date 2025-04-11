@@ -1,0 +1,13 @@
+{
+<<<<<<< HEAD
+  "variant": "vibrant",
+  "primary": "#01F9C6",
+  "appearance": "dark",
+  "radius": 0.375
+=======
+  "variant": "professional",
+  "primary": "hsl(222.2 47.4% 11.2%)",
+  "appearance": "light",
+  "radius": 0.5
+>>>>>>> 1d84bc7 (Set up Node.js project for Titan AI assistant.)
+}

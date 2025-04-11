@@ -1,0 +1,1735 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
+import { ActivityLog } from '@shared/schema';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useWebSocketContext } from '@/lib/websocket';
+import { Separator } from '@/components/ui/separator';
+import { WebSocketMessage } from '@/lib/types';
+import { LivePreview } from '@/components/LivePreview';
+
+interface PerformanceTabProps {
+  projectId: number;
+}
+
+// Define chat message types
+type MessageRole = 'user' | 'agent' | 'system';
+
+interface ChatMessage {
+  id: string;
+  content: string;
+  role: MessageRole;
+  timestamp: Date;
+  codeSnippet?: string | null;
+  isThinking?: boolean;
+  isError?: boolean;
+  isDebugging?: boolean;
+  isStepByStep?: boolean;
+  debugSteps?: string[];
+  currentDebugStep?: number;
+  canRollback?: boolean;
+}
+
+// Function to generate unique IDs for messages
+function generateId() {
+  return Math.random().toString(36).substring(2, 10);
+}
+
+export function PerformanceTab({ projectId }: PerformanceTabProps) {
+  const [message, setMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [editingCode, setEditingCode] = useState<string | null>(null);
+  const [currentCode, setCurrentCode] = useState<string | null>(null);
+  const [codeHistory, setCodeHistory] = useState<string[]>([]);
+  const [canRollback, setCanRollback] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
+  const [showCode, setShowCode] = useState(true);
+  
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { sendMessage, subscribe, connected } = useWebSocketContext();
+  
+  // Handle panel toggle for expansion/collapse
+  const togglePanelExpansion = (panelId: string) => {
+    if (expandedPanel === panelId) {
+      // If clicking the already expanded panel, collapse it
+      setExpandedPanel(null);
+    } else {
+      // Otherwise, expand the clicked panel
+      setExpandedPanel(panelId);
+    }
+  };
+  
+  // Helper function to determine panel height based on expansion state
+  const getPanelHeight = (panelId: string): string => {
+    // When expanded, take up more space, otherwise use standard height
+    if (expandedPanel === panelId) {
+      return '400px'; // Expanded height
+    } else if (expandedPanel === null) {
+      return '250px'; // Standard height when nothing is expanded
+    } else {
+      return '150px'; // Reduced height when another panel is expanded
+    }
+  };
+  
+  // Fetch activity logs
+  const { data: activityLogs = [] } = useQuery<ActivityLog[]>({
+    queryKey: [`/api/projects/${projectId}/activity`],
+    retry: 1,
+  });
+  
+  // Real code implementation from FINDOM Legal Compliance System
+  const sampleCode = `// DocumentTemplateManager.tsx - Part of FINDOM Legal and Compliance System
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { queryClient, apiRequest } from '@/lib/queryClient';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
+import { DocumentTemplate, insertDocumentTemplateSchema } from '@shared/schema';
+
+export function DocumentTemplateManager({ projectId }: { projectId: number }) {
+  const [open, setOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<DocumentTemplate | null>(null);
+  const { toast } = useToast();
+
+  // Form schema with validation
+  const formSchema = insertDocumentTemplateSchema.extend({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    content: z.string().min(10, "Template content must be at least 10 characters"),
+    description: z.string().min(5, "Please provide a brief description"),
+    category: z.string().min(1, "Category is required"),
+  });
+
+  // Setup form with react-hook-form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      content: "",
+      description: "",
+      category: "legal",
+      projectId: projectId,
+      variables: [],
+      isActive: true
+    }
+  });
+
+  // Reset form when opening dialog or changing editing template
+  useEffect(() => {
+    if (open) {
+      if (editingTemplate) {
+        form.reset({
+          name: editingTemplate.name,
+          content: editingTemplate.content,
+          description: editingTemplate.description,
+          category: editingTemplate.category,
+          projectId: projectId,
+          variables: editingTemplate.variables,
+          isActive: editingTemplate.isActive
+        });
+      } else {
+        form.reset({
+          name: "",
+          content: "",
+          description: "",
+          category: "legal",
+          projectId: projectId,
+          variables: [],
+          isActive: true
+        });
+      }
+    }
+  }, [open, editingTemplate, form, projectId]);
+
+  // Fetch templates for this project
+  const { data: templates, isLoading } = useQuery({
+    queryKey: ['/api/templates', projectId],
+    queryFn: async () => {
+      const response = await apiRequest({
+        url: \`/api/projects/\${projectId}/templates\`,
+        method: 'GET'
+      });
+      return response.data as DocumentTemplate[];
+    }
+  });
+
+  // Create new template mutation
+  const createMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      return await apiRequest({
+        url: '/api/templates',
+        method: 'POST',
+        data
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/templates', projectId] });
+      setOpen(false);
+      toast({
+        title: "Success",
+        description: "Template has been created",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: \`Failed to create template: \${error}\`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Update template mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema> & { id: number }) => {
+      const { id, ...updateData } = data;
+      return await apiRequest({
+        url: \`/api/templates/\${id}\`,
+        method: 'PATCH',
+        data: updateData
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/templates', projectId] });
+      setOpen(false);
+      setEditingTemplate(null);
+      toast({
+        title: "Success",
+        description: "Template has been updated",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: \`Failed to update template: \${error}\`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Handle form submission
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (editingTemplate) {
+      updateMutation.mutate({ ...data, id: editingTemplate.id });
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+  
+  // Open dialog to add a new template
+  const handleAddTemplate = () => {
+    setEditingTemplate(null);
+    setOpen(true);
+  };
+  
+  // Open dialog to edit an existing template
+  const handleEditTemplate = (template: DocumentTemplate) => {
+    setEditingTemplate(template);
+    setOpen(true);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Document Templates</h2>
+        <Button onClick={handleAddTemplate}>Add Template</Button>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      ) : templates && templates.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {templates.map((template) => (
+            <Card key={template.id} className="overflow-hidden">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg">{template.name}</CardTitle>
+                  <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                    {template.category}
+                  </span>
+                </div>
+                <CardDescription className="line-clamp-2">{template.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="pb-2">
+                <div className="bg-muted/50 rounded p-2 max-h-20 overflow-hidden text-xs font-mono opacity-70">
+                  {template.content.substring(0, 150)}
+                  {template.content.length > 150 && '...'}
+                </div>
+              </CardContent>
+              <CardFooter className="pt-0">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="ml-auto"
+                  onClick={() => handleEditTemplate(template)}
+                >
+                  Edit Template
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 border rounded-lg border-dashed">
+          <h3 className="text-xl font-medium text-muted-foreground mb-2">No Templates Yet</h3>
+          <p className="text-muted-foreground mb-4">Create your first document template to get started.</p>
+          <Button onClick={handleAddTemplate}>Create Template</Button>
+        </div>
+      )}
+    </div>
+  );
+}`;
+
+  // Set up the initial code and welcome message in Replit-like style
+  useEffect(() => {
+    if (chatMessages.length === 0) {
+      setCurrentCode(sampleCode);
+      
+      // Add welcome messages with Replit-like styling and Markdown formatting
+      setChatMessages([
+        {
+          id: generateId(),
+          content: "# 👋 Welcome to Titan\n\nI'm your AI development agent. I work **24/7** on your projects, constantly improving them without stopping.",
+          role: 'system',
+          timestamp: new Date(),
+          codeSnippet: null
+        },
+        {
+          id: generateId(),
+          content: "## What I'm doing\nI'm analyzing your project and determining what to build next. I'll show you my **real-time thinking process** as I work.",
+          role: 'agent',
+          timestamp: new Date(),
+          codeSnippet: null
+        },
+        {
+          id: generateId(),
+          content: "## Live Development in Progress\n\n**FINDOM Project Status:**\n\n- ✅ AI-Driven Interactive Experience Platform (100%)\n- ✅ Dynamic Pricing Engine (100%)\n- 🔄 AI-Driven Legal and Compliance Automation System (39%)\n- 🔄 Persona Development Suite (28%)\n- 🔄 Multi-platform Distribution System (5%)\n\nCurrently working on: **Document Template Management System** and **Persona Behavior Modeling**",
+          role: 'agent',
+          timestamp: new Date(),
+          codeSnippet: null
+        },
+        {
+          id: generateId(),
+          content: "## How to interact with me\n- Ask me questions about the code\n- Request new features or changes\n- Give me specific instructions\n- See my thinking process in real-time\n\nI'll generate meaningful, production-ready code that you can use immediately.\n\nIf you encounter any errors, use the **Roll Back** button to restore previous versions.",
+          role: 'agent',
+          timestamp: new Date(),
+          codeSnippet: null
+        }
+      ]);
+    }
+  }, []);
+  
+  // Convert activity logs to chat messages when they change
+  useEffect(() => {
+    if (activityLogs.length > 0) {
+      const newMessages = activityLogs.map(log => {
+        const isUser = log.agentId === 'user';
+        return {
+          id: log.id.toString(),
+          content: log.message.replace(/^(User: |Agent: )/, ''),
+          role: isUser ? 'user' as MessageRole : 'agent' as MessageRole,
+          timestamp: new Date(log.timestamp),
+          codeSnippet: log.codeSnippet
+        };
+      });
+      
+      // Don't replace existing messages if we already have them
+      if (chatMessages.length === 0) {
+        setChatMessages(newMessages.reverse());
+      }
+    }
+  }, [activityLogs]);
+  
+  // Add new log message mutation
+  const addLogMutation = useMutation({
+    mutationFn: async (newLog: Omit<ActivityLog, 'id'>) => {
+      return await apiRequest({ 
+        method: 'POST', 
+        url: '/api/activity', 
+        data: newLog 
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/activity`] });
+    }
+  });
+  
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
+  
+  // Function to add a message to the chat
+  const addChatMessage = useCallback((
+    content: string, 
+    role: MessageRole, 
+    codeSnippet: string | null = null, 
+    isThinking?: boolean, 
+    isError?: boolean,
+    isDebugging?: boolean,
+    isStepByStep?: boolean,
+    debugSteps?: string[],
+    currentDebugStep?: number
+  ) => {
+    const newMessage: ChatMessage = {
+      id: generateId(),
+      content,
+      role,
+      timestamp: new Date(),
+      codeSnippet,
+      isThinking,
+      isError,
+      isDebugging,
+      isStepByStep,
+      debugSteps,
+      currentDebugStep,
+      canRollback: codeSnippet ? true : false
+    };
+    
+    setChatMessages(prev => [...prev, newMessage]);
+    
+    // If not a thinking message, also save to the activity log
+    if (!isThinking && role !== 'system') {
+      const rolePrefix = role === 'user' ? 'User: ' : 'Agent: ';
+      addLogMutation.mutate({
+        projectId,
+        message: rolePrefix + content,
+        timestamp: new Date(),
+        agentId: role === 'user' ? 'user' : 'agent-1',
+        codeSnippet: codeSnippet || null,
+        featureId: null,
+        milestoneId: null,
+        activityType: isDebugging ? 'debugging' : isStepByStep ? 'explanation' : 'chat',
+        details: { 
+          debugSteps: debugSteps || [],
+          hasRollback: codeSnippet ? true : false
+        },
+        isCheckpoint: false,
+        thinkingProcess: null,
+        urls: [],
+        changes: {}
+      });
+    }
+  }, [projectId, addLogMutation]);
+  
+  // Setup WebSocket subscription for chat responses and thinking updates
+  useEffect(() => {
+    // Subscribe to WebSocket messages
+    const unsubscribe = subscribe((data: WebSocketMessage) => {
+      // Handle chat responses from WebSocket
+      if (data.type === 'chat-response') {
+        console.log('Received chat response via WebSocket in component:', data);
+        
+        // Remove thinking messages
+        setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+        setIsThinking(false);
+        
+        // Add the response to chat
+        if (typeof data.message === 'string') {
+          addChatMessage(data.message, 'agent', (data as any).codeSnippet || null);
+          
+          // Update code if a code snippet was provided
+          if ((data as any).codeSnippet) {
+            // Save current code to history before updating
+            if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
+              setCodeHistory(prev => [...prev, currentCode]);
+              setCanRollback(true);
+            }
+            
+            setCurrentCode((data as any).codeSnippet);
+          }
+        }
+      }
+      // Handle AI thinking status updates
+      else if (data.type === 'thinking' && (data.projectId === projectId || !data.projectId)) {
+        console.log('Received thinking update via WebSocket:', data);
+        
+        // Check if there's already a thinking message
+        const hasThinkingMessage = chatMessages.some(msg => msg.isThinking);
+        
+        if (hasThinkingMessage) {
+          // Update the existing thinking message by appending to the content
+          setChatMessages(prev => {
+            const updatedMessages = [...prev];
+            const thinkingIndex = updatedMessages.findIndex(msg => msg.isThinking);
+            if (thinkingIndex !== -1) {
+              // Create a sequential thinking output
+              const currentContent = updatedMessages[thinkingIndex].content;
+              // Only append if it's a different message
+              if (!currentContent.includes(data.message || 'Thinking...')) {
+                // Update thinking content
+                let newThinkingContent = currentContent;
+                if (currentContent.includes('```thinking')) {
+                  // Extract everything between the code block markers
+                  const startIdx = currentContent.indexOf('```thinking\n') + '```thinking\n'.length;
+                  const endIdx = currentContent.lastIndexOf('\n```');
+                  
+                  if (startIdx > 0 && endIdx > startIdx) {
+                    const existingContent = currentContent.substring(startIdx, endIdx);
+                    newThinkingContent = currentContent.substring(0, startIdx) + 
+                      existingContent + 
+                      '\n→ ' + (data.message || 'Processing...') + 
+                      currentContent.substring(endIdx);
+                  } else {
+                    newThinkingContent = currentContent + '\n→ ' + (data.message || 'Processing...');
+                  }
+                } else {
+                  newThinkingContent = currentContent + '\n→ ' + (data.message || 'Processing...');
+                }
+                
+                updatedMessages[thinkingIndex] = {
+                  ...updatedMessages[thinkingIndex],
+                  content: newThinkingContent
+                };
+              }
+            }
+            return updatedMessages;
+          });
+        } else {
+          // Add a new thinking message with enhanced Replit-like styling
+          setIsThinking(true);
+          addChatMessage('🧠 **Thinking process started**\n\n```thinking\n' + (data.message || 'Processing request...') + '\n```', 'agent', null, true);
+        }
+      }
+      // Handle new project/feature creation events
+      else if (data.type === 'new-project' || data.type === 'new-feature') {
+        console.log(`Received ${data.type} event via WebSocket:`, data);
+        
+        // Remove thinking messages
+        setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+        setIsThinking(false);
+        
+        // Add a success message about the creation
+        let message = '';
+        if (data.type === 'new-project') {
+          message = `✅ Project "${data.data?.name}" has been successfully generated!`;
+        } else if (data.type === 'new-feature') {
+          message = `✅ Feature "${data.data?.name}" has been successfully added to the project!`;
+        }
+        
+        if (message) {
+          addChatMessage(message, 'system');
+        }
+      }
+      // Handle new activity logs related to AI actions
+      else if (data.type === 'new-activity' && data.projectId === projectId) {
+        const activityLog = data.data;
+        
+        // Only process AI-generated activities
+        if (activityLog && activityLog.agentId && activityLog.agentId.startsWith('ai-')) {
+          console.log('Received AI activity via WebSocket:', activityLog);
+          
+          // If code was generated, update the editor
+          if (activityLog.codeSnippet && activityLog.activityType === 'code_generation') {
+            // Save current code to history before updating
+            if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
+              setCodeHistory(prev => [...prev, currentCode]);
+              setCanRollback(true);
+            }
+            
+            setCurrentCode(activityLog.codeSnippet);
+            
+            // Add message about code generation with Replit-like styling
+            addChatMessage(
+              `✨ **Code Generated!**\n\nI've created code for: **${activityLog.message.replace('Generated code for goal: ', '')}**\n\nHere's what I did:`,
+              'agent',
+              activityLog.codeSnippet
+            );
+          }
+          // If it's a thinking process/analysis, show it in the chat
+          else if (activityLog.thinkingProcess && activityLog.activityType === 'project_analysis') {
+            // Remove thinking messages first
+            setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+            setIsThinking(false);
+            
+            // Add the thinking as a Replit-like chat message with formatting
+            addChatMessage(
+              `📝 **Analysis & Planning**\n\n${activityLog.thinkingProcess}`,
+              'agent',
+              null
+            );
+          }
+        }
+      }
+    });
+    
+    return unsubscribe;
+  }, [addChatMessage, setChatMessages, setIsThinking, setCurrentCode, subscribe, projectId, chatMessages, currentCode, codeHistory]);
+
+  // Handle sending a user message
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+    
+    const userMessageContent = message.trim();
+    
+    // Add user message
+    addChatMessage(userMessageContent, 'user');
+    
+    // Clear input
+    setMessage('');
+    
+    // Focus back on input
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+    
+    // Show thinking state for AI with enhanced Replit-like styling
+    setIsThinking(true);
+    addChatMessage('🧠 **Processing your request**\n\n```thinking\nStarting analysis of your query...\n```', 'agent', null, true);
+    
+    // Simulate AI "thinking" with a timer
+    const thinkingSteps = [
+      'Analyzing request...',
+      'Processing code logic...',
+      'Generating solution...',
+    ];
+    
+    let stepIndex = 0;
+    const thinkingInterval = setInterval(() => {
+      if (stepIndex < thinkingSteps.length) {
+        // Update the thinking message with the next step
+        setChatMessages(prev => {
+          const newMessages = [...prev];
+          const lastMessage = newMessages[newMessages.length - 1];
+          if (lastMessage && lastMessage.isThinking) {
+            // Update the thinking message properly
+            const currentContent = lastMessage.content;
+            let newContent = currentContent;
+            
+            if (currentContent.includes('```thinking')) {
+              const startIdx = currentContent.indexOf('```thinking\n') + '```thinking\n'.length;
+              const endIdx = currentContent.lastIndexOf('\n```');
+              
+              if (startIdx > 0 && endIdx > startIdx) {
+                newContent = currentContent.substring(0, startIdx) + 
+                  currentContent.substring(startIdx, endIdx) +
+                  '\n→ ' + thinkingSteps[stepIndex] + 
+                  currentContent.substring(endIdx);
+              } else {
+                newContent = '🧠 **Processing your request**\n\n```thinking\n' + thinkingSteps[stepIndex] + '\n```';
+              }
+            } else {
+              newContent = '🧠 **Processing your request**\n\n```thinking\n' + thinkingSteps[stepIndex] + '\n```';
+            }
+            
+            newMessages[newMessages.length - 1] = {
+              ...lastMessage,
+              content: newContent
+            };
+          }
+          return newMessages;
+        });
+        stepIndex++;
+      } else {
+        clearInterval(thinkingInterval);
+        
+        // Try WebSocket first if connected
+        if (connected) {
+          console.log('Sending message via WebSocket:', userMessageContent);
+          sendMessage({
+            type: 'chat-message',
+            message: userMessageContent,
+            projectId: projectId
+          });
+          
+          // Wait for the response via WebSocket (handled in useEffect)
+          
+          // Fallback to REST API after timeout if no WebSocket response
+          const fallbackTimeout = setTimeout(() => {
+            console.log('WebSocket response timeout, falling back to REST API');
+            generateAIResponse(userMessageContent);
+          }, 5000);
+          
+          // Store the timeout ID in a ref so we can clear it when WebSocket responds
+          // This logic would be cleaned up in a real implementation
+        } else {
+          // Use REST API directly
+          console.log('WebSocket not connected, using REST API directly');
+          generateAIResponse(userMessageContent);
+        }
+      }
+    }, 1000);
+  };
+  
+  // Function to generate AI response from the server API
+  const generateAIResponse = async (userMessage: string) => {
+    try {
+      console.log('Sending message to AI assistant:', userMessage);
+      
+      // Remove thinking message
+      setChatMessages(prev => prev.filter(msg => !msg.isThinking));
+      
+      // Save the current code to history before potential changes
+      if (currentCode && Array.isArray(codeHistory) && !codeHistory.includes(currentCode)) {
+        setCodeHistory(prev => [...prev, currentCode]);
+        setCanRollback(true);
+      }
+      
+      // Check for special debug command patterns to simulate Replit-like responses
+      if (userMessage.toLowerCase().includes('debug') || userMessage.toLowerCase().includes('fix') || 
+          userMessage.toLowerCase().includes('error') || userMessage.toLowerCase().includes('issue')) {
+        
+        // Simulate debugging response
+        simulateDebuggingResponse(userMessage);
+        return;
+      } 
+      // Check for 'explain' or 'how' to simulate step-by-step explanations
+      else if (userMessage.toLowerCase().includes('explain') || userMessage.toLowerCase().includes('how') || 
+               userMessage.toLowerCase().includes('step') || userMessage.toLowerCase().includes('walk')) {
+        
+        // Simulate explanation response with steps
+        simulateStepByStepResponse(userMessage);
+        return;
+      }
+      
+      // Regular response flow - send request to the server
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          projectId: projectId,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Received AI response:', data);
+      
+      // Add the response to chat
+      addChatMessage(data.response, 'agent', data.codeSnippet);
+      
+      // Update code if a code snippet was returned
+      if (data.codeSnippet) {
+        setCurrentCode(data.codeSnippet);
+      }
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      // Show error message in chat
+      setIsThinking(false);
+      addChatMessage(
+        `Sorry, I encountered an error processing your request. Please try again. Error details: ${error instanceof Error ? error.message : 'Unknown error'}`, 
+        'agent', 
+        null, 
+        false, 
+        true
+      );
+    } finally {
+      setIsThinking(false);
+    }
+  };
+  
+  // Simulated debugging response that mimics Replit agent
+  const simulateDebuggingResponse = (userMessage: string) => {
+    // Create a modified version of code with a fix
+    const improvedCode = currentCode ? 
+      currentCode.replace(
+        '// Form inputs will be added here', 
+        `<input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          className="w-full p-2 mb-3 border rounded"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          className="w-full p-2 mb-3 border rounded"
+          required
+        />
+        <button 
+          type="submit" 
+          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : formType === 'login' ? 'Login' : 'Sign Up'}
+        </button>
+        <p className="mt-3 text-center">
+          {formType === 'login' ? "Don't have an account? " : "Already have an account? "}
+          <button
+            type="button"
+            onClick={() => setFormType(formType === 'login' ? 'signup' : 'login')}
+            className="text-blue-500 hover:underline"
+          >
+            {formType === 'login' ? 'Sign Up' : 'Login'}
+          </button>
+        </p>`
+      ) : sampleCode;
+    
+    // Debugging steps
+    const debugSteps = [
+      "Identifying the issue: The form layout is missing input elements for email and password.",
+      "Checking the form container: The container markup is correct but needs form elements.",
+      "Adding email input field with proper event handling and validation attributes.",
+      "Adding password input with secure type and onChange event handler.",
+      "Adding submit button with loading state handling and conditional text.",
+      "Adding toggle between login/signup modes for better user experience.",
+      "Testing the form rendering and validating the markup structure."
+    ];
+    
+    // Save current code to history before updating
+    if (currentCode && Array.isArray(codeHistory)) {
+      // Make sure codeHistory exists before accessing includes method
+      if (!codeHistory.includes(currentCode)) {
+        setCodeHistory(prev => [...prev, currentCode]);
+        setCanRollback(true);
+      }
+    }
+    
+    // Add debugging message showing step-by-step approach
+    addChatMessage(
+      "I've analyzed the form component and found that it's missing the input fields and submit button. Let me debug and fix this issue by adding the necessary form elements.",
+      'agent',
+      improvedCode,
+      false,
+      false,
+      true,
+      false,
+      debugSteps,
+      0
+    );
+    
+    // Simulate progressive debugging steps with delays
+    let step = 0;
+    const debugInterval = setInterval(() => {
+      if (step < debugSteps.length) {
+        setChatMessages(prev => {
+          const lastIndex = prev.length - 1;
+          const lastMessage = prev[lastIndex];
+          if (lastMessage && lastMessage.isDebugging) {
+            const updatedMessages = [...prev];
+            updatedMessages[lastIndex] = {
+              ...lastMessage,
+              currentDebugStep: step + 1
+            };
+            return updatedMessages;
+          }
+          return prev;
+        });
+        step++;
+      } else {
+        clearInterval(debugInterval);
+        
+        // Set the final code
+        setCurrentCode(improvedCode);
+      }
+    }, 1000);
+  };
+  
+  // Simulated step-by-step explanation that mimics Replit agent
+  const simulateStepByStepResponse = (userMessage: string) => {
+    // Create explanation steps
+    const explanationSteps = [
+      "First, we declare a functional React component with state variables for form management.",
+      "We create state hooks for form type (login/signup), email, password, loading state, and error handling.",
+      "The handleSubmit function prevents default form submission behavior and manages API interactions.",
+      "During form submission, we set loading state to true and clear any previous errors.",
+      "We wrap the API call in a try/catch block to handle potential errors gracefully.",
+      "In the render method, we create a conditional UI that changes based on the form type and loading state.",
+      "Finally, we include a toggle mechanism to switch between login and signup modes for better UX."
+    ];
+    
+    // Add explanation message with step-by-step approach
+    addChatMessage(
+      "Here's a detailed explanation of how the authentication form works in the e-commerce site:",
+      'agent',
+      null,
+      false,
+      false,
+      false,
+      true,
+      explanationSteps,
+      0
+    );
+    
+    // Simulate progressive explanation steps with delays
+    let step = 0;
+    const explainInterval = setInterval(() => {
+      if (step < explanationSteps.length) {
+        setChatMessages(prev => {
+          const lastIndex = prev.length - 1;
+          const lastMessage = prev[lastIndex];
+          if (lastMessage && lastMessage.isStepByStep) {
+            const updatedMessages = [...prev];
+            updatedMessages[lastIndex] = {
+              ...lastMessage,
+              currentDebugStep: step + 1
+            };
+            return updatedMessages;
+          }
+          return prev;
+        });
+        step++;
+      } else {
+        clearInterval(explainInterval);
+        
+        // Add a summary message after explanation
+        setTimeout(() => {
+          addChatMessage(
+            "This form implementation follows React best practices by using controlled inputs, clean state management, and proper error handling. The component is modular and could be easily integrated into the authentication flow of your e-commerce application.",
+            'agent',
+            null
+          );
+        }, 1000);
+      }
+    }, 1000);
+  };
+  
+  // Handle code rollback
+  const handleRollback = () => {
+    if (Array.isArray(codeHistory) && codeHistory.length > 0) {
+      const previousCode = codeHistory[codeHistory.length - 1];
+      setCurrentCode(previousCode);
+      setCodeHistory(prev => prev.slice(0, -1));
+      setCanRollback(codeHistory.length > 1);
+      
+      // Add system message about rollback
+      addChatMessage("Previous version of code restored.", 'system');
+    }
+  };
+  
+  // Handle text area auto-resize
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
+  };
+  
+  // Handle keyboard shortcuts
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Submit on Enter (without Shift)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+  
+  return (
+    <div className="h-full flex flex-col">
+      {/* Chat interface with code panel */}
+      <div className="flex flex-col h-full">
+        {/* Vertical stacked layout with consistent box design */}
+        
+        {/* Navigation Panel with Quick Actions */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          {/* Jump to Chat Button */}
+          <div 
+            className="border border-gray-700 bg-gray-800 rounded-md p-3 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-accent flex flex-col justify-center items-center"
+            onClick={() => {
+              // Scroll to bottom of chat - Properly implemented now
+              if (messagesContainerRef.current) {
+                messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+              }
+            }}
+          >
+            <div className="bg-accent/20 p-2 rounded-full mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-gray-200">Latest Messages</span>
+          </div>
+          
+          {/* Toggle Auto-Refresh Button */}
+          <div 
+            className="border border-gray-700 bg-gray-800 rounded-md p-3 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-accent flex flex-col justify-center items-center"
+            onClick={() => {
+              // Toggle auto-refresh functionality
+              const autoRefreshEvent = new CustomEvent('toggle-auto-refresh');
+              window.dispatchEvent(autoRefreshEvent);
+            }}
+          >
+            <div className="bg-blue-500/20 p-2 rounded-full mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-gray-200">Auto Refresh</span>
+          </div>
+          
+          {/* Toggle Code View Button */}
+          <div 
+            className="border border-gray-700 bg-gray-800 rounded-md p-3 cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-accent flex flex-col justify-center items-center"
+            onClick={() => {
+              // Toggle showing code implementation (expand/collapse)
+              const codeSection = document.getElementById('code-section');
+              if (codeSection) {
+                const isHidden = codeSection.classList.contains('hidden');
+                if (isHidden) {
+                  codeSection.classList.remove('hidden');
+                } else {
+                  codeSection.classList.add('hidden');
+                }
+              }
+            }}
+          >
+            <div className="bg-purple-500/20 p-2 rounded-full mb-2">
+              <svg className="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-gray-200">Toggle Code</span>
+          </div>
+        </div>
+        
+        {/* Chat panel - Moved to the top for better visibility */}
+        <div 
+          className="flex-1 flex flex-col border border-gray-700 rounded-md overflow-hidden mb-4 min-h-[250px] hover:ring-2 hover:ring-accent transition-all duration-200"
+        >
+          {/* Header with expandable control */}
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('chat')}
+          >
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Chat Interface</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-indigo-500/20 text-indigo-300 rounded">
+                Interactive
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              {/* Scroll to Latest Button */}
+              <button
+                className="px-2 py-1 bg-accent/20 hover:bg-accent/30 rounded-md text-xs flex items-center gap-1 text-accent"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent panel toggle
+                  // Scroll to bottom of chat
+                  if (messagesContainerRef.current) {
+                    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+                  }
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span>Latest Messages</span>
+              </button>
+              {expandedPanel === 'chat' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+          </div>
+          {/* Messages area */}
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-800"
+            style={{ height: getPanelHeight('chat') }}
+          >
+            {chatMessages.map(message => (
+              <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div 
+                  className={`
+                    max-w-[80%] rounded-lg px-4 py-2 
+                    ${message.role === 'user' 
+                      ? 'bg-accent text-gray-900' 
+                      : message.role === 'system' 
+                        ? 'bg-gray-700 text-gray-300 border border-gray-600 text-xs italic' 
+                        : message.isThinking 
+                          ? 'bg-gray-750 text-gray-400 border border-gray-700' 
+                          : 'bg-gray-700 text-gray-200'
+                    }
+                    ${message.isThinking ? 'animate-pulse' : ''}
+                  `}
+                >
+                  {message.isThinking && (
+                    <div className="flex items-center mb-1 border-b border-gray-600 pb-1 mb-2">
+                      <div className="h-5 w-5 relative mr-2">
+                        {/* Logo spinner instead of standard spinner */}
+                        <div className="absolute inset-0 flex items-center justify-center animate-spin">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#3B82F6" />
+                            <path d="M2 17L12 22L22 17" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M2 12L12 17L22 12" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                      </div>
+                      <span className="text-blue-300 text-sm font-medium">AI Processing</span>
+                      <div className="ml-auto px-2 py-0.5 bg-blue-500/20 rounded text-xs text-blue-300">
+                        FINDOM
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Debugging UI */}
+                  {message.isDebugging && (
+                    <div className="mb-3 border border-amber-500/30 bg-amber-500/10 rounded-md p-2">
+                      <div className="flex items-center mb-2">
+                        <span className="text-amber-400 text-xs font-medium flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          DEBUGGING MODE
+                        </span>
+                      </div>
+                      <div className="text-amber-200 text-xs">Analyzing and fixing code issues step-by-step</div>
+                    </div>
+                  )}
+                  
+                  {/* Step-by-Step Explanation UI */}
+                  {message.isStepByStep && Array.isArray(message.debugSteps) && message.debugSteps.length > 0 && (
+                    <div className="mb-3 border border-blue-500/30 bg-blue-500/10 rounded-md p-2">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-blue-400 text-xs font-medium flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                          </svg>
+                          STEP-BY-STEP EXPLANATION
+                        </span>
+                        <div className="text-xs text-blue-300">
+                          {message.currentDebugStep || 0}/{message.debugSteps.length} steps
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {message.debugSteps.map((step, index) => (
+                          <div 
+                            key={index}
+                            className={`p-2 rounded text-sm ${
+                              (message.currentDebugStep || 0) > index 
+                                ? 'bg-blue-800/20 text-blue-100' 
+                                : (message.currentDebugStep || 0) === index 
+                                  ? 'bg-blue-500/20 border-l-2 border-blue-400 text-blue-100' 
+                                  : 'text-blue-300/50'
+                            }`}
+                          >
+                            <div className="flex items-start">
+                              <div className="flex-shrink-0 w-5 text-center mr-1">
+                                {(message.currentDebugStep || 0) > index ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (index + 1)}
+                              </div>
+                              <div>{step}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Regular message content with special handling for thinking code blocks */}
+                  {message.content && message.content.split('\n').map((line, i) => {
+                    // Check if we're inside a thinking code block
+                    if (message.isThinking && line.includes('```thinking')) {
+                      return <div key={i} className="mt-2 text-sm font-mono bg-blue-950/30 rounded-t-md p-2 border-t border-x border-blue-800/50">Thinking Process:</div>;
+                    }
+                    else if (message.isThinking && line.includes('```') && message.content.includes('```thinking')) {
+                      return <div key={i} className="border-b border-x border-blue-800/50 rounded-b-md mb-2"></div>;
+                    }
+                    else if (message.isThinking && message.content.includes('```thinking') && !line.includes('```')) {
+                      return (
+                        <div key={i} className={`pl-3 pr-2 py-1 border-l border-r border-blue-800/50 text-blue-300 text-xs font-mono ${line.startsWith('→') ? 'border-l-2 border-l-blue-500' : ''}`}>
+                          {line}
+                        </div>
+                      );
+                    }
+                    // Otherwise regular content
+                    return (
+                      <p key={i} className={i > 0 ? 'mt-2' : ''}>
+                        {line}
+                      </p>
+                    );
+                  })}
+                  
+                  {/* If has code snippet, display a button to view it with enhanced UI */}
+                  {message.codeSnippet && (
+                    <div className="mt-3 flex flex-col">
+                      <div className="flex justify-between items-center">
+                        <button 
+                          className="px-3 py-1 bg-accent/20 hover:bg-accent/30 text-accent-foreground rounded-md text-xs flex items-center gap-1"
+                          onClick={() => setCurrentCode(message.codeSnippet || null)}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                          View code in editor
+                        </button>
+                        
+                        {message.canRollback && (
+                          <button 
+                            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md text-xs flex items-center gap-1"
+                            onClick={handleRollback}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                            Roll back this change
+                          </button>
+                        )}
+                      </div>
+                      <div className="mt-2 text-xs text-gray-400">
+                        {message.canRollback ? "You can roll back to the previous version if needed" : ""}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Input area */}
+          <div className="p-4 border-t border-gray-700 bg-gray-800">
+            <div className="flex">
+              <div className="relative flex-1">
+                <textarea 
+                  ref={inputRef}
+                  value={message}
+                  onChange={handleTextAreaChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Send a message to the AI agent..." 
+                  className="bg-gray-700 text-gray-200 w-full px-4 py-3 rounded-l-md border border-gray-600 focus:outline-none focus:border-accent resize-none overflow-hidden min-h-[44px] max-h-[150px]"
+                  style={{ height: '44px' }}
+                  rows={1}
+                />
+                <div className="absolute right-3 bottom-2 text-xs text-gray-500">
+                  Press Enter to send
+                </div>
+              </div>
+              <button 
+                onClick={handleSendMessage}
+                disabled={isThinking || !message.trim()}
+                className={`
+                  px-4 rounded-r-md flex items-center justify-center transition-colors duration-150
+                  ${isThinking || !message.trim() 
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                    : 'bg-accent hover:bg-accent/90 text-black'
+                  }
+                `}
+              >
+                {isThinking ? (
+                  <div className="w-5 h-5 animate-spin">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#60A5FA" />
+                      <path d="M2 17L12 22L22 17" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 12L12 17L22 12" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7"></path>
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Live web/action view */}
+        <div 
+          className={`border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200`}
+        >
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('preview')}
+          >
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Live Preview</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-green-500/20 text-green-300 rounded">
+                Active Development
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mr-1.5 animate-pulse"></div>
+                <span className="text-xs text-gray-300">Auto-Refresh</span>
+              </div>
+              {expandedPanel === 'preview' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+          </div>
+          <div className="flex-1" style={{ height: getPanelHeight('preview') }}>
+            <LivePreview projectId={projectId} height="100%" />
+          </div>
+        </div>
+        
+        {/* Code panel */}
+        <div 
+          id="code-section" 
+          className={`border border-gray-700 rounded-md overflow-hidden mb-4 flex flex-col hover:ring-2 hover:ring-accent transition-all duration-200 ${!showCode ? 'hidden' : ''}`}
+        >
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('code')}
+          >
+            <div className="flex items-center">
+              <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Code Implementation</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                Active Development
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center px-2 py-1 bg-gray-700 rounded-sm">
+                <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
+                <span className="text-xs text-gray-300">Auto-Developing</span>
+              </div>
+              <button 
+                className={`py-1 px-3 rounded text-xs flex items-center space-x-1 ${canRollback ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent panel toggle
+                  handleRollback();
+                }}
+                disabled={!canRollback}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+                <span>Roll Back</span>
+              </button>
+              {expandedPanel === 'code' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+          </div>
+          <div className="flex-1 bg-gray-900 font-mono text-sm overflow-auto" style={{ height: getPanelHeight('code') }}>
+            <div className="flex items-center bg-gray-800/50 px-4 py-1 text-xs text-gray-400 border-b border-gray-700">
+              <div className="flex-1">
+                {currentCode ? 
+                  "Generated implementation for Document Template Management System" : 
+                  "No active code implementation"
+                }
+              </div>
+              <div>FINDOM / AI-Driven Legal and Compliance Automation System</div>
+            </div>
+            <div className="p-4">
+              {currentCode ? (
+                <SyntaxHighlightedCode code={currentCode} />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                    <svg className="h-12 w-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <div className="text-gray-400">
+                      AI is currently generating code...
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Ask a question or wait for the next implementation
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Development Logs Panel */}
+        <div className="border border-gray-700 rounded-md overflow-hidden mb-4 hover:ring-2 hover:ring-accent transition-all duration-200">
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('logs')}
+          >
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Development Logs</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-amber-500/20 text-amber-300 rounded">
+                Live Updates
+              </span>
+            </div>
+            <div>
+              {expandedPanel === 'logs' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+          </div>
+          <div id="logs-content" className="overflow-y-auto bg-gray-900 p-3" style={{ maxHeight: getPanelHeight('logs') }}>
+            <div className="space-y-2 text-xs font-mono">
+              {activityLogs.slice(0, 10).map((log, index) => (
+                <div key={index} className="flex items-start">
+                  <span className={`min-w-[80px] mr-2 ${
+                    log.activityType === 'completion' ? 'text-green-400' : 
+                    log.activityType === 'debugging' ? 'text-amber-400' : 
+                    'text-blue-400'
+                  }`}>
+                    {new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}
+                  </span>
+                  <span className={`${
+                    log.activityType === 'completion' ? 'text-green-300' : 
+                    log.activityType === 'debugging' ? 'text-amber-300' : 
+                    'text-blue-300'
+                  }`}>
+                    {log.message.replace(/^(User: |Agent: )/, '')}
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-start">
+                <span className="text-green-400 min-w-[80px] mr-2">[07:54:59]</span>
+                <span className="text-green-300">✓ Autonomous improvement cycle started for FINDOM project</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-blue-400 min-w-[80px] mr-2">[07:55:03]</span>
+                <span className="text-blue-300">→ Working on AI Algorithm Development for Strategy Optimization</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-blue-400 min-w-[80px] mr-2">[07:55:07]</span>
+                <span className="text-blue-300">→ Implementing reinforcement learning model for monetization strategy</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-green-400 min-w-[80px] mr-2">[07:55:20]</span>
+                <span className="text-green-300">✓ Successfully generated monetization environment simulation</span>
+              </div>
+              <div className="flex items-start">
+                <span className="text-green-400 min-w-[80px] mr-2">[08:00:10]</span>
+                <span className="text-green-300">✓ Successfully completed API Integration with Major Platforms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+          {/* Header with expandable control */}
+          <div 
+            className="bg-gray-800 px-4 py-2 border-b border-gray-700 flex justify-between items-center cursor-pointer"
+            onClick={() => togglePanelExpansion('chat')}
+          >
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+              </svg>
+              <span className="text-sm font-medium text-gray-300">Chat Interface</span>
+              <span className="ml-2 px-1.5 py-0.5 text-xs bg-indigo-500/20 text-indigo-300 rounded">
+                Interactive
+              </span>
+            </div>
+            <div>
+              {/* Scroll to Latest Button - Inline in the header */}
+              <button
+                className="px-2 py-1 bg-accent/20 hover:bg-accent/30 rounded-md text-xs flex items-center gap-1 text-accent mr-2"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent panel toggle
+                  // Scroll to bottom of chat
+                  if (messagesContainerRef.current) {
+                    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+                  }
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Latest
+              </button>
+              {expandedPanel === 'chat' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+          </div>
+          {/* Messages area */}
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-800"
+            style={{ height: getPanelHeight('chat') }}
+          >
+            {chatMessages.map(message => (
+              <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div 
+                  className={`
+                    max-w-[80%] rounded-lg px-4 py-2 
+                    ${message.role === 'user' 
+                      ? 'bg-accent text-gray-900' 
+                      : message.role === 'system' 
+                        ? 'bg-gray-700 text-gray-300 border border-gray-600 text-xs italic' 
+                        : message.isThinking 
+                          ? 'bg-gray-750 text-gray-400 border border-gray-700' 
+                          : 'bg-gray-700 text-gray-200'
+                    }
+                    ${message.isThinking ? 'animate-pulse' : ''}
+                  `}
+                >
+                  {message.isThinking && (
+                    <div className="flex items-center mb-1 border-b border-gray-600 pb-1 mb-2">
+                      <div className="h-5 w-5 relative mr-2">
+                        {/* Logo spinner instead of standard spinner */}
+                        <div className="absolute inset-0 flex items-center justify-center animate-spin">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#3B82F6" />
+                            <path d="M2 17L12 22L22 17" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M2 12L12 17L22 12" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                      </div>
+                      <span className="text-blue-300 text-sm font-medium">AI Processing</span>
+                      <div className="ml-auto px-2 py-0.5 bg-blue-500/20 rounded text-xs text-blue-300">
+                        FINDOM
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Debugging UI */}
+                  {message.isDebugging && (
+                    <div className="mb-3 border border-amber-500/30 bg-amber-500/10 rounded-md p-2">
+                      <div className="flex items-center mb-2">
+                        <span className="text-amber-400 text-xs font-medium flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          DEBUGGING MODE
+                        </span>
+                      </div>
+                      <div className="text-amber-200 text-xs">Analyzing and fixing code issues step-by-step</div>
+                    </div>
+                  )}
+                  
+                  {/* Step-by-Step Explanation UI */}
+                  {message.isStepByStep && Array.isArray(message.debugSteps) && message.debugSteps.length > 0 && (
+                    <div className="mb-3 border border-blue-500/30 bg-blue-500/10 rounded-md p-2">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-blue-400 text-xs font-medium flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                          </svg>
+                          STEP-BY-STEP EXPLANATION
+                        </span>
+                        <div className="text-xs text-blue-300">
+                          {message.currentDebugStep || 0}/{message.debugSteps.length} steps
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {message.debugSteps.map((step, index) => (
+                          <div 
+                            key={index}
+                            className={`p-2 rounded text-sm ${
+                              (message.currentDebugStep || 0) > index 
+                                ? 'bg-blue-800/20 text-blue-100' 
+                                : (message.currentDebugStep || 0) === index 
+                                  ? 'bg-blue-500/20 border-l-2 border-blue-400 text-blue-100' 
+                                  : 'text-blue-300/50'
+                            }`}
+                          >
+                            <div className="flex items-start">
+                              <div className="flex-shrink-0 w-5 text-center mr-1">
+                                {(message.currentDebugStep || 0) > index ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (index + 1)}
+                              </div>
+                              <div>{step}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Regular message content with special handling for thinking code blocks */}
+                  {message.content && message.content.split('\n').map((line, i) => {
+                    // Check if we're inside a thinking code block
+                    if (message.isThinking && line.includes('```thinking')) {
+                      return <div key={i} className="mt-2 text-sm font-mono bg-blue-950/30 rounded-t-md p-2 border-t border-x border-blue-800/50">Thinking Process:</div>;
+                    }
+                    else if (message.isThinking && line.includes('```') && message.content.includes('```thinking')) {
+                      return <div key={i} className="border-b border-x border-blue-800/50 rounded-b-md mb-2"></div>;
+                    }
+                    else if (message.isThinking && message.content.includes('```thinking') && !line.includes('```')) {
+                      return (
+                        <div key={i} className={`pl-3 pr-2 py-1 border-l border-r border-blue-800/50 text-blue-300 text-xs font-mono ${line.startsWith('→') ? 'border-l-2 border-l-blue-500' : ''}`}>
+                          {line}
+                        </div>
+                      );
+                    }
+                    // Otherwise regular content
+                    return (
+                      <p key={i} className={i > 0 ? 'mt-2' : ''}>
+                        {line}
+                      </p>
+                    );
+                  })}
+                  
+                  {/* If has code snippet, display a button to view it with enhanced UI */}
+                  {message.codeSnippet && (
+                    <div className="mt-3 flex flex-col">
+                      <div className="flex justify-between items-center">
+                        <button 
+                          className="px-3 py-1 bg-accent/20 hover:bg-accent/30 text-accent-foreground rounded-md text-xs flex items-center gap-1"
+                          onClick={() => setCurrentCode(message.codeSnippet || null)}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                          View code in editor
+                        </button>
+                        
+                        {message.canRollback && (
+                          <button 
+                            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md text-xs flex items-center gap-1"
+                            onClick={handleRollback}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                            Roll back this change
+                          </button>
+                        )}
+                      </div>
+                      <div className="mt-2 text-xs text-gray-400">
+                        {message.canRollback ? "You can roll back to the previous version if needed" : ""}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Input area */}
+          <div className="p-4 border-t border-gray-700 bg-gray-800">
+            <div className="flex">
+              <div className="relative flex-1">
+                <textarea 
+                  ref={inputRef}
+                  value={message}
+                  onChange={handleTextAreaChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Send a message to the AI agent..." 
+                  className="bg-gray-700 text-gray-200 w-full px-4 py-3 rounded-l-md border border-gray-600 focus:outline-none focus:border-accent resize-none overflow-hidden min-h-[44px] max-h-[150px]"
+                  style={{ height: '44px' }}
+                  rows={1}
+                />
+                <div className="absolute right-3 bottom-2 text-xs text-gray-500">
+                  Press Enter to send
+                </div>
+              </div>
+              <button 
+                onClick={handleSendMessage}
+                disabled={isThinking || !message.trim()}
+                className={`
+                  px-4 rounded-r-md flex items-center justify-center transition-colors duration-150
+                  ${isThinking || !message.trim() 
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                    : 'bg-accent hover:bg-accent/90 text-black'
+                  }
+                `}
+              >
+                {isThinking ? (
+                  <div className="w-5 h-5 animate-spin">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#60A5FA" />
+                      <path d="M2 17L12 22L22 17" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 12L12 17L22 12" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7"></path>
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface SyntaxHighlightedCodeProps {
+  code: string;
+}
+
+function SyntaxHighlightedCode({ code }: SyntaxHighlightedCodeProps) {
+  // Enhanced syntax highlighter that better represents Replit's style
+  // Add line numbers and better highlighting
+  const lines = code.split('\n');
+  const processedLines = lines.map((line, index) => {
+    // Apply syntax highlighting to each line
+    let highlightedLine = line
+      // Keywords
+      .replace(/(import|export|from|const|let|var|function|class|interface|type|extends|implements|return|async|await|try|catch|finally|if|else|for|while|do|switch|case|break|continue|new|this|super|instanceof|typeof|in|of|null|undefined|true|false|void|delete)/g, '<span class="text-blue-400">$1</span>')
+      // Strings
+      .replace(/('.*?'|".*?")/g, '<span class="text-green-400">$1</span>')
+      // Function calls
+      .replace(/(\w+)(?=\s*\()/g, '<span class="text-yellow-400">$1</span>')
+      // Comments
+      .replace(/(\/\/.*)/g, '<span class="text-gray-500">$1</span>')
+      // Punctuation
+      .replace(/(\{|\}|\(|\)|\[|\]|=>|=|;|,|:|\.|<|>|\?|\||\&|\+|\-|\*|\/|\%|\^|\!)/g, '<span class="text-gray-300">$1</span>')
+      // Numbers
+      .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="text-purple-400">$1</span>')
+      // JSX tags
+      .replace(/(&lt;\/?[a-zA-Z0-9]+(&gt;)?)/g, '<span class="text-orange-400">$1</span>');
+    
+    // Add line number and proper indentation
+    return `
+      <div class="flex hover:bg-gray-800/50">
+        <div class="text-gray-500 w-8 text-right pr-2 select-none">${index + 1}</div>
+        <div class="flex-1 pl-2 border-l border-gray-700">${highlightedLine || ' '}</div>
+      </div>
+    `;
+  });
+  
+  return (
+    <div className="text-sm">
+      <div dangerouslySetInnerHTML={{ __html: processedLines.join('') }} />
+    </div>
+  );
+}

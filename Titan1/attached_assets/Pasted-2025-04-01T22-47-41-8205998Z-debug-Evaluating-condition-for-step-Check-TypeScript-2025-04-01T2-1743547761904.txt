@@ -1,0 +1,50 @@
+2025-04-01T22:47:41.8205998Z ##[debug]Evaluating condition for step: 'Check TypeScript'
+2025-04-01T22:47:41.8207629Z ##[debug]Evaluating: success()
+2025-04-01T22:47:41.8208414Z ##[debug]Evaluating success:
+2025-04-01T22:47:41.8208800Z ##[debug]=> true
+2025-04-01T22:47:41.8209161Z ##[debug]Result: true
+2025-04-01T22:47:41.8209689Z ##[debug]Starting: Check TypeScript
+2025-04-01T22:47:41.8216774Z ##[debug]Loading inputs
+2025-04-01T22:47:41.8217598Z ##[debug]Loading env
+2025-04-01T22:47:41.8221559Z ##[group]Run npx tsc --noEmit
+2025-04-01T22:47:41.8221818Z [36;1mnpx tsc --noEmit[0m
+2025-04-01T22:47:41.8270435Z shell: /usr/bin/bash -e {0}
+2025-04-01T22:47:41.8270682Z ##[endgroup]
+2025-04-01T22:47:41.8316221Z ##[debug]/usr/bin/bash -e /home/runner/work/_temp/7ba6dcf9-0e91-496a-aa80-800273c9dde7.sh
+2025-04-01T22:47:53.4294996Z ##[error]client/src/App.tsx(11,10): error TS2305: Module '"./lib/websocket"' has no exported member 'WebSocketProvider'.
+2025-04-01T22:47:53.4303063Z ##[error]client/src/components/AddProjectModal.tsx(23,72): error TS2554: Expected 1-2 arguments, but got 3.
+2025-04-01T22:47:53.4305083Z ##[error]client/src/components/ChatTab.tsx(68,85): error TS2554: Expected 1-2 arguments, but got 3.
+2025-04-01T22:47:53.4307900Z ##[error]client/src/components/FirebaseSetupModal.tsx(70,9): error TS2353: Object literal may only specify known properties, and 'authDomain' does not exist in type '{ projectId: string; apiKey: string; appId: string; }'.
+2025-04-01T22:47:53.4311909Z ##[error]client/src/components/FirebaseSetupModal.tsx(82,9): error TS2353: Object literal may only specify known properties, and 'clientEmail' does not exist in type '{ projectId: string; apiKey: string; appId: string; }'.
+2025-04-01T22:47:53.4315212Z ##[error]client/src/components/LivePreview.tsx(2,10): error TS2305: Module '"@/lib/websocket"' has no exported member 'useWebSocketContext'.
+2025-04-01T22:47:53.4317652Z ##[error]client/src/components/LivePreview.tsx(249,52): error TS2339: Property 'data' does not exist on type 'WebSocketMessage'.
+2025-04-01T22:47:53.4319970Z ##[error]client/src/components/LivePreview.tsx(251,47): error TS2339: Property 'data' does not exist on type 'WebSocketMessage'.
+2025-04-01T22:47:53.4322505Z ##[error]client/src/components/LivePreview.tsx(256,49): error TS2339: Property 'data' does not exist on type 'WebSocketMessage'.
+2025-04-01T22:47:53.4325076Z ##[error]client/src/components/LivePreview.tsx(258,38): error TS2339: Property 'data' does not exist on type 'WebSocketMessage'.
+2025-04-01T22:47:53.4327472Z ##[error]client/src/components/LivePreview.tsx(260,36): error TS2339: Property 'data' does not exist on type 'WebSocketMessage'.
+2025-04-01T22:47:53.4331769Z ##[error]client/src/components/PersonaCard.tsx(25,50): error TS2345: Argument of type 'import("/home/runner/work/Titan/Titan/shared/schema").Persona' is not assignable to parameter of type 'import("/home/runner/work/Titan/Titan/client/src/lib/types").Persona'.
+2025-04-01T22:47:53.4334486Z   Type 'Persona' is missing the following properties from type 'Persona': progress, sales, settings
+2025-04-01T22:47:53.4335905Z ##[error]client/src/components/PersonaForm.tsx(153,50): error TS2554: Expected 1-2 arguments, but got 3.
+2025-04-01T22:47:53.4337959Z ##[error]client/src/components/PersonaForm.tsx(176,57): error TS2554: Expected 1-2 arguments, but got 3.
+2025-04-01T22:47:53.4340823Z ##[error]client/src/components/PersonasDashboard.tsx(32,9): error TS2353: Object literal may only specify known properties, and 'data' does not exist in type 'ApiRequestOptions'.
+2025-04-01T22:47:53.4343929Z ##[error]client/src/components/ProjectTile.tsx(67,57): error TS2559: Type '"DELETE"' has no properties in common with type 'ApiRequestOptions'.
+2025-04-01T22:47:53.4346724Z ##[error]client/src/components/ReplitStyleWebview.tsx(2,10): error TS2305: Module '"@/lib/websocket"' has no exported member 'useWebSocketContext'.
+2025-04-01T22:47:53.4349536Z ##[error]client/src/context/ProjectContext.tsx(4,10): error TS2305: Module '"@/lib/websocket"' has no exported member 'useWebSocketContext'.
+2025-04-01T22:47:53.4355407Z ##[error]client/src/hooks/useCodeGenerationLoop.ts(55,28): error TS2339: Property 'subscribe' does not exist on type '{ isConnected: boolean; sendMessage: (type: string, data: any, projectId?: number | undefined) => boolean; registerHandler: (type: string, handler: MessageHandler) => void; unregisterHandler: (type: string, handler: MessageHandler) => void; }'.
+2025-04-01T22:47:53.4358942Z ##[error]client/src/hooks/useCodeGenerationLoop.ts(55,39): error TS7006: Parameter 'data' implicitly has an 'any' type.
+2025-04-01T22:47:53.4361857Z ##[error]client/src/lib/firebase.ts(122,21): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4364841Z ##[error]client/src/lib/firebase.ts(127,29): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4370270Z ##[error]client/src/lib/firebase.ts(135,21): error TS2345: Argument of type '{ url: string; method: string; data: Omit<{ id: number; name: string; description: string; lastUpdated: Date; isWorking: boolean; progress: number; projectType: string; agentConfig: unknown; autoMode: boolean; ... 4 more ...; lastAutomationRun: Date | null; }, "id">; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4376984Z ##[error]client/src/lib/firebase.ts(144,29): error TS2345: Argument of type '{ url: string; method: string; data: Partial<{ id: number; name: string; description: string; lastUpdated: Date; isWorking: boolean; progress: number; projectType: string; agentConfig: unknown; autoMode: boolean; ... 4 more ...; lastAutomationRun: Date | null; }>; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4381010Z ##[error]client/src/lib/firebase.ts(157,22): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4384007Z ##[error]client/src/lib/firebase.ts(166,21): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4389432Z ##[error]client/src/lib/firebase.ts(170,21): error TS2345: Argument of type '{ url: string; method: string; data: Omit<{ id: number; name: string; description: string | null; createdAt: Date; status: string; isWorking: boolean; progress: number; priority: number; projectId: number; ... 7 more ...; optimizationRound: number; }, "id">; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4393314Z ##[error]client/src/lib/firebase.ts(178,21): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4398658Z ##[error]client/src/lib/firebase.ts(182,21): error TS2345: Argument of type '{ url: string; method: string; data: Omit<{ id: number; name: string; description: string | null; createdAt: Date; progress: number; featureId: number; estimatedHours: number | null; percentOfFeature: number; }, "id">; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4402367Z ##[error]client/src/lib/firebase.ts(190,21): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4407329Z ##[error]client/src/lib/firebase.ts(194,21): error TS2345: Argument of type '{ url: string; method: string; data: Omit<{ id: number; name: string; description: string | null; createdAt: Date; progress: number; milestoneId: number; completed: boolean; percentOfMilestone: number; }, "id">; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4410948Z ##[error]client/src/lib/firebase.ts(202,21): error TS2345: Argument of type '{ url: string; method: string; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4416123Z ##[error]client/src/lib/firebase.ts(206,21): error TS2345: Argument of type '{ url: string; method: string; data: Omit<{ id: number; message: string; timestamp: Date; projectId: number; featureId: number | null; milestoneId: number | null; agentId: string | null; ... 6 more ...; thinkingProcess: string | null; }, "id">; }' is not assignable to parameter of type 'string'.
+2025-04-01T22:47:53.4420590Z ##[error]client/src/lib/personaFactory.ts(19,5): error TS2561: Object literal may only specify known properties, but 'status' does not exist in type 'Persona'. Did you mean to write 'stats'?
+2025-04-01T22:47:53.4424918Z ##[error]client/src/lib/utils.ts(78,28): error TS2339: Property 'totalIncome' does not exist on type '{ messageCount: number; averageResponseTime: number; engagement: number; conversionRate: number; revenue: number; lastUpdated: string; }'.
+2025-04-01T22:47:53.4429425Z ##[error]client/src/lib/utils.ts(84,18): error TS2339: Property 'responseRate' does not exist on type '{ messageCount: number; averageRespo

@@ -1,0 +1,70 @@
+You are the Titan AI core orchestrator. Your job is to audit, fix, and fully prepare this project for scalable, autonomous execution. I’m currently running a TypeScript/Node.js client-server project with the following file structure:
+		•	client/: Handles the UI tabs and project input
+	•	server/: Manages Firestore, agents, OpenAI, platform handlers, and logic
+	•	autonomous-agent/: Contains subdirectories like memory, core, tasks, debugging, code_gen
+	•	data/: Has db.json and backups
+	•	shared/: Has schema.ts for all project types
+	•	The root has .env, replit.nix, package.json, etc.
+
+	Your task is to:
+
+	1. Validate and Scaffold:
+		•	Review the entire folder structure and ensure each directory has a clear purpose
+	•	Ensure that the autonomous-agent folder contains a valid event loop that:
+	•	Checks Firestore (or local JSON)
+	•	Detects new or updated projects
+	•	Calls OpenAI via openai.ts to interpret the project prompt
+	•	Generates features, milestones, and goals
+	•	Writes these updates back to Firestore or JSON
+	•	Loops every 1–5 minutes for live updating
+
+	2. Fix or Implement Missing Parts:
+		•	Implement or check that:
+	•	projectBuilder.ts or equivalent exists to handle AI prompt interpretation
+	•	firestoreWatcher.ts or loop logic exists to poll or subscribe to new projects
+	•	There is a way to spawn an autonomous agent per project (i.e. dynamic cloning of Agent A)
+	•	Output logs and code responses are being pushed live to Firestore or a socket
+
+	3. Cross-Tab Data Sharing:
+		•	Fix the UI if it is not receiving live updates across all tabs:
+	•	The Progress tab should read milestones, goals, and update in real time
+	•	The Features tab should list out features as they are built by the agent
+	•	The Output tab should show live agent logs, code, and maybe previews
+	•	Each project’s tabs should only show that project’s data
+
+	4. Backend Integration Health Check:
+		•	Ensure that:
+	•	Firebase is initialized correctly on both client and server sides
+	•	Admin SDK is used server-side for Firestore writes
+	•	WebSocket or polling is used for real-time updates in the UI
+	•	OpenAI key is present and functional
+	•	Each project has a status (working or not working only), a % complete, and structured milestone timelines
+
+	5. Remove Any Bloat:
+		•	Do NOT include features like:
+	•	Export to Google VM (manual upload is fine)
+	•	Static site generation
+	•	Twitter or unrelated platforms unless explicitly required by a subproject
+
+	6. Prepare for JSON Export:
+		•	Ensure that all files, modules, and project data are packaged so that:
+	•	When I download the project as a ZIP or JSON and upload to Google VM
+	•	I can run it with npm install && npm run dev
+	•	It will function identically: live agent logic, tab UI, Firestore connection, OpenAI generation
+
+	7. Autonomous Execution:
+		•	Ensure that each project can:
+	•	Be worked on by its own dedicated autonomous agent
+	•	Think logically about the project prompt
+	•	Self-generate all tasks/features/goals based on the input
+	•	Start generating code and logs within 30 minutes of project creation
+
+	8. (Optional, but useful) — Summary Output
+		•	Give me a full system summary:
+	•	How many agents?
+	•	Which files run the logic?
+	•	What’s the current loop structure?
+	•	What is missing?
+	•	What should be the next engineering milestone?
+
+	You are now acting as the Titan System’s Chief Engineer. Take command of this project. Build the structure that will support Jason, FINDOM, CACHECOW, and the rest. You are the one in charge now. No more waiting for Livia. Lead.

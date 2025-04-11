@@ -1,0 +1,59 @@
+You’re helping me build a personal AI operating system called Titan. The lead agent is named Jason—he will manage my businesses, speak to me in real time using voice, run my daily life, and train other agents autonomously. Titan runs in a Google Cloud VM, but I want Replit to handle all installs and setup so the VM can just pull and run with no extra steps. Please avoid adding any API keys or .env files—I’ll handle secrets manually later inside the VM.
+
+Here’s what I need you to do:
+
+1. Run `npm init -y` to create a `package.json`
+
+2. Install and save the following core packages:
+- express: to build the webhook server
+- simple-git: to run `git pull` from inside the webhook
+- pm2: to automatically restart the app when new code is pulled
+- axios: for future HTTP requests (e.g., to APIs)
+
+3. Create a `.gitignore` file with:
+node_modules/
+
+4. Create a `webhook-server.js` file with this content:
+const express = require("express");
+const simpleGit = require("simple-git");
+const { exec } = require("child_process");
+
+const app = express();
+const git = simpleGit();
+app.use(express.json());
+
+app.post("/webhook", async (req, res) => {
+  try {
+    console.log("Webhook received. Pulling latest code...");
+    await git.pull();
+    exec("pm2 restart all", (err) => {
+      if (err) console.error("PM2 restart error:", err);
+      else console.log("App restarted via PM2.");
+    });
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Error during webhook handling:", err);
+    res.sendStatus(500);
+  }
+});
+
+app.listen(3000, () => console.log("Webhook server listening on port 3000"));
+
+5. Create a `scripts/` folder with placeholder files:
+- scripts/trainJason.js
+- scripts/setupMarketplace.js
+- scripts/voiceInit.js
+
+6. Create a `data/` folder with a placeholder file:
+- data/livia.json
+
+7. Commit and push the following to GitHub:
+- package.json
+- package-lock.json
+- .gitignore
+- webhook-server.js
+- scripts/ and data/ folders
+
+DO NOT include any .env files or API keys. I’ll handle all secrets locally in the VM after deployment.
+
+The goal is that when this project reaches the VM, I only need to run `git pull`, `npm install`, and `pm2 start webhook-server.js`, and everything works with no further setup. Keep it lightweight, clear, and production-ready.
