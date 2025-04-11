@@ -17,6 +17,7 @@ import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { runPuppeteerTask } from "./puppeteer";
+import OpenAI from "openai";
 import { openai } from "./openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -377,13 +378,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/openai/completions', async (req: Request, res: Response) => {
     try {
-      const { prompt, model, maxTokens, temperature } = req.body;
+      const { prompt, model, maxTokens, temperature, projectId } = req.body;
       
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
       }
       
-      const result = await openai.chat.completions.create({
+      let apiClient = openai;
+      
+      // If a project ID is provided, try to use its turbo API key
+      if (projectId) {
+        try {
+          const project = await storage.getProject(Number(projectId));
+          if (project) {
+            // Check for project-specific API key
+            const projectApiKeys = await storage.getApiKeysByProject(project.id);
+            const turboKey = projectApiKeys.find(key => key.isTurbo);
+            
+            if (turboKey) {
+              // Use the project's turbo API key
+              apiClient = new OpenAI({ apiKey: turboKey.key });
+              console.log(`Using turbo API key for project "${project.name}"`);
+              
+              // Log activity
+              await storage.createActivityLog({
+                agentId: null,
+                action: "API_CALL",
+                details: `Used turbo API key for project "${project.name}" in AI Testing`
+              });
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to get project API key:', err);
+          // Continue with default API key
+        }
+      }
+      
+      const result = await apiClient.chat.completions.create({
         model: model || 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
         messages: [{ role: 'user', content: prompt }],
         max_tokens: maxTokens || 1000,
@@ -394,6 +425,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         content: result.choices[0].message.content,
         usage: result.usage
       });
+      
+      // Broadcast a notification that OpenAI was used
+      if (result.usage) {
+        broadcast({
+          type: "openai-usage",
+          model: model || 'gpt-4o',
+          tokens: result.usage.total_tokens,
+          timestamp: new Date().toISOString()
+        });
+      }
     } catch (error) {
       console.error('OpenAI API error:', error);
       res.status(500).json({ error: 'Failed to generate completion' });
