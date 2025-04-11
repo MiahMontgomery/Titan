@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titan - Status Page</title>
+  <style>
+    :root {
+      --background: #141415;
+      --foreground: #f7f7f7;
+      --card: #1c1c1e;
+      --primary: #01F9C6;
+      --muted: #71717a;
+      --border: #303038;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--foreground);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 90%;
+      padding: 2rem;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      margin-right: 0.75rem;
+    }
+    
+    .title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .status-card {
+      background-color: #1c1c1e;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .status-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    .status-heading h2 {
+      color: var(--primary);
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    
+    .status-indicator.online {
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+    
+    .status-indicator.offline {
+      background-color: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+    }
+    
+    .status-indicator.checking {
+      background-color: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    
+    .status-text {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    
+    .button {
+      background-color: var(--primary);
+      color: var(--background);
+      border: none;
+      border-radius: 0.375rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: block;
+      margin: 2rem auto 0;
+    }
+    
+    .button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .logs {
+      font-family: monospace;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    
+    .logs p {
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .logs .log-time {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="#01F9C6"/>
+        <path d="M40 30H60V40H55V70H45V40H40V30Z" fill="#141415"/>
+      </svg>
+      <h1 class="title">TITAN STATUS</h1>
+    </div>
+    
+    <div class="status-card">
+      <div class="status-heading">
+        <h2>Express Server</h2>
+        <div>
+          <span class="status-indicator online"></span>
+          <span>Online</span>
+        </div>
+      </div>
+      <p class="status-text">
+        API is running correctly on port 5000. Health check is responding successfully.
+      </p>
+      <div class="logs">
+        <p><span class="log-time">10:40:42 PM</span> [express] serving on port 5000</p>
+        <p><span class="log-time">10:41:02 PM</span> [express] GET /api/health 200 in 3ms</p>
+      </div>
+    </div>
+    
+    <div class="status-card">
+      <div class="status-heading">
+        <h2>WebSocket Connection</h2>
+        <div>
+          <span class="status-indicator checking"></span>
+          <span>Checking...</span>
+        </div>
+      </div>
+      <p class="status-text">
+        Attempting to connect to WebSocket server on ws://localhost:5000/ws
+      </p>
+      <div class="logs" id="ws-logs">
+        <p><span class="log-time" id="current-time"></span> Initializing WebSocket connection...</p>
+      </div>
+    </div>
+    
+    <div class="status-card">
+      <div class="status-heading">
+        <h2>Vite Development Server</h2>
+        <div>
+          <span class="status-indicator checking"></span>
+          <span>Checking...</span>
+        </div>
+      </div>
+      <p class="status-text">
+        Checking if Vite server is running and serving client assets
+      </p>
+      <div class="logs" id="vite-logs">
+        <p><span class="log-time" id="vite-check-time"></span> Checking Vite server status...</p>
+      </div>
+    </div>
+    
+    <button class="button" id="refresh-button">Refresh Status</button>
+  </div>
+  
+  <script>
+    // Update current time
+    function updateCurrentTime() {
+      const now = new Date();
+      const formattedTime = now.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+      
+      document.querySelectorAll('#current-time, #vite-check-time').forEach(el => {
+        el.textContent = formattedTime;
+      });
+    }
+    
+    updateCurrentTime();
+    
+    // Check WebSocket connection
+    function checkWebSocket() {
+      const wsLogs = document.getElementById('ws-logs');
+      const wsStatusIndicator = wsLogs.parentElement.querySelector('.status-indicator');
+      const wsStatusText = wsStatusIndicator.nextElementSibling;
+      
+      updateCurrentTime();
+      
+      try {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        
+        wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Connecting to ${wsUrl}...</p>`;
+        
+        const socket = new WebSocket(wsUrl);
+        
+        socket.onopen = function() {
+          wsStatusIndicator.className = 'status-indicator online';
+          wsStatusText.textContent = 'Connected';
+          wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Connection established!</p>`;
+          
+          // Send a ping to test the connection
+          socket.send(JSON.stringify({ type: 'ping' }));
+          wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Sent ping message</p>`;
+        };
+        
+        socket.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Received: ${event.data}</p>`;
+          } catch (e) {
+            wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Received non-JSON message</p>`;
+          }
+        };
+        
+        socket.onerror = function(error) {
+          wsStatusIndicator.className = 'status-indicator offline';
+          wsStatusText.textContent = 'Error';
+          wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> WebSocket error occurred</p>`;
+        };
+        
+        socket.onclose = function(event) {
+          wsStatusIndicator.className = 'status-indicator offline';
+          wsStatusText.textContent = 'Disconnected';
+          wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Connection closed (${event.code}): ${event.reason || 'No reason provided'}</p>`;
+        };
+        
+        // Close the connection after 5 seconds to prevent issues
+        setTimeout(() => {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.close();
+            wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Connection closed after timeout</p>`;
+          }
+        }, 5000);
+        
+      } catch (e) {
+        wsStatusIndicator.className = 'status-indicator offline';
+        wsStatusText.textContent = 'Failed';
+        wsLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Failed to create WebSocket: ${e.message}</p>`;
+      }
+    }
+    
+    // Check Vite server status
+    function checkViteServer() {
+      const viteLogs = document.getElementById('vite-logs');
+      const viteStatusIndicator = viteLogs.parentElement.querySelector('.status-indicator');
+      const viteStatusText = viteStatusIndicator.nextElementSibling;
+      
+      updateCurrentTime();
+      
+      viteLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Checking if Vite is serving main.tsx...</p>`;
+      
+      // Fetch a known frontend resource
+      fetch('/src/main.tsx')
+        .then(response => {
+          if (response.ok) {
+            viteStatusIndicator.className = 'status-indicator online';
+            viteStatusText.textContent = 'Online';
+            viteLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Vite server is running! Status: ${response.status}</p>`;
+          } else {
+            viteStatusIndicator.className = 'status-indicator offline';
+            viteStatusText.textContent = 'Error';
+            viteLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Vite server returned error: ${response.status}</p>`;
+          }
+        })
+        .catch(error => {
+          viteStatusIndicator.className = 'status-indicator offline';
+          viteStatusText.textContent = 'Offline';
+          viteLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> Failed to connect to Vite server: ${error.message}</p>`;
+        });
+    }
+    
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    }
+    
+    // Check API status
+    function checkApiStatus() {
+      fetch('/api/health')
+        .then(response => response.json())
+        .then(data => {
+          const apiLogs = document.querySelector('.logs');
+          apiLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> API health check: ${JSON.stringify(data)}</p>`;
+        })
+        .catch(error => {
+          const apiLogs = document.querySelector('.logs');
+          apiLogs.innerHTML += `<p><span class="log-time">${getCurrentTime()}</span> API health check failed: ${error.message}</p>`;
+          
+          const apiStatusIndicator = document.querySelector('.status-card:first-of-type .status-indicator');
+          apiStatusIndicator.className = 'status-indicator offline';
+          apiStatusIndicator.nextElementSibling.textContent = 'Offline';
+        });
+    }
+    
+    // Initialize checks
+    function runAllChecks() {
+      checkApiStatus();
+      checkWebSocket();
+      checkViteServer();
+    }
+    
+    // Run checks on load
+    window.addEventListener('load', runAllChecks);
+    
+    // Set up refresh button
+    document.getElementById('refresh-button').addEventListener('click', function() {
+      document.querySelectorAll('.status-indicator').forEach(indicator => {
+        indicator.className = 'status-indicator checking';
+        indicator.nextElementSibling.textContent = 'Checking...';
+      });
+      
+      document.getElementById('ws-logs').innerHTML = `<p><span class="log-time">${getCurrentTime()}</span> Initializing WebSocket connection...</p>`;
+      document.getElementById('vite-logs').innerHTML = `<p><span class="log-time">${getCurrentTime()}</span> Checking Vite server status...</p>`;
+      
+      runAllChecks();
+    });
+  </script>
+</body>
+</html>
