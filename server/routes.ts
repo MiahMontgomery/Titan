@@ -24,7 +24,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   
   // Create WebSocket server
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  const wss = new WebSocketServer({ 
+    server: httpServer, 
+    path: '/ws',
+    // Allow connections from any origin
+    verifyClient: () => true
+  });
   
   // WebSocket connection handler
   wss.on("connection", (ws: WebSocket) => {
@@ -33,22 +38,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Send initial connection confirmation
     ws.send(JSON.stringify({
       type: "connection",
-      message: "Connected to FINDOM WebSocket server"
+      message: "Connected to Titan WebSocket server",
+      timestamp: new Date().toISOString()
     }));
     
     // Handle client messages
     ws.on("message", async (message: string) => {
       try {
-        const data = JSON.parse(message);
+        const data = JSON.parse(message.toString());
         console.log("Received message:", data);
         
         // Process message based on type
         if (data.type === "ping") {
-          ws.send(JSON.stringify({ type: "pong", timestamp: new Date().toISOString() }));
+          ws.send(JSON.stringify({ 
+            type: "pong", 
+            message: "Pong response from server",
+            timestamp: new Date().toISOString() 
+          }));
         }
       } catch (error) {
         console.error("WebSocket message error:", error);
-        ws.send(JSON.stringify({ type: "error", message: "Invalid message format" }));
+        ws.send(JSON.stringify({ 
+          type: "error", 
+          message: "Invalid message format",
+          timestamp: new Date().toISOString()
+        }));
       }
     });
     
@@ -56,13 +70,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ws.on("close", () => {
       console.log("WebSocket client disconnected");
     });
+    
+    // Handle errors
+    ws.on("error", (error) => {
+      console.error("WebSocket error:", error);
+    });
+    
+    // Keep the connection alive with ping/pong
+    const pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.ping();
+      } else {
+        clearInterval(pingInterval);
+      }
+    }, 30000); // Send ping every 30 seconds
+    
+    // Clear interval when connection closes
+    ws.on("close", () => {
+      clearInterval(pingInterval);
+    });
   });
   
   // Broadcast function to send messages to all connected clients
   function broadcast(data: any) {
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(data));
+        client.send(JSON.stringify({
+          ...data,
+          timestamp: new Date().toISOString()
+        }));
       }
     });
   }
@@ -351,11 +387,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             lastRun: new Date()
           });
           
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+          
           // Create activity log for error
           await storage.createActivityLog({
             agentId: task.agentId,
             action: "AUTOMATION_ERROR",
-            details: `Task "${task.name}" failed: ${error.message}`
+            details: `Task "${task.name}" failed: ${errorMessage}`
           });
           
           // Broadcast task error
@@ -363,10 +401,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             type: "automation-task-completed",
             taskId: task.id,
             success: false,
-            error: error.message
+            error: errorMessage
           });
           
-          res.status(500).json({ success: false, error: error.message });
+          res.status(500).json({ success: false, error: errorMessage });
         }
       } else {
         res.status(400).json({ error: 'Task missing URL or script' });

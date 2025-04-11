@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titan - Direct HTML</title>
+  <style>
+    :root {
+      --background: #141415;
+      --foreground: #f7f7f7;
+      --card: #1c1c1e;
+      --primary: #01F9C6;
+      --muted: #71717a;
+      --border: #303038;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--foreground);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 90%;
+      padding: 2rem;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      margin-right: 0.75rem;
+    }
+    
+    .title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .card {
+      background-color: #1c1c1e;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      box-shadow: 0 0 10px rgba(1, 249, 198, 0.3);
+      border-color: var(--primary);
+    }
+    
+    .card h2 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+    }
+    
+    .card p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    
+    .button {
+      background-color: var(--primary);
+      color: var(--background);
+      border: none;
+      border-radius: 0.375rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: block;
+      margin: 2rem auto 0;
+    }
+    
+    .button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .description {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="#01F9C6"/>
+        <path d="M40 30H60V40H55V70H45V40H40V30Z" fill="#141415"/>
+      </svg>
+      <h1 class="title">TITAN</h1>
+    </div>
+    
+    <p class="description">
+      Your AI-powered autonomous coding assistant and project management system.
+    </p>
+    
+    <div class="card">
+      <h2>Project Management</h2>
+      <p>
+        Create and manage projects with AI-powered assistance. Track progress, view logs, and manage code all in one place.
+      </p>
+    </div>
+    
+    <div class="card">
+      <h2>Web Automation</h2>
+      <p>
+        Automate web tasks with Puppeteer integration. Create scripts to extract data, fill forms, and more.
+      </p>
+    </div>
+    
+    <div class="card">
+      <h2>AI Integration</h2>
+      <p>
+        Leverage OpenAI's powerful models for content generation, code assistance, and data analysis.
+      </p>
+    </div>
+    
+    <button class="button">Get Started</button>
+  </div>
+</body>
+</html>

@@ -1,21 +1,12 @@
 import React, { useState } from "react";
-import { Plus, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus } from "lucide-react";
 import { TitanLogoWithText } from "@/components/ui/titan-logo";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-
-// Temporary type definitions until we update the schema
-type Project = {
-  id: number;
-  name: string;
-  description: string;
-  status: "active" | "idle" | "error";
-  progress: number;
-  createdAt: Date;
-};
+import { ProjectBox, Project } from "@/components/project/project-box";
 
 export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -57,6 +48,9 @@ export default function Dashboard() {
     setNewProjectName("");
     setNewProjectDescription("");
     setIsCreateDialogOpen(false);
+    
+    // Automatically expand the newly created project
+    setExpandedProject(newProject.id);
 
     toast({
       title: "Success",
@@ -101,64 +95,12 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-4">
               {projects.map((project) => (
-                <div 
-                  key={project.id} 
-                  className={`titan-project-box ${project.status === 'active' ? 'pulse-glow' : ''}`}
-                >
-                  <div 
-                    className="titan-project-box-header cursor-pointer"
-                    onClick={() => toggleProjectExpansion(project.id)}
-                  >
-                    <div className="flex items-center">
-                      <div className={`titan-status-light mr-3 ${project.status === 'active' ? 'active' : ''}`} />
-                      <h3 className="font-medium text-foreground">{project.name}</h3>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="mr-4 text-sm text-muted-foreground">
-                        Progress: {project.progress}%
-                      </div>
-                      {expandedProject === project.id ? (
-                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </div>
-                  </div>
-                  
-                  {expandedProject === project.id && (
-                    <div className="p-0">
-                      <div className="titan-tab-container flex">
-                        <button className="titan-tab active">Progress</button>
-                        <button className="titan-tab">Input</button>
-                        <button className="titan-tab">Logs</button>
-                        <button className="titan-tab">Output</button>
-                        <button className="titan-tab">Code</button>
-                      </div>
-                      
-                      <div className="p-4">
-                        {/* Progress tab content by default */}
-                        <div>
-                          <div className="mb-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="text-sm font-medium">Project Progress</div>
-                              <div className="text-sm text-muted-foreground">{project.progress}%</div>
-                            </div>
-                            <div className="titan-progress-bar">
-                              <div 
-                                className="titan-progress-bar-value" 
-                                style={{ width: `${project.progress}%` }}
-                              />
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground">No features have been created yet. Start interacting through the Input tab.</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ProjectBox
+                  key={project.id}
+                  project={project}
+                  isExpanded={expandedProject === project.id}
+                  onToggleExpand={() => toggleProjectExpansion(project.id)}
+                />
               ))}
             </div>
           )}

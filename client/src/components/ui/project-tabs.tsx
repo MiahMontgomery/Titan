@@ -1,69 +1,67 @@
-import React, { useState } from "react";
-import { cn } from "@/lib/utils";
-import { TitanLogo } from "./titan-logo";
+import React from "react";
+import { Activity, MessageSquare, FileText, List, Code } from "lucide-react";
 
 type TabType = "progress" | "input" | "logs" | "output" | "code";
 
 interface ProjectTabsProps {
-  activeTab?: TabType;
-  onTabChange?: (tab: TabType) => void;
-  isLoading?: boolean;
-}
-
-export function ProjectTabs({ 
-  activeTab = "progress",
-  onTabChange,
-  isLoading = false
-}: ProjectTabsProps) {
-  const [currentTab, setCurrentTab] = useState<TabType>(activeTab);
-
-  const handleTabChange = (tab: TabType) => {
-    setCurrentTab(tab);
-    if (onTabChange) {
-      onTabChange(tab);
-    }
-  };
-
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "progress", label: "Progress" },
-    { id: "input", label: "Input" },
-    { id: "logs", label: "Logs" },
-    { id: "output", label: "Output" },
-    { id: "code", label: "Code" },
-  ];
-
-  return (
-    <div className="titan-tab-container flex">
-      {isLoading ? (
-        <div className="flex items-center justify-center w-full py-2">
-          <TitanLogo size={24} spinning={true} />
-          <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
-        </div>
-      ) : (
-        tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={cn(
-              "titan-tab",
-              currentTab === tab.id && "active"
-            )}
-            onClick={() => handleTabChange(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))
-      )}
-    </div>
-  );
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
 }
 
 interface TabContentProps {
   currentTab: TabType;
-  children: React.ReactNode;
   tab: TabType;
+  children: React.ReactNode;
+}
+
+export function ProjectTabs({ activeTab, onTabChange }: ProjectTabsProps) {
+  return (
+    <div className="titan-tab-container flex">
+      <button 
+        className={`titan-tab ${activeTab === "progress" ? "active" : ""}`}
+        onClick={() => onTabChange("progress")}
+      >
+        <Activity className="h-4 w-4 mr-2" />
+        Progress
+      </button>
+      <button 
+        className={`titan-tab ${activeTab === "input" ? "active" : ""}`}
+        onClick={() => onTabChange("input")}
+      >
+        <MessageSquare className="h-4 w-4 mr-2" />
+        Input
+      </button>
+      <button 
+        className={`titan-tab ${activeTab === "logs" ? "active" : ""}`}
+        onClick={() => onTabChange("logs")}
+      >
+        <List className="h-4 w-4 mr-2" />
+        Logs
+      </button>
+      <button 
+        className={`titan-tab ${activeTab === "output" ? "active" : ""}`}
+        onClick={() => onTabChange("output")}
+      >
+        <FileText className="h-4 w-4 mr-2" />
+        Output
+      </button>
+      <button 
+        className={`titan-tab ${activeTab === "code" ? "active" : ""}`}
+        onClick={() => onTabChange("code")}
+      >
+        <Code className="h-4 w-4 mr-2" />
+        Code
+      </button>
+    </div>
+  );
 }
 
 export function TabContent({ currentTab, tab, children }: TabContentProps) {
   if (currentTab !== tab) return null;
-  return <div className="p-4">{children}</div>;
+  
+  return (
+    <div className="p-4">
+      {children}
+    </div>
+  );
 }

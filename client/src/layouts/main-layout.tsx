@@ -1,5 +1,4 @@
 import React from "react";
-import { Sidebar } from "@/components/ui/sidebar";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -7,12 +6,9 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar />
-      
+    <div className="min-h-screen bg-background">
       {/* Main Content */}
-      <div className="flex flex-col flex-1 pl-64">
+      <div className="flex flex-col flex-1">
         {children}
       </div>
     </div>
