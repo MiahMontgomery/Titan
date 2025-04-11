@@ -77,4 +77,67 @@
   .code-block {
     @apply font-mono text-sm leading-relaxed bg-muted rounded-md p-4 overflow-x-auto;
   }
+  
+  /* Titan-specific components */
+  .titan-glow-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .titan-glow-hover:hover {
+    @apply shadow-[0_0_10px_rgba(1,249,198,0.4)] ring-1 ring-primary;
+  }
+  
+  .titan-card {
+    @apply bg-card rounded-md border border-border titan-glow-hover;
+  }
+  
+  .titan-status-light {
+    @apply w-3 h-3 rounded-full bg-primary;
+  }
+  
+  .titan-status-light.active {
+    @apply animate-pulse;
+  }
+  
+  .titan-progress-bar {
+    @apply h-1 bg-secondary rounded-full overflow-hidden;
+  }
+  
+  .titan-progress-bar-value {
+    @apply h-full bg-primary;
+  }
+  
+  .titan-project-box {
+    @apply w-full bg-card border border-border rounded-md mb-4 overflow-hidden transition-all duration-300;
+  }
+  
+  .titan-project-box-header {
+    @apply flex items-center justify-between p-4 border-b border-border;
+  }
+  
+  .titan-tab-container {
+    @apply border-b border-border;
+  }
+  
+  .titan-tab {
+    @apply px-4 py-2 text-sm font-medium transition-colors;
+  }
+  
+  .titan-tab.active {
+    @apply text-primary border-b-2 border-primary;
+  }
+  
+  /* New animation for project items */
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(1, 249, 198, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 15px rgba(1, 249, 198, 0.4);
+    }
+  }
+  
+  .pulse-glow {
+    animation: glow-pulse 2s infinite;
+  }
 }
