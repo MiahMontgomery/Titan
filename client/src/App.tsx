@@ -9,6 +9,7 @@ import Projects from "@/pages/projects";
 import WebAutomation from "@/pages/web-automation";
 import ApiKeys from "@/pages/api-keys";
 import Billing from "@/pages/billing";
+import AITesting from "@/pages/ai-testing";
 import MainLayout from "@/layouts/main-layout";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/web-automation" component={WebAutomation} />
       <Route path="/api-keys" component={ApiKeys} />
       <Route path="/billing" component={Billing} />
+      <Route path="/ai-testing" component={AITesting} />
       <Route component={NotFound} />
     </Switch>
   );
