@@ -14,6 +14,7 @@ import {
   insertSaleSchema
 } from "@shared/schema";
 import dotenv from "dotenv";
+dotenv.config();
 import { OpenRouter } from '../services/openrouter';
 
 const openRouter = new OpenRouter();
