@@ -36,9 +36,9 @@ export default async () => {
       port: 4000,
       host: true,
       proxy: {
-        '/api': 'http://localhost:4000',
+        '/api': 'http://localhost:5050',
         '/ws': {
-          target: 'ws://localhost:4000',
+          target: 'ws://localhost:5050',
           ws: true,
         },
       },
