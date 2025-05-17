@@ -37,6 +37,10 @@ export default async () => {
       host: true,
       proxy: {
         '/api': 'http://localhost:5050',
+        '/ws': {
+          target: 'ws://localhost:5050',
+          ws: true,
+        },
       },
     },
   });
