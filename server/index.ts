@@ -76,3 +76,4 @@ server.listen({
 }, () => {
   log(`serving on port ${port}`);
 });
+})();
