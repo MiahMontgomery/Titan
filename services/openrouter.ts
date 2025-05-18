@@ -61,7 +61,7 @@ export class OpenRouter {
   // Helper method for Claude 3 Opus
   async claudeChat(messages: ChatMessage[]): Promise<ChatResponse> {
     return this.chat({
-      model: 'claude-3-opus',
+      model: 'gpt-4-turbo',
       messages,
       temperature: 0.7
     });

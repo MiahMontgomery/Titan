@@ -65,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // 1. Generate features/milestones/goals using AI
       const aiResponse = await openRouter.chat({
-        model: 'claude-3-opus',
+        model: 'gpt-4-turbo',
         messages: [
           { role: 'system', content: 'You are an expert project manager AI.' },
           { role: 'user', content: `Break down this project into features, milestones, and goals: ${prompt}` }

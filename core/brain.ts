@@ -64,7 +64,7 @@ async function handleChatTask(task: Task): Promise<TaskResult> {
   
   // Use Claude for high-level reasoning
   const response = await openRouter.chat({
-    model: 'claude-3-opus',
+    model: 'gpt-4-turbo',
     messages: [
       {
         role: 'system',
