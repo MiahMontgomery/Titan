@@ -7,11 +7,12 @@ dotenv.config();
 
 const app = express();
 
-// Enable CORS for frontend
+// Enable CORS for frontend (allow both localhost and your public IP)
 app.use(cors({
-  origin: 'http://localhost:4000',
+  origin: ['http://localhost:4000', 'http://5.161.127.90:4000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 app.use(express.json());
@@ -67,13 +68,13 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Use PORT from environment or default to 5000
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
-server.listen({
-  port,
-  host: "0.0.0.0",
-  reusePort: true,
-}, () => {
-  log(`serving on port ${port}`);
-});
+  // Use PORT from environment or default to 5050 to match your proxy/firewall
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5050;
+  server.listen({
+    port,
+    host: "0.0.0.0",
+    reusePort: true,
+  }, () => {
+    log(`serving on port ${port}`);
+  });
 })();
