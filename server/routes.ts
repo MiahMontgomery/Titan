@@ -67,15 +67,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const aiResponse = await openRouter.chat({
         model: 'gpt-4-turbo',
         messages: [
-          { role: 'system', content: 'You are an expert project manager AI.' },
+          { role: 'system', content: 'You are an expert project manager AI. Respond ONLY with valid JSON. Do not include any commentary or explanation.' },
           { role: 'user', content: `Break down this project into features, milestones, and goals: ${prompt}` }
         ]
       });
+      console.log("AI raw response:", aiResponse.choices[0]?.message?.content);
       let plan;
       try {
         plan = JSON.parse(aiResponse.choices[0]?.message?.content || '{}');
       } catch {
-        return res.status(500).json({ error: 'AI did not return valid JSON' });
+        return res.status(500).json({ error: 'AI did not return valid JSON', raw: aiResponse.choices[0]?.message?.content });
       }
 
       // 2. Create the project
