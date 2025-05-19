@@ -46,7 +46,7 @@ export class OpenRouter {
         model: request.model,
         messages: request.messages,
         temperature: request.temperature ?? 0.7,
-        max_tokens: request.max_tokens ?? 1000
+        max_tokens: request.max_tokens ?? 4000
       })
     });
     

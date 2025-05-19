@@ -11,11 +11,39 @@ import {
   insertMessageSchema,
   insertLogSchema,
   insertOutputSchema,
-  insertSaleSchema
+  insertSaleSchema,
+  type Feature as DBFeature,
+  type Milestone as DBMilestone,
+  type Goal as DBGoal
 } from "@shared/schema";
 import dotenv from "dotenv";
 dotenv.config();
 import { OpenRouter } from '../services/openrouter';
+
+interface Goal {
+  title: string;
+  order: number;
+  name?: string;
+}
+
+interface Milestone {
+  title: string;
+  order: number;
+  goals: Goal[];
+  name?: string;
+}
+
+interface Feature {
+  title: string;
+  description: string;
+  order: number;
+  milestones: Milestone[];
+  name?: string;
+}
+
+interface ProjectPlan {
+  features: Feature[];
+}
 
 const openRouter = new OpenRouter();
 
@@ -69,21 +97,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         messages: [
           { role: 'system', content: `You are an expert project manager AI. Respond ONLY with valid JSON in the following format, and do not include any commentary or explanation:\n\n{\n  "features": [\n    {\n      "title": "string",\n      "description": "string",\n      "order": 0,\n      "milestones": [\n        {\n          "title": "string",\n          "order": 0,\n          "goals": [\n            {\n              "title": "string",\n              "order": 0\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}\n\nAll milestones must be nested inside their respective features, and all goals must be nested inside their respective milestones. Use the exact field names: title, description, order, milestones, goals.` },
           { role: 'user', content: `Break down this project into features, milestones, and goals: ${prompt}` }
-        ]
+        ],
+        max_tokens: 4000
       });
       console.log("AI raw response:", aiResponse.choices[0]?.message?.content);
       let plan;
       try {
-        plan = JSON.parse(aiResponse.choices[0]?.message?.content || '{}');
+        plan = JSON.parse(aiResponse.choices[0]?.message?.content || '{}') as ProjectPlan;
         // Fallback: map 'name' to 'title' and ensure structure
         if (plan.features) {
-          plan.features = plan.features.map((feature, fIdx) => {
+          plan.features = plan.features.map((feature: Feature, fIdx: number) => {
             feature.title = feature.title || feature.name || `Feature ${fIdx+1}`;
             feature.order = typeof feature.order === 'number' ? feature.order : fIdx;
-            feature.milestones = (feature.milestones || []).map((milestone, mIdx) => {
+            feature.milestones = (feature.milestones || []).map((milestone: Milestone, mIdx: number) => {
               milestone.title = milestone.title || milestone.name || `Milestone ${mIdx+1}`;
               milestone.order = typeof milestone.order === 'number' ? milestone.order : mIdx;
-              milestone.goals = (milestone.goals || []).map((goal, gIdx) => {
+              milestone.goals = (milestone.goals || []).map((goal: Goal, gIdx: number) => {
                 goal.title = goal.title || goal.name || `Goal ${gIdx+1}`;
                 goal.order = typeof goal.order === 'number' ? goal.order : gIdx;
                 return goal;
@@ -93,8 +122,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return feature;
           }).filter(feature => feature.title);
         }
-      } catch {
-        return res.status(500).json({ error: 'AI did not return valid JSON', raw: aiResponse.choices[0]?.message?.content });
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return res.status(500).json({ error: 'AI did not return valid JSON', raw: aiResponse.choices[0]?.message?.content, details: errorMessage });
       }
 
       // 2. Create the project
@@ -130,20 +160,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // 4. Broadcast new project to all clients
-      broadcast({ type: 'project_created', project });
-
-      // 5. Return the new project (with features tree)
+      // 4. Return the created project with its features
       const features = await storage.getFeaturesByProject(project.id);
-      for (const feature of features) {
-        feature.milestones = await storage.getMilestonesByFeature(feature.id);
-        for (const milestone of feature.milestones) {
-          milestone.goals = await storage.getGoalsByMilestone(milestone.id);
-        }
-      }
-      res.status(201).json({ ...project, features });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+      const projectWithFeatures = {
+        ...project,
+        features: await Promise.all(features.map(async (feature: DBFeature) => {
+          const milestones = await storage.getMilestonesByFeature(feature.id);
+          return {
+            ...feature,
+            milestones: await Promise.all(milestones.map(async (milestone: DBMilestone) => {
+              const goals = await storage.getGoalsByMilestone(milestone.id);
+              return {
+                ...milestone,
+                goals
+              };
+            }))
+          };
+        }))
+      };
+
+      res.status(201).json(projectWithFeatures);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage });
     }
   });
   
@@ -298,7 +337,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/messages/create', async (req, res) => {
     try {
       const messageData = insertMessageSchema.parse(req.body);
-      const message = await storage.createMessage(messageData);
+      const message = await storage.createMessage({
+        ...messageData,
+        metadata: messageData.metadata as Record<string, any> | undefined
+      });
       
       // Broadcast new message
       broadcast({ type: 'message_created', message });
