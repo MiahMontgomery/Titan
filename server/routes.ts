@@ -67,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const aiResponse = await openRouter.chat({
         model: 'gpt-4-turbo',
         messages: [
-          { role: 'system', content: 'You are an expert project manager AI. Respond ONLY with valid JSON. Do not include any commentary or explanation.' },
+          { role: 'system', content: `You are an expert project manager AI. Respond ONLY with valid JSON in the following format, and do not include any commentary or explanation:\n\n{\n  "features": [\n    {\n      "title": "string",\n      "description": "string",\n      "order": 0,\n      "milestones": [\n        {\n          "title": "string",\n          "order": 0,\n          "goals": [\n            {\n              "title": "string",\n              "order": 0\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}\n\nAll milestones must be nested inside their respective features, and all goals must be nested inside their respective milestones. Use the exact field names: title, description, order, milestones, goals.` },
           { role: 'user', content: `Break down this project into features, milestones, and goals: ${prompt}` }
         ]
       });
@@ -75,6 +75,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let plan;
       try {
         plan = JSON.parse(aiResponse.choices[0]?.message?.content || '{}');
+        // Fallback: map 'name' to 'title' and ensure structure
+        if (plan.features) {
+          plan.features = plan.features.map((feature, fIdx) => {
+            feature.title = feature.title || feature.name || `Feature ${fIdx+1}`;
+            feature.order = typeof feature.order === 'number' ? feature.order : fIdx;
+            feature.milestones = (feature.milestones || []).map((milestone, mIdx) => {
+              milestone.title = milestone.title || milestone.name || `Milestone ${mIdx+1}`;
+              milestone.order = typeof milestone.order === 'number' ? milestone.order : mIdx;
+              milestone.goals = (milestone.goals || []).map((goal, gIdx) => {
+                goal.title = goal.title || goal.name || `Goal ${gIdx+1}`;
+                goal.order = typeof goal.order === 'number' ? goal.order : gIdx;
+                return goal;
+              }).filter(goal => goal.title);
+              return milestone;
+            }).filter(milestone => milestone.title);
+            return feature;
+          }).filter(feature => feature.title);
+        }
       } catch {
         return res.status(500).json({ error: 'AI did not return valid JSON', raw: aiResponse.choices[0]?.message?.content });
       }
