@@ -37,6 +37,10 @@ export async function getProject(id: number): Promise<Project> {
   return response.json();
 }
 
+export async function deleteProject(id: number): Promise<void> {
+  await apiRequest("DELETE", `/api/projects/${id}`);
+}
+
 // Feature API calls
 export async function createFeature(data: Omit<InsertFeature, "order">): Promise<Feature> {
   const response = await apiRequest("POST", "/api/features/create", data);
