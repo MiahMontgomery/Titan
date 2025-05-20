@@ -239,6 +239,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.get('/api/features', async (req, res) => {
+    try {
+      const projectId = parseInt(req.query.projectId as string);
+      if (isNaN(projectId)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      const features = await storage.getFeaturesByProject(projectId);
+      res.json(features);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get features' });
+    }
+  });
+  
   app.put('/api/features/:id/complete', async (req, res) => {
     try {
       const id = parseInt(req.params.id);

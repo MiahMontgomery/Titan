@@ -27,19 +27,31 @@ export function useInputSync(projectId: number | null): InputSyncResult {
   const queryClient = useQueryClient();
 
   // Queries
-  const { data: messages = [], isLoading: isMessagesLoading } = useQuery({
+  const { data: messages = [], isLoading: isMessagesLoading } = useQuery<Message[]>({
     queryKey: ['/api/projects', projectId, 'messages'],
+    queryFn: () => getMessagesByProject(projectId!),
     enabled: !!projectId,
   });
 
-  const { data: logs = [], isLoading: isLogsLoading } = useQuery({
+  const { data: logs = [], isLoading: isLogsLoading } = useQuery<Log[]>({
     queryKey: ['/api/projects', projectId, 'logs'],
+    queryFn: () => getLogsByProject(projectId!),
     enabled: !!projectId,
   });
 
   // Mutations
   const { mutateAsync: createMessageMutation } = useMutation({
-    mutationFn: createMessage,
+    mutationFn: async (data: { 
+      projectId: number; 
+      content: string; 
+      sender: string; 
+      metadata?: Record<string, any>; 
+    }) => {
+      if (!data.projectId || !data.content || !data.sender) {
+        throw new Error('Missing required message data');
+      }
+      return createMessage(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'messages'] });
     },

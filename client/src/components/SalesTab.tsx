@@ -9,15 +9,21 @@ interface SalesTabProps {
   projectId: number;
 }
 
+interface Performance {
+  messages: number;
+  content: number;
+  income: number;
+}
+
 export function SalesTab({ projectId }: SalesTabProps) {
   // Get performance metrics
-  const { data: performance, isLoading: isPerformanceLoading } = useQuery({
+  const { data: performance = { messages: 0, content: 0, income: 0 }, isLoading: isPerformanceLoading } = useQuery<Performance>({
     queryKey: ['/api/projects', projectId, 'performance'],
     enabled: !!projectId,
   });
 
   // Get sales activity
-  const { data: sales = [], isLoading: isSalesLoading } = useQuery({
+  const { data: sales = [], isLoading: isSalesLoading } = useQuery<Sale[]>({
     queryKey: ['/api/projects', projectId, 'sales'],
     enabled: !!projectId,
   });
@@ -135,6 +141,19 @@ function SaleItem({ sale }: SaleItemProps) {
     }
   };
 
+  const formatTimestamp = (timestamp: string | Date) => {
+    try {
+      const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+      if (isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+      return format(date, 'MMM d, h:mm a');
+    } catch (error) {
+      console.error('Error formatting timestamp:', error);
+      return 'Invalid date';
+    }
+  };
+
   return (
     <div className="p-3 bg-[#0d0d0d] border border-[#333333] rounded-md">
       <div className="flex justify-between items-center">
@@ -143,7 +162,7 @@ function SaleItem({ sale }: SaleItemProps) {
           <span className="text-white">{getActivityText()}</span>
         </div>
         <div className="text-xs text-[#A9A9A9]">
-          {format(new Date(sale.timestamp), 'MMM d, h:mm a')}
+          {formatTimestamp(sale.timestamp)}
         </div>
       </div>
     </div>
