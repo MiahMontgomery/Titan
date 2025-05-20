@@ -13,12 +13,17 @@ interface ChatBubbleProps {
 
 export function ChatBubble({ message, onRollback }: ChatBubbleProps) {
   const isUser = message.sender === SENDERS.USER;
-  const formattedTime = format(new Date(message.timestamp), DATE_FORMATS.MESSAGE_TIME);
+  let formattedTime = '';
+  try {
+    formattedTime = message.timestamp ? format(new Date(message.timestamp), DATE_FORMATS.MESSAGE_TIME) : '';
+  } catch {
+    formattedTime = '';
+  }
 
   // Determine if message contains code or screenshot
-  const hasMetadata = !!message.metadata;
-  const hasCode = hasMetadata && message.metadata?.type === "code";
-  const hasScreenshot = hasMetadata && message.metadata?.type === "screenshot";
+  const hasMetadata = !!message.metadata && typeof message.metadata === 'object';
+  const hasCode = hasMetadata && (message.metadata as any)?.type === "code";
+  const hasScreenshot = hasMetadata && (message.metadata as any)?.type === "screenshot";
 
   return (
     <motion.div
@@ -53,9 +58,9 @@ export function ChatBubble({ message, onRollback }: ChatBubbleProps) {
         {/* Code block */}
         {hasCode && (
           <CodeBlock
-            code={message.metadata?.data?.code}
-            language={message.metadata?.data?.language || "javascript"}
-            filename={message.metadata?.data?.filename || "code.js"}
+            code={(message.metadata as any)?.data?.code}
+            language={(message.metadata as any)?.data?.language || "javascript"}
+            filename={(message.metadata as any)?.data?.filename || "code.js"}
             messageId={message.id}
             onRollback={onRollback}
           />
@@ -64,8 +69,8 @@ export function ChatBubble({ message, onRollback }: ChatBubbleProps) {
         {/* Screenshot */}
         {hasScreenshot && (
           <ScreenshotBlock
-            url={message.metadata?.data?.url}
-            caption={message.metadata?.data?.caption || ""}
+            url={(message.metadata as any)?.data?.url}
+            caption={(message.metadata as any)?.data?.caption || ""}
           />
         )}
       </div>
