@@ -7,8 +7,10 @@
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "tsc",
     "start": "NODE_ENV=production node dist/server/index.js",
-    "db:generate": "drizzle-kit generate:pg",
-    "db:push": "drizzle-kit push:pg",
+    "client:dev": "vite --config vite.config.ts",
+    "client:build": "vite build",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:init": "tsx scripts/init-db.ts"
   },
@@ -23,9 +25,11 @@
     "express": "^4.18.2",
     "node-fetch": "^3.3.2",
     "pg": "^8.11.3",
+    "pg-connection-string": "^2.6.0",
     "puppeteer": "^22.0.0",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^5.4.14"
   },
   "devDependencies": {
     "drizzle-kit": "^0.20.14"
