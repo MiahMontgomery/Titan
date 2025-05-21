@@ -1,104 +1,85 @@
-# Titan & Jason
+# Titan Project
 
-An autonomous system for managing projects and personas with isolated execution environments and secure secrets management.
+An autonomous AI agent that can build and manage projects independently.
 
 ## Features
 
-- **Project & Persona Isolation**: Each project and persona operates in its own isolated environment with separate memory and secrets.
-- **Secure Secrets Management**: Encrypted storage of sensitive data per project/persona.
-- **Real-time Updates**: WebSocket-based status updates and logging.
-- **Autonomous Execution**: Projects and personas can operate independently with their own AI agents.
-- **Browser Automation**: Puppeteer integration for web interactions and screenshots.
+- Project isolation and management
+- Secure secrets management
+- Browser automation for autonomous tasks
+- Context-aware AI responses
+- Persistent data storage
+- Real-time project updates
 
-## Project Structure
+## Prerequisites
 
-```
-.
-├── core/
-│   ├── brain.ts       # Task execution logic
-│   ├── logger.ts      # JSON-based logging
-│   ├── manager.ts     # Project/persona management
-│   ├── memory.ts      # Persistent state
-│   ├── secrets.ts     # Encrypted secrets
-│   ├── status.ts      # System status
-│   └── websocket.ts   # Real-time updates
-├── data/
-│   ├── logs/         # JSON log files
-│   ├── secrets/      # Encrypted secrets
-│   └── queue.json    # Task queue
-├── output/
-│   ├── screenshots/  # Browser screenshots
-│   ├── audio/        # Generated audio
-│   └── status.json   # Current status
-├── puppeteer/
-│   └── screenshot.ts # Browser automation
-└── services/
-    ├── openrouter.ts # AI model integration
-    └── elevenlabs.ts # Voice generation
-```
+- Node.js v18 or higher
+- PostgreSQL database
+- OpenRouter API key
+- ElevenLabs API key (optional, for voice features)
 
 ## Setup
 
-1. Install dependencies:
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/titan.git
+cd titan
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Create `.env` file:
+3. Create a `.env` file in the root directory:
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/titan
+OPENROUTER_API_KEY=your_openrouter_api_key
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+ENCRYPTION_KEY=your_encryption_key
+PORT=5050
+```
+
+4. Initialize the database:
 ```bash
-cp .env.example .env
+npm run db:generate  # Generate migration files
+npm run db:push     # Push schema to database
+npm run db:init     # Initialize database
 ```
 
-3. Set environment variables:
-```
-OPENROUTER_API_KEY=your_key_here
-ELEVENLABS_API_KEY=your_key_here
-ENCRYPTION_KEY=your_encryption_key_here
-```
-
-4. Start development server:
+5. Start the development server:
 ```bash
 npm run dev
 ```
 
-## Usage
+## Development
 
-### Creating a Project
-```typescript
-const project = await agentManager.createAgent('project-001', 'project', 'My Project');
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run db:studio` - Open Drizzle Studio for database management
+
+## Project Structure
+
+```
+titan/
+├── client/           # Frontend application
+├── server/           # Backend server
+├── services/         # Core services
+│   ├── openrouter.ts # AI integration
+│   └── browser.ts    # Browser automation
+├── shared/           # Shared types and utilities
+└── scripts/          # Utility scripts
 ```
 
-### Creating a Persona
-```typescript
-const persona = await agentManager.createAgent('persona-001', 'persona', 'Ethan');
-```
+## Contributing
 
-### Managing Secrets
-```typescript
-// Save project secrets
-await agentManager.saveAgentSecrets('project-001', 'project', {
-  apiKey: 'secret-key'
-});
-
-// Load project secrets
-const secrets = await agentManager.loadAgentSecrets('project-001', 'project');
-```
-
-### Logging Actions
-```typescript
-await agentManager.logAgentAction('project-001', 'task_completed', {
-  taskId: 'task-123',
-  result: 'success'
-});
-```
-
-## Security
-
-- All secrets are encrypted using AES-256-CBC
-- Each project/persona has isolated memory and secrets
-- No cross-contamination between agents
-- Secure WebSocket communication
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-MIT 
+This project is licensed under the MIT License - see the LICENSE file for details. 

@@ -1,5 +1,17 @@
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import { eq, and, gte, lte } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { 
   users, 
+  projects,
+  features,
+  milestones,
+  goals,
+  messages,
+  logs,
+  outputs,
+  sales,
   type User, 
   type InsertUser,
   type Project,
@@ -70,324 +82,205 @@ export interface IStorage {
   countMessagesByProjectAndDate(projectId: number, date: Date): Promise<number>;
   countOutputsByProjectAndDate(projectId: number, date: Date): Promise<number>;
   getSalesAmountByProjectAndDate(projectId: number, date: Date): Promise<number>;
+  sumSalesByProjectAndDate(projectId: number, date: Date): Promise<number>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private projects: Project[] = [];
-  private features: Feature[] = [];
-  private milestones: Map<number, Milestone>;
-  private goals: Map<number, Goal>;
-  private messages: Message[] = [];
-  private logs: Log[] = [];
-  private outputs: Map<number, Output>;
-  private sales: Sale[] = [];
-  
-  private userId: number;
-  private projectId: number;
-  private featureId: number;
-  private milestoneId: number;
-  private goalId: number;
-  private messageId: number;
-  private logId: number;
-  private outputId: number;
-  private saleId: number;
-  private nextId = 1;
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is required");
+}
 
-  constructor() {
-    this.users = new Map();
-    this.milestones = new Map();
-    this.goals = new Map();
-    this.outputs = new Map();
-    
-    this.userId = 1;
-    this.projectId = 1;
-    this.featureId = 1;
-    this.milestoneId = 1;
-    this.goalId = 1;
-    this.messageId = 1;
-    this.logId = 1;
-    this.outputId = 1;
-    this.saleId = 1;
-  }
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
+const db = drizzle(pool);
+
+export class PostgresStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async createUser(user: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
   }
-  
+
   // Project methods
   async getProjects(): Promise<Project[]> {
-    return this.projects;
+    return await db.select().from(projects);
   }
-  
+
   async getProject(id: number): Promise<Project | undefined> {
-    return this.projects.find(p => p.id === id);
+    const result = await db.select().from(projects).where(eq(projects.id, id));
+    return result[0];
   }
-  
+
   async createProject(project: InsertProject): Promise<Project> {
-    const id = this.projectId++;
-    const newProject: Project = {
-      ...project,
-      id,
-      createdAt: new Date(),
-      active: true
-    };
-    this.projects.push(newProject);
-    return newProject;
+    const result = await db.insert(projects).values(project).returning();
+    return result[0];
   }
-  
+
   // Feature methods
   async createFeature(feature: InsertFeature): Promise<Feature> {
-    const id = this.nextId++;
-    const newFeature: Feature = {
-      id,
-      title: feature.title,
-      description: feature.description || null,
-      projectId: feature.projectId,
-      completed: false,
-      order: feature.order || 0
-    };
-    this.features.push(newFeature);
-    return newFeature;
+    const result = await db.insert(features).values(feature).returning();
+    return result[0];
   }
-  
+
   async getFeaturesByProject(projectId: number): Promise<Feature[]> {
-    return this.features.filter(feature => feature.projectId === projectId)
-      .sort((a, b) => a.order - b.order);
+    return await db.select().from(features).where(eq(features.projectId, projectId));
   }
-  
+
   async completeFeature(id: number): Promise<Feature | undefined> {
-    const feature = this.features.find(f => f.id === id);
-    if (!feature) return undefined;
-    
-    const updatedFeature: Feature = {
-      ...feature,
-      completed: true
-    };
-    this.features.splice(this.features.indexOf(feature), 1, updatedFeature);
-    return updatedFeature;
+    const result = await db.update(features)
+      .set({ completed: true })
+      .where(eq(features.id, id))
+      .returning();
+    return result[0];
   }
-  
+
   // Milestone methods
   async createMilestone(milestone: InsertMilestone): Promise<Milestone> {
-    const id = this.milestoneId++;
-    const newMilestone: Milestone = {
-      ...milestone,
-      id,
-      completed: false,
-      order: milestone.order || 0
-    };
-    this.milestones.set(id, newMilestone);
-    return newMilestone;
+    const result = await db.insert(milestones).values(milestone).returning();
+    return result[0];
   }
-  
+
   async getMilestonesByFeature(featureId: number): Promise<Milestone[]> {
-    return Array.from(this.milestones.values())
-      .filter(milestone => milestone.featureId === featureId)
-      .sort((a, b) => a.order - b.order);
+    return await db.select().from(milestones).where(eq(milestones.featureId, featureId));
   }
-  
+
   // Goal methods
   async createGoal(goal: InsertGoal): Promise<Goal> {
-    const id = this.goalId++;
-    const newGoal: Goal = {
-      ...goal,
-      id,
-      completed: false,
-      order: goal.order || 0
-    };
-    this.goals.set(id, newGoal);
-    return newGoal;
+    const result = await db.insert(goals).values(goal).returning();
+    return result[0];
   }
-  
+
   async getGoalsByMilestone(milestoneId: number): Promise<Goal[]> {
-    return Array.from(this.goals.values())
-      .filter(goal => goal.milestoneId === milestoneId)
-      .sort((a, b) => a.order - b.order);
+    return await db.select().from(goals).where(eq(goals.milestoneId, milestoneId));
   }
-  
+
   async completeGoal(id: number): Promise<Goal | undefined> {
-    const goal = this.goals.get(id);
-    if (!goal) return undefined;
-    
-    const updatedGoal: Goal = {
-      ...goal,
-      completed: true
-    };
-    this.goals.set(id, updatedGoal);
-    return updatedGoal;
+    const result = await db.update(goals)
+      .set({ completed: true })
+      .where(eq(goals.id, id))
+      .returning();
+    return result[0];
   }
-  
+
   // Message methods
   async createMessage(message: InsertMessage & { metadata?: Record<string, any> }): Promise<Message> {
-    const id = this.nextId++;
-    const newMessage: Message = {
-      id,
-      projectId: message.projectId,
-      content: message.content,
-      sender: message.sender,
-      timestamp: new Date(),
-      metadata: message.metadata || null
-    };
-    this.messages.push(newMessage);
-    return newMessage;
+    const result = await db.insert(messages).values(message).returning();
+    return result[0];
   }
-  
+
   async getMessagesByProject(projectId: number): Promise<Message[]> {
-    return this.messages.filter(message => message.projectId === projectId)
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    return await db.select().from(messages).where(eq(messages.projectId, projectId));
   }
-  
+
   // Log methods
   async createLog(log: InsertLog): Promise<Log> {
-    const id = this.nextId++;
-    const newLog: Log = {
-      id,
-      projectId: log.projectId,
-      type: log.type,
-      title: log.title,
-      details: log.details || null,
-      timestamp: new Date()
-    };
-    this.logs.push(newLog);
-    return newLog;
+    const result = await db.insert(logs).values(log).returning();
+    return result[0];
   }
-  
+
   async getLogsByProject(projectId: number): Promise<Log[]> {
-    return this.logs.filter(log => log.projectId === projectId)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return await db.select().from(logs).where(eq(logs.projectId, projectId));
   }
-  
+
   // Output methods
   async createOutput(output: InsertOutput): Promise<Output> {
-    const id = this.outputId++;
-    const newOutput: Output = {
-      ...output,
-      id,
-      approved: null,
-      createdAt: new Date()
-    };
-    this.outputs.set(id, newOutput);
-    return newOutput;
+    const result = await db.insert(outputs).values(output).returning();
+    return result[0];
   }
-  
+
   async getOutputsByProject(projectId: number): Promise<Output[]> {
-    return Array.from(this.outputs.values())
-      .filter(output => output.projectId === projectId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return await db.select().from(outputs).where(eq(outputs.projectId, projectId));
   }
-  
+
   async approveOutput(id: number): Promise<Output | undefined> {
-    const output = this.outputs.get(id);
-    if (!output) return undefined;
-    
-    const updatedOutput: Output = {
-      ...output,
-      approved: true
-    };
-    this.outputs.set(id, updatedOutput);
-    return updatedOutput;
+    const result = await db.update(outputs)
+      .set({ approved: true })
+      .where(eq(outputs.id, id))
+      .returning();
+    return result[0];
   }
-  
+
   async rejectOutput(id: number): Promise<Output | undefined> {
-    const output = this.outputs.get(id);
-    if (!output) return undefined;
-    
-    const updatedOutput: Output = {
-      ...output,
-      approved: false
-    };
-    this.outputs.set(id, updatedOutput);
-    return updatedOutput;
+    const result = await db.update(outputs)
+      .set({ approved: false })
+      .where(eq(outputs.id, id))
+      .returning();
+    return result[0];
   }
-  
+
   // Sale methods
   async createSale(sale: InsertSale): Promise<Sale> {
-    const id = this.nextId++;
-    const newSale: Sale = {
-      id,
-      type: sale.type,
-      projectId: sale.projectId,
-      amount: sale.amount,
-      quantity: sale.quantity || 1,
-      platform: sale.platform || null,
-      timestamp: new Date()
-    };
-    this.sales.push(newSale);
-    return newSale;
+    const result = await db.insert(sales).values(sale).returning();
+    return result[0];
   }
-  
+
   async getSalesByProject(projectId: number): Promise<Sale[]> {
-    return this.sales.filter(sale => sale.projectId === projectId)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return await db.select().from(sales).where(eq(sales.projectId, projectId));
   }
-  
+
   // Performance metrics
   async countMessagesByProjectAndDate(projectId: number, date: Date): Promise<number> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     
-    return this.messages.filter(message => 
-      message.projectId === projectId &&
-      new Date(message.timestamp) >= startOfDay &&
-      new Date(message.timestamp) <= endOfDay
-    ).length;
+    const result = await db.select({ count: sql`count(*)` })
+      .from(messages)
+      .where(and(
+        eq(messages.projectId, projectId),
+        gte(messages.timestamp, startOfDay),
+        lte(messages.timestamp, endOfDay)
+      ));
+    return Number(result[0]?.count || 0);
   }
-  
+
   async countOutputsByProjectAndDate(projectId: number, date: Date): Promise<number> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     
-    return this.outputs.size;
+    const result = await db.select({ count: sql`count(*)` })
+      .from(outputs)
+      .where(and(
+        eq(outputs.projectId, projectId),
+        gte(outputs.createdAt, startOfDay),
+        lte(outputs.createdAt, endOfDay)
+      ));
+    return Number(result[0]?.count || 0);
   }
-  
+
   async getSalesAmountByProjectAndDate(projectId: number, date: Date): Promise<number> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     
-    return this.sales.filter(sale => 
-      sale.projectId === projectId &&
-      new Date(sale.timestamp) >= startOfDay &&
-      new Date(sale.timestamp) <= endOfDay
-    ).reduce((total, sale) => total + sale.amount, 0);
+    const result = await db.select({ sum: sql`sum(amount)` })
+      .from(sales)
+      .where(and(
+        eq(sales.projectId, projectId),
+        gte(sales.timestamp, startOfDay),
+        lte(sales.timestamp, endOfDay)
+      ));
+    return Number(result[0]?.sum || 0);
   }
 
-  async deleteProject(id: number): Promise<void> {
-    const index = this.projects.findIndex(p => p.id === id);
-    if (index === -1) {
-      throw new Error("Project not found");
-    }
-    this.projects.splice(index, 1);
-    
-    // Also delete associated data
-    this.features = this.features.filter(f => f.projectId !== id);
-    this.messages = this.messages.filter(m => m.projectId !== id);
-    this.logs = this.logs.filter(l => l.projectId !== id);
-    this.sales = this.sales.filter(s => s.projectId !== id);
+  async sumSalesByProjectAndDate(projectId: number, date: Date): Promise<number> {
+    return this.getSalesAmountByProjectAndDate(projectId, date);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new PostgresStorage();

@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { createServer } from 'http';
 dotenv.config();
 
 const app = express();
@@ -69,11 +70,13 @@ app.use((req, res, next) => {
   }
 
   // Use PORT from environment or default to 5050 to match your proxy/firewall
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5050;
-  server.listen({
-    port,
-    host: "localhost"
-  }, () => {
-    log(`serving on port ${port}`);
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 5050;
+
+  // Create HTTP server
+  const httpServer = createServer(app);
+
+  // Start server
+  httpServer.listen(port, () => {
+    log(`Server running on port ${port}`);
   });
 })();
