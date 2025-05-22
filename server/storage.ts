@@ -1,6 +1,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Debug logging
+console.log('Storage.ts - Environment check:', {
+  DATABASE_URL: process.env.DATABASE_URL,
+  NODE_ENV: process.env.NODE_ENV,
+  PWD: process.cwd(),
+  ENV_LOADED: process.env.DATABASE_URL ? 'yes' : 'no'
+});
+
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { eq, and, gte, lte } from 'drizzle-orm';
