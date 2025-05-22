@@ -6,6 +6,13 @@ import cors from 'cors';
 import { createServer } from 'http';
 dotenv.config();
 
+// Debug log to check environment variables
+console.log('Environment variables:', {
+  DATABASE_URL: process.env.DATABASE_URL,
+  NODE_ENV: process.env.NODE_ENV,
+  PORT: process.env.PORT
+});
+
 const app = express();
 
 // Enable CORS for frontend (allow both localhost and your public IP)
