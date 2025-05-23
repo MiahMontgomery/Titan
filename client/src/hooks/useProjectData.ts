@@ -45,7 +45,6 @@ export function useProjectData(projectId: number | null): ProjectDataResult {
 
   const { data: features = [], isLoading: isFeaturesLoading } = useQuery({
     queryKey: ['/api/projects', projectId, 'features'],
-    queryFn: () => getFeaturesByProject(projectId!),
     enabled: !!projectId,
   });
 

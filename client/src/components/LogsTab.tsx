@@ -12,24 +12,19 @@ interface LogsTabProps {
 }
 
 export function LogsTab({ projectId }: LogsTabProps) {
-  const { data: logs = [], isLoading } = useQuery<Log[]>({
+  const { data: logs = [], isLoading } = useQuery({
     queryKey: ['/api/projects', projectId, 'logs'],
-    queryFn: () => getLogsByProject(projectId),
     enabled: !!projectId,
   });
 
   // Group logs by date
-  const groupedLogs = logs.reduce((acc: Record<string, Log[]>, log: Log) => {
-    try {
-      if (!log.timestamp) return acc;
-      const date = format(new Date(log.timestamp), "yyyy-MM-dd");
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(log);
-    } catch (error) {
-      console.error('Error processing log timestamp:', error);
+  const groupedLogs = (logs as Log[]).reduce((acc: Record<string, Log[]>, log: Log) => {
+    if (!log.timestamp) return acc; // Skip logs with missing timestamp
+    const date = format(parseISO(log.timestamp.toString()), "yyyy-MM-dd");
+    if (!acc[date]) {
+      acc[date] = [];
     }
+    acc[date].push(log);
     return acc;
   }, {});
 
@@ -93,18 +88,6 @@ interface LogItemProps {
 }
 
 function LogItem({ log }: LogItemProps) {
-  const formatTimestamp = (timestamp: Date | string | null) => {
-    try {
-      if (!timestamp) return '';
-      const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
-      if (isNaN(date.getTime())) return '';
-      return format(date, DATE_FORMATS.LOG_TIME);
-    } catch (error) {
-      console.error('Error formatting timestamp:', error);
-      return '';
-    }
-  };
-
   // Get icon based on log type
   const getLogIcon = (type: string) => {
     switch (type) {
@@ -124,7 +107,7 @@ function LogItem({ log }: LogItemProps) {
   return (
     <div className="log-item">
       <div className="log-time text-xs text-[#A9A9A9] mb-1">
-        {formatTimestamp(log.timestamp)}
+        {format(parseISO(log.timestamp.toString()), DATE_FORMATS.LOG_TIME)}
       </div>
       <div className="log-content p-3 rounded-md bg-[#0d0d0d] border border-[#333333]">
         <div className="flex items-center gap-2">
@@ -145,19 +128,13 @@ function LogItem({ log }: LogItemProps) {
 
 // Helper function to format date headers
 function formatDateHeader(dateStr: string) {
-  try {
-    const date = parseISO(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-    
-    if (isToday(date)) {
-      return "Today";
-    } else if (isYesterday(date)) {
-      return "Yesterday";
-    } else {
-      return format(date, DATE_FORMATS.LOG_DATE);
-    }
-  } catch (error) {
-    console.error('Error formatting date header:', error);
-    return dateStr;
+  const date = parseISO(dateStr);
+  
+  if (isToday(date)) {
+    return "Today";
+  } else if (isYesterday(date)) {
+    return "Yesterday";
+  } else {
+    return format(date, DATE_FORMATS.LOG_DATE);
   }
 }
