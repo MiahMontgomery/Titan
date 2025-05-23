@@ -18,8 +18,7 @@ export function LogsTab({ projectId }: LogsTabProps) {
   });
 
   // Group logs by date
-  const groupedLogs = (logs as Log[]).reduce((acc: Record<string, Log[]>, log: Log) => {
-    if (!log.timestamp) return acc; // Skip logs with missing timestamp
+  const groupedLogs = logs.reduce((acc: Record<string, Log[]>, log) => {
     const date = format(parseISO(log.timestamp.toString()), "yyyy-MM-dd");
     if (!acc[date]) {
       acc[date] = [];
@@ -60,18 +59,18 @@ export function LogsTab({ projectId }: LogsTabProps) {
         ) : (
           Object.entries(groupedLogs)
             .sort(([dateA], [dateB]) => dateB.localeCompare(dateA)) // Newest first
-            .map(([date, logsForDate]: [string, Log[]]) => (
+            .map(([date, logsForDate]) => (
               <div key={date} className="log-group">
                 <div className="date-header text-sm text-[#A9A9A9] mb-2">
                   {formatDateHeader(date)}
                 </div>
                 <div className="space-y-3">
                   {logsForDate
-                    .sort((a: Log, b: Log) => {
+                    .sort((a, b) => {
                       // Sort by timestamp in descending order (newest first)
                       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
                     })
-                    .map((log: Log) => (
+                    .map((log) => (
                       <LogItem key={log.id} log={log} />
                     ))}
                 </div>
