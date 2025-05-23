@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
+  darkMode: "class",
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
@@ -41,7 +41,7 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        border: "hsl(var(--border))",
+        border: "hsl(220, 14%, 96%)",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         chart: {
