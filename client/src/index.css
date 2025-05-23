@@ -60,7 +60,7 @@
 
 @layer base {
   * {
-    @apply border;
+    @apply border-[1px];
     border-color: theme('colors.border');
   }
 
