@@ -6,7 +6,7 @@ import {
   createLog,
   getLogsByProject
 } from "@/lib/api";
-import { onMessageCreated, onLogCreated } from "@/lib/websocket";
+import { useWebSocket } from "@/lib/websocket";
 import { SENDERS, LOG_TYPES } from "@/lib/constants";
 import { useToast } from "@/hooks/use-toast";
 import type { Message, Log } from "@shared/schema";
@@ -16,9 +16,20 @@ interface InputSyncResult {
   logs: Log[];
   isLoading: boolean;
   addUserMessage: (content: string) => Promise<void>;
-  addJasonMessage: (content: string, metadata?: any) => Promise<void>;
+  addJasonMessage: (content: string, metadata?: Record<string, any>) => Promise<void>;
   addExecutionLog: (title: string, details?: string) => Promise<void>;
   activeTask: string | null;
+  wsStatus: "connecting" | "connected" | "disconnected" | "error";
+}
+
+interface WebSocketMessage {
+  message?: Message;
+  log?: Log;
+}
+
+interface TaskStatusMetadata {
+  type: "task_status";
+  [key: string]: any;
 }
 
 export function useInputSync(projectId: number | null): InputSyncResult {
@@ -26,13 +37,18 @@ export function useInputSync(projectId: number | null): InputSyncResult {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // WebSocket connection
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = `${protocol}//${window.location.host}/ws`;
+  const { status: wsStatus, subscribe, unsubscribe } = useWebSocket(wsUrl);
+
   // Queries
-  const { data: messages = [], isLoading: isMessagesLoading } = useQuery({
+  const { data: messages = [], isLoading: isMessagesLoading } = useQuery<Message[]>({
     queryKey: ['/api/projects', projectId, 'messages'],
     enabled: !!projectId,
   });
 
-  const { data: logs = [], isLoading: isLogsLoading } = useQuery({
+  const { data: logs = [], isLoading: isLogsLoading } = useQuery<Log[]>({
     queryKey: ['/api/projects', projectId, 'logs'],
     enabled: !!projectId,
   });
@@ -70,28 +86,35 @@ export function useInputSync(projectId: number | null): InputSyncResult {
   useEffect(() => {
     if (!projectId) return;
 
-    const messageUnsubscribe = onMessageCreated((data) => {
+    const handleMessage = (data: WebSocketMessage) => {
       if (data?.message?.projectId === projectId) {
         queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'messages'] });
         
         // Update active task if this is a task status message
-        if (data.message.sender === SENDERS.JASON && data.message.metadata?.type === "task_status") {
+        if (data.message.sender === SENDERS.JASON && 
+            data.message.metadata && 
+            typeof data.message.metadata === 'object' && 
+            'type' in data.message.metadata && 
+            (data.message.metadata as TaskStatusMetadata).type === "task_status") {
           setActiveTask(data.message.content);
         }
       }
-    });
+    };
 
-    const logUnsubscribe = onLogCreated((data) => {
+    const handleLog = (data: WebSocketMessage) => {
       if (data?.log?.projectId === projectId) {
         queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'logs'] });
       }
-    });
+    };
+
+    subscribe('message', handleMessage);
+    subscribe('log', handleLog);
 
     return () => {
-      messageUnsubscribe();
-      logUnsubscribe();
+      unsubscribe('message', handleMessage);
+      unsubscribe('log', handleLog);
     };
-  }, [projectId, queryClient]);
+  }, [projectId, queryClient, subscribe, unsubscribe]);
 
   // Check for inactivity - if no reply from user for 2 hours, add a follow-up message
   useEffect(() => {
@@ -135,7 +158,7 @@ export function useInputSync(projectId: number | null): InputSyncResult {
     });
   }, [projectId, createMessageMutation]);
 
-  const addJasonMessage = useCallback(async (content: string, metadata?: any) => {
+  const addJasonMessage = useCallback(async (content: string, metadata?: Record<string, any>) => {
     if (!projectId) return;
     
     await createMessageMutation({
@@ -166,6 +189,7 @@ export function useInputSync(projectId: number | null): InputSyncResult {
     addUserMessage,
     addJasonMessage,
     addExecutionLog,
-    activeTask
+    activeTask,
+    wsStatus
   };
 }

@@ -1,76 +1,130 @@
+import { useEffect, useRef, useState } from "react";
 import { WS_EVENTS } from "./constants";
 
-type WebSocketCallback = (data: any) => void;
+export type WebSocketMessage = {
+  type: string;
+  data?: any;
+};
 
-interface WebSocketListeners {
-  [event: string]: WebSocketCallback[];
-}
+export type WebSocketStatus = "connecting" | "connected" | "disconnected" | "error";
+
+const MAX_RECONNECT_ATTEMPTS = 5;
+const INITIAL_RECONNECT_DELAY = 1000; // 1 second
 
 export class WebSocketClient {
   private socket: WebSocket | null = null;
-  private listeners: WebSocketListeners = {};
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectTimeoutId: number | null = null;
+  private reconnectTimeout: NodeJS.Timeout | null = null;
+  private listeners: Record<string, ((data: any) => void)[]> = {};
+  private messageQueue: WebSocketMessage[] = [];
+  private status: WebSocketStatus = "disconnected";
+  private statusListeners: ((status: WebSocketStatus) => void)[] = [];
 
-  constructor() {
+  constructor(private url: string) {
     this.connect();
   }
 
   private connect() {
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      return;
-    }
-
     try {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${protocol}//${window.location.host}/ws`;
-      
-      this.socket = new WebSocket(wsUrl);
-      
+      this.socket = new WebSocket(this.url);
+      this.updateStatus("connecting");
+
       this.socket.onopen = () => {
-        console.log("WebSocket connection established");
+        console.log("WebSocket connected");
         this.reconnectAttempts = 0;
+        this.updateStatus("connected");
+        this.flushMessageQueue();
       };
-      
+
+      this.socket.onclose = () => {
+        console.log("WebSocket disconnected");
+        this.updateStatus("disconnected");
+        this.handleReconnect();
+      };
+
+      this.socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        this.updateStatus("error");
+      };
+
       this.socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           this.handleMessage(data);
         } catch (error) {
-          console.error("Failed to parse WebSocket message:", error);
+          console.error("Error parsing WebSocket message:", error);
         }
-      };
-      
-      this.socket.onclose = () => {
-        if (this.reconnectAttempts < this.maxReconnectAttempts) {
-          this.attemptReconnect();
-        } else {
-          console.error("WebSocket connection closed permanently after max retries");
-        }
-      };
-      
-      this.socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
       };
     } catch (error) {
-      console.error("Failed to establish WebSocket connection:", error);
-      this.attemptReconnect();
+      console.error("Error creating WebSocket:", error);
+      this.updateStatus("error");
+      this.handleReconnect();
     }
   }
 
-  private attemptReconnect() {
-    if (this.reconnectTimeoutId !== null) {
-      clearTimeout(this.reconnectTimeoutId);
+  private handleReconnect() {
+    if (this.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      console.error("Max reconnection attempts reached");
+      return;
     }
 
-    const reconnectDelay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-    console.log(`Attempting to reconnect in ${reconnectDelay / 1000} seconds...`);
-    
-    this.reconnectAttempts += 1;
-    this.reconnectTimeoutId = window.setTimeout(() => {
+    const delay = INITIAL_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempts);
+    this.reconnectAttempts++;
+
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+
+    this.reconnectTimeout = setTimeout(() => {
+      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
       this.connect();
-    }, reconnectDelay);
+    }, delay);
+  }
+
+  private updateStatus(status: WebSocketStatus) {
+    this.status = status;
+    this.statusListeners.forEach(listener => listener(status));
+  }
+
+  private flushMessageQueue() {
+    while (this.messageQueue.length > 0) {
+      const message = this.messageQueue.shift();
+      if (message) {
+        this.send(message);
+      }
+    }
+  }
+
+  public send(message: WebSocketMessage) {
+    if (this.socket?.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(message));
+    } else {
+      this.messageQueue.push(message);
+    }
+  }
+
+  public subscribe(type: string, callback: (data: any) => void) {
+    if (!this.listeners[type]) {
+      this.listeners[type] = [];
+    }
+    this.listeners[type].push(callback);
+  }
+
+  public unsubscribe(type: string, callback: (data: any) => void) {
+    if (this.listeners[type]) {
+      this.listeners[type] = this.listeners[type].filter(cb => cb !== callback);
+    }
+  }
+
+  public onStatusChange(callback: (status: WebSocketStatus) => void) {
+    this.statusListeners.push(callback);
+    return () => {
+      this.statusListeners = this.statusListeners.filter(cb => cb !== callback);
+    };
+  }
+
+  public getStatus(): WebSocketStatus {
+    return this.status;
   }
 
   private handleMessage(data: any) {
@@ -89,37 +143,39 @@ export class WebSocketClient {
     });
   }
 
-  public addListener(event: string, callback: WebSocketCallback) {
-    if (!this.listeners[event]) {
-      this.listeners[event] = [];
-    }
-    this.listeners[event].push(callback);
-  }
-
-  public removeListener(event: string, callback: WebSocketCallback) {
-    if (!this.listeners[event]) return;
-    
-    this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
-    
-    if (this.listeners[event].length === 0) {
-      delete this.listeners[event];
-    }
-  }
-
-  public close() {
-    if (this.reconnectTimeoutId !== null) {
-      clearTimeout(this.reconnectTimeoutId);
-      this.reconnectTimeoutId = null;
-    }
-    
+  public disconnect() {
     if (this.socket) {
       this.socket.close();
-      this.socket = null;
     }
-    
-    this.listeners = {};
-    this.reconnectAttempts = 0;
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
   }
+}
+
+// React hook for using WebSocket
+export function useWebSocket(url: string) {
+  const [status, setStatus] = useState<WebSocketStatus>("disconnected");
+  const clientRef = useRef<WebSocketClient | null>(null);
+
+  useEffect(() => {
+    clientRef.current = new WebSocketClient(url);
+    const unsubscribe = clientRef.current.onStatusChange(setStatus);
+
+    return () => {
+      unsubscribe();
+      clientRef.current?.disconnect();
+    };
+  }, [url]);
+
+  return {
+    status,
+    send: (message: WebSocketMessage) => clientRef.current?.send(message),
+    subscribe: (type: string, callback: (data: any) => void) => 
+      clientRef.current?.subscribe(type, callback),
+    unsubscribe: (type: string, callback: (data: any) => void) =>
+      clientRef.current?.unsubscribe(type, callback),
+  };
 }
 
 // Create singleton instance

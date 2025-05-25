@@ -12,14 +12,15 @@ interface LogsTabProps {
 }
 
 export function LogsTab({ projectId }: LogsTabProps) {
-  const { data: logs = [], isLoading } = useQuery({
+  const { data: logs = [], isLoading } = useQuery<Log[]>({
     queryKey: ['/api/projects', projectId, 'logs'],
     enabled: !!projectId,
   });
 
   // Group logs by date
-  const groupedLogs = logs.reduce((acc: Record<string, Log[]>, log) => {
-    const date = format(parseISO(log.timestamp.toString()), "yyyy-MM-dd");
+  const groupedLogs = logs.reduce((acc: Record<string, Log[]>, log: Log) => {
+    const timestamp = log.timestamp ? new Date(log.timestamp) : new Date();
+    const date = format(timestamp, "yyyy-MM-dd");
     if (!acc[date]) {
       acc[date] = [];
     }
@@ -66,11 +67,13 @@ export function LogsTab({ projectId }: LogsTabProps) {
                 </div>
                 <div className="space-y-3">
                   {logsForDate
-                    .sort((a, b) => {
+                    .sort((a: Log, b: Log) => {
                       // Sort by timestamp in descending order (newest first)
-                      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+                      const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+                      const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+                      return timeB - timeA;
                     })
-                    .map((log) => (
+                    .map((log: Log) => (
                       <LogItem key={log.id} log={log} />
                     ))}
                 </div>
@@ -103,10 +106,12 @@ function LogItem({ log }: LogItemProps) {
     }
   };
 
+  const timestamp = log.timestamp ? new Date(log.timestamp) : new Date();
+
   return (
     <div className="log-item">
       <div className="log-time text-xs text-[#A9A9A9] mb-1">
-        {format(parseISO(log.timestamp.toString()), DATE_FORMATS.LOG_TIME)}
+        {format(timestamp, DATE_FORMATS.LOG_TIME)}
       </div>
       <div className="log-content p-3 rounded-md bg-[#0d0d0d] border border-[#333333]">
         <div className="flex items-center gap-2">
