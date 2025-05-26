@@ -8,7 +8,6 @@ import {
   completeFeature,
   completeGoal
 } from "@/lib/api";
-import { onFeatureUpdated } from "@/lib/websocket";
 import { useToast } from "@/hooks/use-toast";
 import type { Feature, Milestone, Goal } from "@shared/schema";
 
@@ -126,12 +125,7 @@ export function useProjectData(projectId: number | null): ProjectDataResult {
   useEffect(() => {
     if (!projectId) return;
 
-    const unsubscribe = onFeatureUpdated((data) => {
-      // Check if the updated feature belongs to our project
-      if (data?.feature?.projectId === projectId) {
-        queryClient.invalidateQueries({ queryKey: ['/api/projects', projectId, 'features'] });
-      }
-    });
+    const unsubscribe = () => {};
 
     return () => unsubscribe();
   }, [projectId, queryClient]);

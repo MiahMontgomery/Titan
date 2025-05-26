@@ -1,7 +1,6 @@
 import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProjects, createProject } from "@/lib/api";
-import { onProjectCreated } from "@/lib/websocket";
 import { useToast } from "@/hooks/use-toast";
 import type { Project } from "@shared/schema";
 
@@ -48,11 +47,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   // Listen for new projects via WebSocket
   useEffect(() => {
-    const unsubscribe = onProjectCreated(() => {
-      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
-    });
-
-    return () => unsubscribe();
+    const unsubscribe = () => {};
   }, [queryClient]);
 
   // Create a new project
