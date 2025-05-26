@@ -12,7 +12,7 @@ interface OutputTabProps {
 }
 
 export function OutputTab({ projectId }: OutputTabProps) {
-  const { data: outputs = [], isLoading } = useQuery({
+  const { data: outputs = [], isLoading } = useQuery<Output[]>({
     queryKey: ['/api/projects', projectId, 'outputs'],
     enabled: !!projectId,
   });
@@ -124,12 +124,12 @@ export function OutputTab({ projectId }: OutputTabProps) {
             No deliverables yet. Completed work will appear here for your approval.
           </div>
         ) : (
-          outputs.map(output => (
+          outputs.map((output: Output) => (
             <OutputItem 
               key={output.id}
               output={output}
               onApprove={() => handleApprove(output.id)}
-              onReject={() => handleReject(output.id, output.title)}
+              onReject={() => handleReject(output.id, 'title' in output ? output.title : '')}
             />
           ))
         )}
@@ -192,7 +192,7 @@ function OutputItem({ output, onApprove, onReject }: OutputItemProps) {
         return (
           <img 
             src={output.content} 
-            alt={output.title} 
+            alt={'title' in output ? output.title : ''} 
             className="max-h-[240px] mx-auto object-contain" 
           />
         );
@@ -219,7 +219,7 @@ function OutputItem({ output, onApprove, onReject }: OutputItemProps) {
       <div className="output-header flex justify-between items-center mb-2">
         <div className="flex items-center">
           <span className="mr-2">{getOutputIcon(output.type)}</span>
-          <h4 className="font-medium text-white">{output.title}</h4>
+          <h4 className="font-medium text-white">{'title' in output ? output.title : ''}</h4>
         </div>
         <div className="text-xs text-[#A9A9A9] uppercase">{output.type}</div>
       </div>

@@ -43,44 +43,47 @@ export function useProjectData(projectId: number | null): ProjectDataResult {
     enabled: !!projectId,
   });
 
-  const { data: features = [], isLoading: isFeaturesLoading } = useQuery({
+  const { data: features = [], isLoading: isFeaturesLoading } = useQuery<Feature[]>({
     queryKey: ['/api/projects', projectId, 'features'],
     enabled: !!projectId,
   });
 
   // Get all milestones for all features
   const featureIds = features.map(f => f.id);
-  const { data: milestonesMap = {}, isLoading: isMilestonesLoading } = useQuery({
+  const { data: milestones = [], isLoading: isMilestonesLoading } = useQuery<Milestone[]>({
     queryKey: ['/api/features', featureIds, 'milestones'],
     enabled: featureIds.length > 0,
-    select: (data: Milestone[]) => {
-      const map: Record<number, Milestone[]> = {};
-      data.forEach(milestone => {
-        if (!map[milestone.featureId]) {
-          map[milestone.featureId] = [];
-        }
-        map[milestone.featureId].push(milestone);
-      });
-      return map;
-    }
   });
 
-  // Get all goals for all milestones
-  const milestoneIds = Object.values(milestonesMap).flat().map(m => m.id);
-  const { data: goalsMap = {}, isLoading: isGoalsLoading } = useQuery({
+  const milestonesMap: Record<number, Milestone[]> = {};
+  if (milestones) {
+    milestones.forEach(milestone => {
+      if (milestone.featureId != null) {
+        if (!milestonesMap[milestone.featureId]) {
+          milestonesMap[milestone.featureId] = [];
+        }
+        milestonesMap[milestone.featureId].push(milestone);
+      }
+    });
+  }
+
+  const milestoneIds = milestones ? milestones.map(m => m.id) : [];
+  const { data: goals = [], isLoading: isGoalsLoading } = useQuery<Goal[]>({
     queryKey: ['/api/milestones', milestoneIds, 'goals'],
     enabled: milestoneIds.length > 0,
-    select: (data: Goal[]) => {
-      const map: Record<number, Goal[]> = {};
-      data.forEach(goal => {
-        if (!map[goal.milestoneId]) {
-          map[goal.milestoneId] = [];
-        }
-        map[goal.milestoneId].push(goal);
-      });
-      return map;
-    }
   });
+
+  const goalsMap: Record<number, Goal[]> = {};
+  if (goals) {
+    goals.forEach(goal => {
+      if (goal.milestoneId != null) {
+        if (!goalsMap[goal.milestoneId]) {
+          goalsMap[goal.milestoneId] = [];
+        }
+        goalsMap[goal.milestoneId].push(goal);
+      }
+    });
+  }
 
   // Mutations
   const { mutateAsync: markFeatureCompleteMutation } = useMutation({
@@ -160,11 +163,11 @@ export function useProjectData(projectId: number | null): ProjectDataResult {
   }, [markGoalCompleteMutation]);
 
   // Build the feature tree with milestones and goals
-  const featuresWithChildren: FeatureWithChildren[] = features.map(feature => {
+  const featuresWithChildren: FeatureWithChildren[] = features.map((feature: Feature) => {
     const featureMilestones = milestonesMap[feature.id] || [];
     return {
       ...feature,
-      milestones: featureMilestones.map(milestone => ({
+      milestones: featureMilestones.map((milestone: Milestone) => ({
         ...milestone,
         goals: goalsMap[milestone.id] || [],
       })),
@@ -172,7 +175,7 @@ export function useProjectData(projectId: number | null): ProjectDataResult {
   });
 
   // Calculate feature completion percentage
-  const completedFeatures = features.filter(f => f.completed).length;
+  const completedFeatures = features.filter((f: Feature) => f.completed).length;
   const featureCompletionPercentage = features.length > 0 
     ? Math.round((completedFeatures / features.length) * 100) 
     : 0;

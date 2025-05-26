@@ -17,7 +17,7 @@ export function SalesTab({ projectId }: SalesTabProps) {
   });
 
   // Get sales activity
-  const { data: sales = [], isLoading: isSalesLoading } = useQuery({
+  const { data: sales = [] } = useQuery<Sale[]>({
     queryKey: ['/api/projects', projectId, 'sales'],
     enabled: !!projectId,
   });
@@ -67,7 +67,7 @@ export function SalesTab({ projectId }: SalesTabProps) {
             <div className="text-[#A9A9A9] text-sm">Messages</div>
           </div>
           <div className="text-2xl font-semibold text-white">
-            {performance?.messages || 0}
+            {performance && typeof performance === 'object' && 'messages' in performance ? performance.messages : 0}
           </div>
         </div>
         
@@ -77,7 +77,7 @@ export function SalesTab({ projectId }: SalesTabProps) {
             <div className="text-[#A9A9A9] text-sm">Content Created</div>
           </div>
           <div className="text-2xl font-semibold text-white">
-            {performance?.content || 0}
+            {performance && typeof performance === 'object' && 'content' in performance ? performance.content : 0}
           </div>
         </div>
         
@@ -87,7 +87,7 @@ export function SalesTab({ projectId }: SalesTabProps) {
             <div className="text-[#A9A9A9] text-sm">Income Earned</div>
           </div>
           <div className="text-2xl font-semibold text-white">
-            {performance?.income ? formatCurrency(performance.income) : '$0'}
+            {performance && typeof performance === 'object' && 'income' in performance ? formatCurrency(performance.income) : '$0'}
           </div>
         </div>
       </div>
@@ -101,8 +101,12 @@ export function SalesTab({ projectId }: SalesTabProps) {
             </div>
           ) : (
             sales
-              .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-              .map((sale) => (
+              .sort((a, b) => {
+                const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+                const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+                return timeB - timeA;
+              })
+              .map((sale: Sale) => (
                 <SaleItem key={sale.id} sale={sale} />
               ))
           )}
@@ -126,13 +130,14 @@ function SaleItem({ sale }: SaleItemProps) {
 
   const getActivityText = () => {
     const amount = formatCurrency(sale.amount);
-    const platform = sale.platform ? ` via ${sale.platform}` : '';
+    const platform = 'platform' in sale && sale.platform ? ` via ${sale.platform}` : '';
     
-    if (sale.quantity > 1) {
-      return `Sold ${sale.quantity} ${sale.type}s for ${amount}${platform}`;
-    } else {
+    if ('quantity' in sale && sale.quantity > 1) {
+      return `Sold ${sale.quantity} ${'type' in sale ? sale.type : ''}s for ${amount}${platform}`;
+    } else if ('type' in sale) {
       return `Sold 1 ${sale.type} for ${amount}${platform}`;
     }
+    return '';
   };
 
   return (
@@ -143,7 +148,7 @@ function SaleItem({ sale }: SaleItemProps) {
           <span className="text-white">{getActivityText()}</span>
         </div>
         <div className="text-xs text-[#A9A9A9]">
-          {format(new Date(sale.timestamp), 'MMM d, h:mm a')}
+          {format(sale.timestamp ? new Date(sale.timestamp) : new Date(), 'MMM d, h:mm a')}
         </div>
       </div>
     </div>

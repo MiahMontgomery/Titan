@@ -177,37 +177,3 @@ export function useWebSocket(url: string) {
       clientRef.current?.unsubscribe(type, callback),
   };
 }
-
-// Create singleton instance
-export const wsClient = new WebSocketClient();
-
-// Helper functions for specific events
-export function onProjectCreated(callback: (data: any) => void) {
-  wsClient.addListener(WS_EVENTS.PROJECT_CREATED, callback);
-  return () => wsClient.removeListener(WS_EVENTS.PROJECT_CREATED, callback);
-}
-
-export function onFeatureUpdated(callback: (data: any) => void) {
-  wsClient.addListener(WS_EVENTS.FEATURE_UPDATED, callback);
-  return () => wsClient.removeListener(WS_EVENTS.FEATURE_UPDATED, callback);
-}
-
-export function onMessageCreated(callback: (data: any) => void) {
-  wsClient.addListener(WS_EVENTS.MESSAGE_CREATED, callback);
-  return () => wsClient.removeListener(WS_EVENTS.MESSAGE_CREATED, callback);
-}
-
-export function onLogCreated(callback: (data: any) => void) {
-  wsClient.addListener(WS_EVENTS.LOG_CREATED, callback);
-  return () => wsClient.removeListener(WS_EVENTS.LOG_CREATED, callback);
-}
-
-export function onOutputCreated(callback: (data: any) => void) {
-  wsClient.addListener(WS_EVENTS.OUTPUT_CREATED, callback);
-  return () => wsClient.removeListener(WS_EVENTS.OUTPUT_CREATED, callback);
-}
-
-export function onSaleCreated(callback: (data: any) => void) {
-  wsClient.addListener(WS_EVENTS.SALE_CREATED, callback);
-  return () => wsClient.removeListener(WS_EVENTS.SALE_CREATED, callback);
-}
